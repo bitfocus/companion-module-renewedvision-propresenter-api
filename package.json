@@ -1,5 +1,5 @@
 {
-	"name": "your-module-name",
+	"name": "renewed-propresenter-api",
 	"version": "0.1.0",
 	"main": "main.js",
 	"scripts": {
@@ -8,10 +8,11 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-your-module-name.git"
+		"url": "git+https://github.com/bitfocus/companion-module-renewed-propresenter-api.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.0.1"
+		"@companion-module/base": "~1.2.0",
+		"renewedvision-propresenter": "https://github.com/JeffreyDavidsz/node-renewedvision-propresenter-api"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^0.5.1"
