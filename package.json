@@ -1,9 +1,14 @@
 {
 	"name": "renewed-propresenter-api",
 	"version": "0.1.0",
-	"main": "main.js",
+	"main": "dist/index.js",
 	"scripts": {
-		"format": "prettier -w ."
+		"prepare": "husky install",
+		"build": "rimraf dist && yarn build:main",
+		"build:main": "tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch",
+		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
+		"lint": "yarn lint:raw ."
 	},
 	"license": "MIT",
 	"repository": {
@@ -15,7 +20,24 @@
 		"renewedvision-propresenter": "https://github.com/JeffreyDavidsz/node-renewedvision-propresenter-api"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^0.5.1"
+		"@companion-module/tools": "^0.5.1",
+		"@types/node": "^18.11.9",
+		"@types/ws": "^8.5.3",
+		"husky": "^8.0.1",
+		"lint-staged": "^13.0.3",
+		"rimraf": "^3.0.2",
+		"typescript": "~4.9"
 	},
-	"prettier": "@companion-module/tools/.prettierrc.json"
+	"prettier": "@companion-module/tools/.prettierrc.json",
+	"lint-staged": {
+		"*.{css,json,md,scss}": [
+			"prettier --write"
+		],
+		"*.{ts,tsx,js,jsx}": [
+			"yarn lint:raw --fix"
+		]
+	},
+	"engines": {
+		"node": "^18.12"
+	}
 }

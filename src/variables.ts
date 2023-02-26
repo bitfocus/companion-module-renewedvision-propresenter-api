@@ -1,4 +1,6 @@
-module.exports = (instance) => {
+import { DeviceConfig, InstanceBaseExt } from "./config"
+
+module.exports = (instance: InstanceBaseExt<DeviceConfig>) => {
 	const variables = []
 
 	variables.push({

@@ -1,10 +1,20 @@
-function GetActions(instance) {
-	const actions = {
+import { CompanionActionDefinition, CompanionActionDefinitions } from "@companion-module/base";
+import { DeviceConfig, InstanceBaseExt } from "./config"
+
+type JSONValue =
+    | string
+    | number
+    | boolean
+    | { [x: string]: JSONValue }
+    | Array<JSONValue>;
+
+export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
+	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
 		[ActionId.version]: {
 			name: 'Version',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.version().then((result) => {
+				instance.ProPresenter.version().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -13,7 +23,7 @@ function GetActions(instance) {
 			name: 'Announcement Active',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.announcementGetActive().then((result) => {
+				instance.ProPresenter.announcementGetActive().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -22,7 +32,7 @@ function GetActions(instance) {
 			name: 'Announcement Slide Index',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.announcementGetSlideIndex().then((result) => {
+				instance.ProPresenter.announcementGetSlideIndex().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -62,12 +72,12 @@ function GetActions(instance) {
 					type: 'textinput',
 					label: 'Index',
 					id: 'index',
-					default: 0,
+					default: '0',
 					useVariables: true,
 				},
 			],
 			callback: async (action) => {
-				const index = await instance.parseVariablesInString(action.options.index)
+				const index = await instance.parseVariablesInString(action.options.index as string)
 				instance.ProPresenter.announcementActiveIndexTrigger(index)
 			},
 		},
@@ -87,7 +97,7 @@ function GetActions(instance) {
 				},
 			],
 			callback: async (action) => {
-				const operation = await instance.parseVariablesInString(action.options.operation)
+				const operation = await instance.parseVariablesInString(action.options.operation as string)
 				instance.ProPresenter.announcementActiveTimelineOperation(operation)
 			},
 		},
@@ -95,7 +105,7 @@ function GetActions(instance) {
 			name: 'Announcement Active Timeline Operation',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.announcementGetActiveTimelineOperation().then((result) => {
+				instance.ProPresenter.announcementGetActiveTimelineOperation().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -104,7 +114,7 @@ function GetActions(instance) {
 			name: 'Audio Playlists',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.audioGetPlaylists().then((result) => {
+				instance.ProPresenter.audioGetPlaylists().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -121,8 +131,8 @@ function GetActions(instance) {
 				},
 			],
 			callback: async (action) => {
-				const id = await instance.parseVariablesInString(action.options.id)
-				instance.ProPresenter.audioGetPlaylistsByPlaylistId(id).then((result) => {
+				const id = await instance.parseVariablesInString(action.options.id as string)
+				instance.ProPresenter.audioGetPlaylistsByPlaylistId(id).then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -139,8 +149,8 @@ function GetActions(instance) {
 				},
 			],
 			callback: async (action) => {
-				const id = await instance.parseVariablesInString(action.options.id)
-				instance.ProPresenter.audioGetPlaylistsByPlaylistIdUpdates(id).then((result) => {
+				const id = await instance.parseVariablesInString(action.options.id as string)
+				instance.ProPresenter.audioGetPlaylistsByPlaylistIdUpdates(id).then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -149,7 +159,7 @@ function GetActions(instance) {
 			name: 'Current focused audio playlist',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.audioGetPlaylistsFocused().then((result) => {
+				instance.ProPresenter.audioGetPlaylistsFocused().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -158,7 +168,7 @@ function GetActions(instance) {
 			name: 'Current active audio playlist',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.audioGetPlaylistsActive().then((result) => {
+				instance.ProPresenter.audioGetPlaylistsActive().then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -182,24 +192,22 @@ function GetActions(instance) {
 	return actions
 }
 
-const ActionId = {
-	version: 'version',
-	announcementGetActive: 'announcementActive',
-	announcementGetSlideIndex: 'announcementSlideIndex',
-	announcementActiveFocus: 'announcementActiveFocus',
-	announcementTrigger: 'announcementTrigger',
-	announcementNextTrigger: 'announcementNextTrigger',
-	announcementPreviousTrigger: 'announcementPreviousTrigger',
-	announcementActiveIndexTrigger: 'announcementActiveIndexTrigger',
-	announcementActiveTimelineOperation: 'announcementActiveTimelineOperation',
-	announcementGetActiveTimelineOperation: 'announcementGetActiveTimelineOperation',
-	audioGetPlaylists: 'audioPlaylists',
-	audioGetPlaylistsByPlaylistId: 'audioPlaylistsByPlaylistId',
-	audioGetPlaylistsByPlaylistIdUpdates: 'audioPlaylistsByPlaylistIdUpdates',
-	audioGetPlaylistsFocused: 'audioPlaylistsFocused',
-	audioGetPlaylistsActive: 'audioPlaylistsActive',
-	audioPlaylistsNextFocus: 'audioPlaylistsNextFocus',
-	audioPlaylistsPreviousFocus: 'audioPlaylistsPreviousFocus',
+export enum ActionId {
+	version= 'version',
+	announcementGetActive= 'announcementActive',
+	announcementGetSlideIndex= 'announcementSlideIndex',
+	announcementActiveFocus= 'announcementActiveFocus',
+	announcementTrigger= 'announcementTrigger',
+	announcementNextTrigger= 'announcementNextTrigger',
+	announcementPreviousTrigger= 'announcementPreviousTrigger',
+	announcementActiveIndexTrigger= 'announcementActiveIndexTrigger',
+	announcementActiveTimelineOperation= 'announcementActiveTimelineOperation',
+	announcementGetActiveTimelineOperation= 'announcementGetActiveTimelineOperation',
+	audioGetPlaylists= 'audioPlaylists',
+	audioGetPlaylistsByPlaylistId= 'audioPlaylistsByPlaylistId',
+	audioGetPlaylistsByPlaylistIdUpdates= 'audioPlaylistsByPlaylistIdUpdates',
+	audioGetPlaylistsFocused= 'audioPlaylistsFocused',
+	audioGetPlaylistsActive= 'audioPlaylistsActive',
+	audioPlaylistsNextFocus= 'audioPlaylistsNextFocus',
+	audioPlaylistsPreviousFocus= 'audioPlaylistsPreviousFocus',
 }
-
-export {ActionId, GetActions}

@@ -1,21 +1,35 @@
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
-const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
+import { InstanceBase, runEntrypoint, InstanceStatus } from '@companion-module/base'
+import { GetActions } from './actions'
+import { DeviceConfig, GetConfigFields } from './config'
+import { GetPresets } from './presets'
 const UpgradeScripts = require('./upgrades')
-const { GetActions } = require('./actions')
-const UpdatePresets = require('./presets')
 const InitVariables = require('./variables')
 const ProPresenter = require('renewedvision-propresenter')
 
-class ModuleInstance extends InstanceBase {
-	constructor(internal) {
+// type JSONValue =
+//     | string
+//     | number
+//     | boolean
+//     | { [x: string]: JSONValue }
+//     | Array<JSONValue>;
+
+class ModuleInstance extends InstanceBase<DeviceConfig> {
+	public config: DeviceConfig = {
+		ProPresenter: null,
+		host: '',
+		port: 1025,
+	}
+	private ProPresenter: any
+
+	constructor(internal: unknown) {
 		super(internal)
 	}
 
-	async init(config) {
+	public async init(config: DeviceConfig): Promise<void> {
 		this.config = config
 		this.ProPresenter = new ProPresenter(this.config.host, this.config.port)
 		await this.configUpdated(config)
-		this.ProPresenter.version().then((result) => {
+		this.ProPresenter.version().then((result: any) => {
 			this.processIncommingData(result)
 		})
 	}
@@ -24,33 +38,18 @@ class ModuleInstance extends InstanceBase {
 		this.log('debug', 'destroy')
 	}
 
-	async configUpdated(config) {
+	async configUpdated(config: DeviceConfig) {
 		this.log('debug', JSON.stringify(config))
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
-		this.updateActions() 
+		this.updateActions()
 		this.updatePresets()
 		InitVariables(this)
 	}
 
 	// Return config fields for web config
 	getConfigFields() {
-		return [
-			{
-				type: 'textinput',
-				id: 'host',
-				label: 'Target ProPresenter Instance',
-				width: 8,
-			},
-			{
-				type: 'textinput',
-				id: 'port',
-				label: 'Target Port',
-				width: 4,
-				default: 1025,
-				regex: Regex.PORT,
-			},
-		]
+		return GetConfigFields()
 	}
 
 	updateActions() {
@@ -58,12 +57,12 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	updatePresets() {
-		UpdatePresets(this)
+		this.setPresetDefinitions(GetPresets())
 	}
 
-	processIncommingData(jsonData) {
+	processIncommingData(jsonData: any) {
 		this.log('debug', `${JSON.stringify(jsonData)}`)
-		if(jsonData && jsonData.success) {
+		if (jsonData && jsonData.success) {
 			this.updateStatus(InstanceStatus.Ok)
 			switch (jsonData.success) {
 				case '/version':
@@ -80,7 +79,7 @@ class ModuleInstance extends InstanceBase {
 					break
 			}
 		} else {
-			this.log('error',`Getting this: ${JSON.stringify(jsonData)}`)
+			this.log('error', `Getting this: ${JSON.stringify(jsonData)}`)
 		}
 	}
 }

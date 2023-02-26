@@ -1,14 +1,14 @@
-const ActionId = require('./actions')
-const { combineRgb } = require('@companion-module/base')
-module.exports = (instance) => {
-	console.log('From presets',ActionId)
-	presets = {
+import { combineRgb, CompanionPresetDefinitions } from '@companion-module/base'
+import { ActionId } from './actions'
+
+export function GetPresets(): CompanionPresetDefinitions {
+	const presets: CompanionPresetDefinitions = {
 		[ActionId.version]: {
 			name: 'Version',
 			category: 'Status',
 			type: 'button',
 			style: {
-				text: ``,
+				text: `Version`,
 				size: 'auto',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
@@ -18,7 +18,7 @@ module.exports = (instance) => {
 					down: [
 						{
 							actionId: ActionId.version,
-							options: {}
+							options: {},
 						},
 					],
 					up: [],
@@ -27,9 +27,15 @@ module.exports = (instance) => {
 			feedbacks: [],
 		},
 		[ActionId.announcementGetActive]: {
-			name: 'Announcement Active',
+			name: 'Get Active Announcement',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Get Active Announcement`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -44,9 +50,15 @@ module.exports = (instance) => {
 			feedbacks: [],
 		},
 		[ActionId.announcementGetSlideIndex]: {
-			name: 'Announcement Slide Index',
+			name: 'Get Slide Index Announcement',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Get Slide Index Announcement`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -64,6 +76,12 @@ module.exports = (instance) => {
 			name: 'Announcement Active Focus',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Active Focus`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -81,6 +99,12 @@ module.exports = (instance) => {
 			name: 'Announcement Trigger',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Trigger`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -98,6 +122,12 @@ module.exports = (instance) => {
 			name: 'Announcement Next Trigger',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Next Trigger`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -115,11 +145,17 @@ module.exports = (instance) => {
 			name: 'Announcement Previous Trigger',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Previous Trigger`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
 						{
-							actionId: ActionId.announcementPreviousTrigge,
+							actionId: ActionId.announcementPreviousTrigger,
 							options: {},
 						},
 					],
@@ -132,6 +168,12 @@ module.exports = (instance) => {
 			name: 'Announcement Active Index Trigger',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Active Index Trigger`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -146,8 +188,15 @@ module.exports = (instance) => {
 			feedbacks: [],
 		},
 		[ActionId.announcementActiveTimelineOperation]: {
+			name: 'Announcement Active Timeline Operation',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Active Timeline Operation`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -160,11 +209,17 @@ module.exports = (instance) => {
 				},
 			],
 			feedbacks: [],
-			name: 'Announcement Active Timeline Operation',
 		},
 		[ActionId.announcementGetActiveTimelineOperation]: {
+			name: 'Announcement Get Active Timeline Operation',
 			category: 'Announcement',
 			type: 'button',
+			style: {
+				text: `Announcement Get Active Timeline Operation`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -177,12 +232,17 @@ module.exports = (instance) => {
 				},
 			],
 			feedbacks: [],
-			name: 'Announcement Active Timeline Operation',
 		},
 		[ActionId.audioGetPlaylists]: {
 			name: 'Audio Playlists',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Audio Playlists`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -200,6 +260,12 @@ module.exports = (instance) => {
 			name: 'Audio items in specific Playlists',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Audio items in specific Playlists`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -217,6 +283,12 @@ module.exports = (instance) => {
 			name: 'Request updates for specific Playlists',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Request updates for specific Playlists`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -234,6 +306,12 @@ module.exports = (instance) => {
 			name: 'Current focused audio playlist',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Current focused audio playlist`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -251,6 +329,12 @@ module.exports = (instance) => {
 			name: 'Current active audio playlist',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Current active audio playlist`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -268,6 +352,12 @@ module.exports = (instance) => {
 			name: 'Focus next audio playlist',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Focus next audio playlist`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -285,6 +375,12 @@ module.exports = (instance) => {
 			name: 'Focus previous audio playlist',
 			category: 'Audio',
 			type: 'button',
+			style: {
+				text: `Focus previous audio playlist`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
 			steps: [
 				{
 					down: [
@@ -298,8 +394,6 @@ module.exports = (instance) => {
 			],
 			feedbacks: [],
 		},
-		
 	}
-
-	instance.setPresetDefinitions(presets)
+	return presets
 }
