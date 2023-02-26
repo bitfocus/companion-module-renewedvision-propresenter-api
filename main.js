@@ -1,7 +1,8 @@
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args))
 const { InstanceBase, Regex, runEntrypoint, InstanceStatus } = require('@companion-module/base')
 const UpgradeScripts = require('./upgrades')
-const UpdateActions = require('./actions')
+const { GetActions } = require('./actions')
+const UpdatePresets = require('./presets')
 const InitVariables = require('./variables')
 const ProPresenter = require('renewedvision-propresenter')
 
@@ -27,7 +28,8 @@ class ModuleInstance extends InstanceBase {
 		this.log('debug', JSON.stringify(config))
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
-		this.updateActions() // export actions
+		this.updateActions() 
+		this.updatePresets()
 		InitVariables(this)
 	}
 
@@ -52,7 +54,11 @@ class ModuleInstance extends InstanceBase {
 	}
 
 	updateActions() {
-		UpdateActions(this)
+		this.setActionDefinitions(GetActions(this))
+	}
+
+	updatePresets() {
+		UpdatePresets(this)
 	}
 
 	processIncommingData(jsonData) {

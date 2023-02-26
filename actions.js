@@ -1,7 +1,5 @@
-const { Regex } = require('@companion-module/base')
-
-module.exports = (instance) => {
-	actions = {
+function GetActions(instance) {
+	const actions = {
 		[ActionId.version]: {
 			name: 'Version',
 			options: [],
@@ -181,8 +179,7 @@ module.exports = (instance) => {
 		},
 		
 	}
-
-	instance.setActionDefinitions(actions)
+	return actions
 }
 
 const ActionId = {
@@ -204,3 +201,5 @@ const ActionId = {
 	audioPlaylistsNextFocus: 'audioPlaylistsNextFocus',
 	audioPlaylistsPreviousFocus: 'audioPlaylistsPreviousFocus',
 }
+
+export {ActionId, GetActions}
