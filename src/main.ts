@@ -2,16 +2,8 @@ import { InstanceBase, runEntrypoint, InstanceStatus } from '@companion-module/b
 import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
-const UpgradeScripts = require('./upgrades')
-const InitVariables = require('./variables')
-const ProPresenter = require('renewedvision-propresenter')
-
-// type JSONValue =
-//     | string
-//     | number
-//     | boolean
-//     | { [x: string]: JSONValue }
-//     | Array<JSONValue>;
+import { ProPresenter } from 'renewedvision-propresenter'
+import { GetVariableDefinitions } from './variables'
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
 	public config: DeviceConfig = {
@@ -42,9 +34,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', JSON.stringify(config))
 		this.config = config
 		this.updateStatus(InstanceStatus.Connecting)
-		this.updateActions()
-		this.updatePresets()
-		InitVariables(this)
+		this.initActions()
+		this.initPresets()
+		this.initVariables()
 	}
 
 	// Return config fields for web config
@@ -52,12 +44,22 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		return GetConfigFields()
 	}
 
-	updateActions() {
+	initActions() {
 		this.setActionDefinitions(GetActions(this))
 	}
 
-	updatePresets() {
+	initPresets() {
 		this.setPresetDefinitions(GetPresets())
+	}
+
+	initVariables() {
+		this.setVariableDefinitions(GetVariableDefinitions())
+		this.setVariableValues({
+			name: undefined,
+			platform: undefined,
+			os_version: undefined,
+			version: undefined,
+		})
 	}
 
 	processIncommingData(jsonData: any) {
@@ -84,4 +86,4 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 }
 
-runEntrypoint(ModuleInstance, UpgradeScripts)
+runEntrypoint(ModuleInstance, [])
