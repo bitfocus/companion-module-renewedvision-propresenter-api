@@ -1,12 +1,5 @@
-import { CompanionActionDefinition, CompanionActionDefinitions } from "@companion-module/base";
-import { DeviceConfig, InstanceBaseExt } from "./config"
-
-type JSONValue =
-    | string
-    | number
-    | boolean
-    | { [x: string]: JSONValue }
-    | Array<JSONValue>;
+import { CompanionActionDefinition, CompanionActionDefinitions } from '@companion-module/base'
+import { DeviceConfig, InstanceBaseExt, JSONValue } from './config'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -89,9 +82,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					label: 'operation',
 					id: 'operation',
 					choices: [
-						{ label: 'play',id: 'play'},
-						{ label: 'pause',id: 'pause'},
-						{ label: 'rewind',id: 'rewind'},
+						{ label: 'play', id: 'play' },
+						{ label: 'pause', id: 'pause' },
+						{ label: 'rewind', id: 'rewind' },
 					],
 					default: 'play',
 				},
@@ -187,27 +180,26 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.audioPlaylistsPreviousFocus()
 			},
 		},
-		
 	}
 	return actions
 }
 
 export enum ActionId {
-	version= 'version',
-	announcementGetActive= 'announcementActive',
-	announcementGetSlideIndex= 'announcementSlideIndex',
-	announcementActiveFocus= 'announcementActiveFocus',
-	announcementTrigger= 'announcementTrigger',
-	announcementNextTrigger= 'announcementNextTrigger',
-	announcementPreviousTrigger= 'announcementPreviousTrigger',
-	announcementActiveIndexTrigger= 'announcementActiveIndexTrigger',
-	announcementActiveTimelineOperation= 'announcementActiveTimelineOperation',
-	announcementGetActiveTimelineOperation= 'announcementGetActiveTimelineOperation',
-	audioGetPlaylists= 'audioPlaylists',
-	audioGetPlaylistsByPlaylistId= 'audioPlaylistsByPlaylistId',
-	audioGetPlaylistsByPlaylistIdUpdates= 'audioPlaylistsByPlaylistIdUpdates',
-	audioGetPlaylistsFocused= 'audioPlaylistsFocused',
-	audioGetPlaylistsActive= 'audioPlaylistsActive',
-	audioPlaylistsNextFocus= 'audioPlaylistsNextFocus',
-	audioPlaylistsPreviousFocus= 'audioPlaylistsPreviousFocus',
+	version = 'version',
+	announcementGetActive = 'announcementActive',
+	announcementGetSlideIndex = 'announcementSlideIndex',
+	announcementActiveFocus = 'announcementActiveFocus',
+	announcementTrigger = 'announcementTrigger',
+	announcementNextTrigger = 'announcementNextTrigger',
+	announcementPreviousTrigger = 'announcementPreviousTrigger',
+	announcementActiveIndexTrigger = 'announcementActiveIndexTrigger',
+	announcementActiveTimelineOperation = 'announcementActiveTimelineOperation',
+	announcementGetActiveTimelineOperation = 'announcementGetActiveTimelineOperation',
+	audioGetPlaylists = 'audioPlaylists',
+	audioGetPlaylistsByPlaylistId = 'audioPlaylistsByPlaylistId',
+	audioGetPlaylistsByPlaylistIdUpdates = 'audioPlaylistsByPlaylistIdUpdates',
+	audioGetPlaylistsFocused = 'audioPlaylistsFocused',
+	audioGetPlaylistsActive = 'audioPlaylistsActive',
+	audioPlaylistsNextFocus = 'audioPlaylistsNextFocus',
+	audioPlaylistsPreviousFocus = 'audioPlaylistsPreviousFocus',
 }
