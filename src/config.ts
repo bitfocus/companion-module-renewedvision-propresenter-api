@@ -7,6 +7,8 @@ export interface DeviceConfig {
 	port: number
 }
 
+export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
+
 export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 	[x: string]: any
 	config: TConfig
