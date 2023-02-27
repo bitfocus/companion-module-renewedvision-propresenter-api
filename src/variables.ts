@@ -1,6 +1,6 @@
 import { DeviceConfig, InstanceBaseExt } from "./config"
 
-module.exports = (instance: InstanceBaseExt<DeviceConfig>) => {
+export function GetVariableDefinitions() {
 	const variables = []
 
 	variables.push({
@@ -20,7 +20,10 @@ module.exports = (instance: InstanceBaseExt<DeviceConfig>) => {
 		variableId: 'version',
 	})
 
-	instance.setVariableDefinitions(variables)
+	return variables
+}
+
+export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>) {
 	instance.setVariableValues({
 		name: undefined,
 		platform: undefined,
