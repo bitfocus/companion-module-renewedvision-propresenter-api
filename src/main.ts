@@ -11,7 +11,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		host: '',
 		port: 1025,
 	}
-	private ProPresenter: any
+	ProPresenter: ProPresenter
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -62,11 +62,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
-	processIncommingData(jsonData: any) {
-		this.log('debug', `${JSON.stringify(jsonData)}`)
-		if (jsonData && jsonData.success) {
+	processIncommingData(msg: any) {
+		this.log('debug', `${JSON.stringify(msg)}`)
+		if (msg && msg.command && msg.data) {
+			const jsonData = msg.data
 			this.updateStatus(InstanceStatus.Ok)
-			switch (jsonData.success) {
+			switch (msg.command) {
 				case '/version':
 					this.setVariableValues({
 						name: jsonData.name,
@@ -77,11 +78,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					break
 
 				default:
-					this.log('debug', 'missed an response handler for: ' + jsonData.success)
+					this.log('debug', 'missed an response handler for: ' + msg.command)
 					break
 			}
 		} else {
-			this.log('error', `Getting this: ${JSON.stringify(jsonData)}`)
+			this.log('error', `Getting this: ${JSON.stringify(msg)}`)
 		}
 	}
 }
