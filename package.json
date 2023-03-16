@@ -1,5 +1,5 @@
 {
-	"name": "renewed-propresenter-api",
+	"name": "renewed-propresenter-rest",
 	"version": "0.1.0",
 	"main": "dist/index.js",
 	"scripts": {
@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.2.0",
-		"renewedvision-propresenter": "https://github.com/JeffreyDavidsz/node-renewedvision-propresenter-api"
+		"renewedvision-propresenter": "^7.3.0"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^0.5.1",
