@@ -1,12 +1,12 @@
 {
-	"id": "renewed-propresenter-api",
-	"name": "renewed-propresenter-api",
-	"shortname": "renewed-propresenter",
-	"description": "ProPresenter v7 module",
+	"id": "renewedvision-propresenter-rest",
+	"name": "renewedvision-propresenter-rest",
+	"shortname": "renewedvision-propresenter",
+	"description": "ProPresenter rest module",
 	"version": "0.0.0",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-renewed-propresenter-api.git",
-	"bugs": "https://github.com/bitfocus/companion-module-renewed-propresenter-api/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest.git",
+	"bugs": "https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest/issues",
 	"maintainers": [
 		{
 			"name": "Jeffrey Davidsz",
@@ -21,6 +21,6 @@
 	},
 	"legacyIds": [],
 	"manufacturer": "RenewedVision",
-	"products": ["ProPresenter V7"],
+	"products": ["ProPresenter"],
 	"keywords": []
 }
