@@ -11,7 +11,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		host: '',
 		port: 1025,
 	}
-	ProPresenter: ProPresenter
+	ProPresenter: any
 
 	constructor(internal: unknown) {
 		super(internal)
