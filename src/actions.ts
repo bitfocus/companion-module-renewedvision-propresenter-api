@@ -1,5 +1,6 @@
 import { CompanionActionDefinition, CompanionActionDefinitions } from '@companion-module/base'
 import { DeviceConfig, InstanceBaseExt, JSONValue } from './config'
+import { options } from './utils'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -60,15 +61,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		[ActionId.announcementActiveIndexTrigger]: {
 			name: 'Announcement Active Index Trigger',
-			options: [
-				{
-					type: 'textinput',
-					label: 'Index',
-					id: 'index',
-					default: '0',
-					useVariables: true,
-				},
-			],
+			options: [options.index],
 			callback: async (action) => {
 				const index = await instance.parseVariablesInString(action.options.index as string)
 				instance.ProPresenter.announcementActiveIndexTrigger(index)
@@ -76,19 +69,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		[ActionId.announcementActiveTimelineOperation]: {
 			name: 'Announcement Active Timeline Operation',
-			options: [
-				{
-					type: 'dropdown',
-					label: 'operation',
-					id: 'operation',
-					choices: [
-						{ label: 'play', id: 'play' },
-						{ label: 'pause', id: 'pause' },
-						{ label: 'rewind', id: 'rewind' },
-					],
-					default: 'play',
-				},
-			],
+			options: [options.timeline_operation],
 			callback: async (action) => {
 				const operation = await instance.parseVariablesInString(action.options.operation as string)
 				instance.ProPresenter.announcementActiveTimelineOperation(operation)
@@ -114,36 +95,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		[ActionId.audioGetPlaylistsByPlaylistId]: {
 			name: 'Audio items in specific Playlists',
-			options: [
-				{
-					type: 'textinput',
-					label: 'Playlist Id',
-					id: 'id',
-					default: '',
-					useVariables: true,
-				},
-			],
+			options: [options.playlist_id],
 			callback: async (action) => {
-				const id = await instance.parseVariablesInString(action.options.id as string)
-				instance.ProPresenter.audioGetPlaylistsByPlaylistId(id).then((result: JSONValue) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioGetPlaylistsByPlaylistId(playlist_id).then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
 		},
 		[ActionId.audioGetPlaylistsByPlaylistIdUpdates]: {
 			name: 'Request updates for specific Playlists',
-			options: [
-				{
-					type: 'textinput',
-					label: 'Playlist Id',
-					id: 'id',
-					default: '',
-					useVariables: true,
-				},
-			],
+			options: [options.playlist_id],
 			callback: async (action) => {
-				const id = await instance.parseVariablesInString(action.options.id as string)
-				instance.ProPresenter.audioGetPlaylistsByPlaylistIdUpdates(id).then((result: JSONValue) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioGetPlaylistsByPlaylistIdUpdates(playlist_id).then((result: JSONValue) => {
 					instance.processIncommingData(result)
 				})
 			},
@@ -180,6 +145,88 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.audioPlaylistsPreviousFocus()
 			},
 		},
+		[ActionId.audioPlaylistsActiveFocus]: {
+			name: 'Focuses the active audio playlist',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsActiveFocus()
+			},
+		},
+		[ActionId.audioPlaylistsByPlaylistIdFocus]: {
+			name: 'Focuses the specified audio playlist',
+			options: [options.playlist_id],
+			callback: async (action) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioPlaylistsByPlaylistIdFocus(playlist_id)
+			},
+		},
+		[ActionId.audioPlaylistsFocusedTrigger]: {
+			name: 'Triggers the focused audio playlist',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsFocusedTrigger()
+			},
+		},
+		[ActionId.audioPlaylistsFocusedNextTrigger]: {
+			name: 'Triggers the next item in the focused audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsFocusedNextTrigger()
+			},
+		},
+		[ActionId.audioPlaylistsFocusedPreviousTrigger]: {
+			name: 'Triggers the previous item in the focused audio playlist',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsFocusedPreviousTrigger()
+			},
+		},
+		[ActionId.audioPlaylistsFocusedIdTrigger]: {
+			name: 'Triggers the specified item in the focused audio playlist',
+			options: [options.id],
+			callback: async (action) => {
+				const id = await instance.parseVariablesInString(action.options.id as string)
+				instance.ProPresenter.audioPlaylistsFocusedIdTrigger(id)
+			},
+		},
+		[ActionId.audioPlaylistsActiveNextTrigger]: {
+			name: 'Triggers the next item in the active audio playlist',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsActiveNextTrigger()
+			},
+		},
+		[ActionId.audioPlaylistsActivePreviousTrigger]: {
+			name: 'Triggers the previous item in the active audio playlist',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistsActivePreviousTrigger()
+			},
+		},
+		[ActionId.audioPlaylistsActiveIdTrigger]: {
+			name: 'Triggers the specified item in the active audio playlist',
+			options: [options.id],
+			callback: async (action) => {
+				const id = await instance.parseVariablesInString(action.options.id as string)
+				instance.ProPresenter.audioPlaylistsActiveIdTrigger(id)
+			},
+		},
+		[ActionId.audioPlaylistsByPlaylistIdNextTrigger]: {
+			name: 'Triggers the specified item in the active audio playlist',
+			options: [options.playlist_id],
+			callback: async (action) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioPlaylistsByPlaylistIdNextTrigger(playlist_id)
+			},
+		},
+		[ActionId.audioPlaylistsByPlaylistIdPreviousTrigger]: {
+			name: 'Triggers the specified item in the active audio playlist',
+			options: [options.playlist_id],
+			callback: async (action) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioPlaylistsByPlaylistIdPreviousTrigger(playlist_id)
+			},
+		},
 	}
 	return actions
 }
@@ -202,4 +249,15 @@ export enum ActionId {
 	audioGetPlaylistsActive = 'audioPlaylistsActive',
 	audioPlaylistsNextFocus = 'audioPlaylistsNextFocus',
 	audioPlaylistsPreviousFocus = 'audioPlaylistsPreviousFocus',
+	audioPlaylistsActiveFocus = 'audioPlaylistsActiveFocus',
+	audioPlaylistsByPlaylistIdFocus = 'audioPlaylistsByPlaylistIdFocus',
+	audioPlaylistsFocusedTrigger = 'audioPlaylistsFocusedTrigger',
+	audioPlaylistsFocusedNextTrigger = 'audioPlaylistsFocusedNextTrigger',
+	audioPlaylistsFocusedPreviousTrigger = 'audioPlaylistsFocusedPreviousTrigger',
+	audioPlaylistsFocusedIdTrigger = 'audioPlaylistsFocusedIdTrigger',
+	audioPlaylistsActiveNextTrigger = 'audioPlaylistsActiveNextTrigger',
+	audioPlaylistsActivePreviousTrigger = 'audioPlaylistsActivePreviousTrigger',
+	audioPlaylistsActiveIdTrigger = 'audioPlaylistsActiveIdTrigger',
+	audioPlaylistsByPlaylistIdNextTrigger = 'audioPlaylistsByPlaylistIdNextTrigger',
+	audioPlaylistsByPlaylistIdPreviousTrigger = 'audioPlaylistsByPlaylistIdPreviousTrigger',
 }
