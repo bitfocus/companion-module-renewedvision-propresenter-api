@@ -21,6 +21,6 @@
 	},
 	"legacyIds": [],
 	"manufacturer": "RenewedVision",
-	"products": ["ProPresenter"],
+	"products": ["ProPresenter REST API"],
 	"keywords": []
 }
