@@ -17,12 +17,13 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.2.0",
-		"renewedvision-propresenter": "^7.3.0"
+		"renewedvision-propresenter": "^7.3.0",
+		"ws": "^8.13.0"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^0.5.1",
 		"@types/node": "^18.11.9",
-		"@types/ws": "^8.5.3",
+		"@types/ws": "^8.5.4",
 		"husky": "^8.0.1",
 		"lint-staged": "^13.0.3",
 		"rimraf": "^3.0.2",
