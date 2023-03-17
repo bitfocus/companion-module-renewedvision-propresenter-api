@@ -200,7 +200,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			name: 'Triggers the previous item in the active audio playlist',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.audioPlaylistsActivePreviousTrigger()
+				instance.ProPresenter.audioPlaylistsActivedPreviousTrigger()
 			},
 		},
 		[ActionId.audioPlaylistsActiveIdTrigger]: {
