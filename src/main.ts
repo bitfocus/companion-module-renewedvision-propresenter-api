@@ -68,6 +68,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
+	processWSIncommingData(msg: any) {
+		this.log('debug', `WebSocket: ${msg}`)
+	}
+
 	processIncommingData(msg: any) {
 		this.log('debug', `${JSON.stringify(msg)}`)
 		if (msg && msg.command && msg.data) {
@@ -95,14 +99,16 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	/**
 	 * Attempts to open a websocket connection with ProPresenter.
 	 */
-	connectToProPresenter() {
+	connectToProPresenterWebsocket() {
 		// Check for undefined host or port. Also make sure port is [1-65535] and host is least 1 char long.
 		if (
 			!this.config.host ||
 			this.config.host.length < 1 ||
 			!this.config.port ||
 			this.config.port < 1 ||
-			this.config.port > 65535
+			this.config.port > 65535 ||
+			!this.config.password ||
+			this.config.password === ''
 		) {
 			// Do not try to connect with invalid host or port
 			return
@@ -145,7 +151,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		this.socket.on('message', (message) => {
 			// Handle the message received from ProPresenter
-			this.processIncommingData(message)
+			this.processWSIncommingData(message)
 		})
 	}
 
