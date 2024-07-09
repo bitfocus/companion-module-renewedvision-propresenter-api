@@ -200,7 +200,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			name: 'Triggers the previous item in the active audio playlist',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.audioPlaylistsActivedPreviousTrigger()
+				instance.ProPresenter.audioPlaylistsActivePreviousTrigger()
 			},
 		},
 		[ActionId.audioPlaylistsActiveIdTrigger]: {
@@ -227,12 +227,55 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.audioPlaylistsByPlaylistIdPreviousTrigger(playlist_id)
 			},
 		},
+		[ActionId.triggerMediaNext]: {
+			name: 'Trigger Next Media',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerMediaNext()
+			},
+		},
+		[ActionId.triggerMediaPrevious]: {
+			name: 'Trigger Previous Media',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerMediaPrevious()
+			},
+		},
+		[ActionId.triggerAudioNext]: {
+			name: 'Trigger Next Audio',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerAudioNext()
+			},
+		},
+		[ActionId.triggerAudioPrevious]: {
+			name: 'Trigger Previous Audio',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerAudioPrevious()
+			},
+		},
+		[ActionId.triggerNext]: {
+			name: 'Trigger Next Slide/Cue',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerNext()
+			},
+		},
+		[ActionId.triggerPrevious]: {
+			name: 'Trigger Previous Slide/Cue',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.triggerPrevious()
+			},
+		},
 	}
 	return actions
 }
 
 export enum ActionId {
 	version = 'version',
+	// Announcement
 	announcementGetActive = 'announcementActive',
 	announcementGetSlideIndex = 'announcementSlideIndex',
 	announcementActiveFocus = 'announcementActiveFocus',
@@ -242,6 +285,7 @@ export enum ActionId {
 	announcementActiveIndexTrigger = 'announcementActiveIndexTrigger',
 	announcementActiveTimelineOperation = 'announcementActiveTimelineOperation',
 	announcementGetActiveTimelineOperation = 'announcementGetActiveTimelineOperation',
+	// Audio
 	audioGetPlaylists = 'audioPlaylists',
 	audioGetPlaylistsByPlaylistId = 'audioPlaylistsByPlaylistId',
 	audioGetPlaylistsByPlaylistIdUpdates = 'audioPlaylistsByPlaylistIdUpdates',
@@ -260,4 +304,12 @@ export enum ActionId {
 	audioPlaylistsActiveIdTrigger = 'audioPlaylistsActiveIdTrigger',
 	audioPlaylistsByPlaylistIdNextTrigger = 'audioPlaylistsByPlaylistIdNextTrigger',
 	audioPlaylistsByPlaylistIdPreviousTrigger = 'audioPlaylistsByPlaylistIdPreviousTrigger',
+	// Trigger
+	triggerMediaNext = 'triggerMediaNext',
+	triggerMediaPrevious = 'triggerMediaPrevious',
+	triggerAudioNext = 'triggeAudiorNext',
+	triggerAudioPrevious = 'triggerAudioPrevious',
+	triggerNext = 'triggerNext',
+	triggerPrevious = 'triggerPrevious',
+
 }
