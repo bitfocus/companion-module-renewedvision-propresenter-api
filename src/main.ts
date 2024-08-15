@@ -6,6 +6,8 @@ import { ProPresenter } from 'renewedvision-propresenter'
 import { GetVariableDefinitions } from './variables'
 import { WebSocket } from 'ws'
 
+
+
 class ModuleInstance extends InstanceBase<DeviceConfig> {
 	constructor(internal: unknown) {
 		super(internal)
@@ -36,13 +38,24 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port)
+			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate},2000)
 			this.ProPresenter.version().then((result: any) => {
 				this.processIncommingData(result)
 			})
+			
 			this.initActions()
 			this.initPresets()
 			this.initVariables()
 		}
+	}
+
+	// Status callbacks: Use arrow notation to create property functions that capture *this* instance of ModuleInstance class
+	statusSlideUpdate = (jsonStatusUpdateObject: any) => {
+		this.log('info',JSON.stringify(jsonStatusUpdateObject))
+	}
+
+	timersCurrentUpdate = (jsonStatusUpdateObject: any) => {
+		this.log('info',JSON.stringify(jsonStatusUpdateObject))
 	}
 
 	// Return config fields for web config
