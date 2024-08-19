@@ -5,7 +5,7 @@ export interface DeviceConfig {
 	ProPresenter: ProPresenter | null
 	host: string
 	port: number
-	password: string
+	//password: string
 }
 
 export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -41,12 +41,12 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			min: 1,
 			max: 99999,
 		},
-		{
-			type: 'textinput',
-			id: 'password',
-			label: 'ProPresenter remote password',
-			width: 8,
-			default: '',
-		},
+		// {
+		// 	type: 'textinput',
+		// 	id: 'password',
+		// 	label: 'ProPresenter remote password',
+		// 	width: 8,
+		// 	default: '',
+		// },
 	]
 }
