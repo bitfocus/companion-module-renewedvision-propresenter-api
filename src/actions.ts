@@ -226,7 +226,7 @@ export enum ActionId {
 	// Trigger
 	triggerMediaNext = 'triggerMediaNext',
 	triggerMediaPrevious = 'triggerMediaPrevious',
-	triggerAudioNext = 'triggeAudiorNext',
+	triggerAudioNext = 'triggerAudioNext',
 	triggerAudioPrevious = 'triggerAudioPrevious',
 	triggerNext = 'triggerNext',
 	triggerPrevious = 'triggerPrevious',
