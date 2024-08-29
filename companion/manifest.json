@@ -1,9 +1,9 @@
 {
-	"id": "renewedvision-propresenter-rest",
-	"name": "renewedvision-propresenter-rest",
-	"shortname": "renewedvision-propresenter",
-	"description": "ProPresenter rest module",
-	"version": "0.0.0",
+	"id": "renewedvision-propresenter-api",
+	"name": "Propresenter-API",
+	"shortname": "Propresenter-API",
+	"description": "ProPresenter API Module (Pro Versions 7.9 and higher)",
+	"version": "0.0.1",
 	"license": "MIT",
 	"repository": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest.git",
 	"bugs": "https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest/issues",
@@ -11,6 +11,10 @@
 		{
 			"name": "Jeffrey Davidsz",
 			"email": "jeffrey.davidsz@vicreo.eu"
+		},
+		{
+			"name": "Daniel Owen",
+			"email": "greyshirtguy@gmail.com"
 		}
 	],
 	"runtime": {
@@ -20,7 +24,7 @@
 		"entrypoint": "../dist/main.js"
 	},
 	"legacyIds": [],
-	"manufacturer": "RenewedVision",
-	"products": ["ProPresenter REST API"],
+	"manufacturer": "Renewed Vision",
+	"products": ["ProPresenter API"],
 	"keywords": []
 }
