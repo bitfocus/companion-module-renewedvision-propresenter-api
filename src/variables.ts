@@ -19,6 +19,18 @@ export function GetVariableDefinitions() {
 		name: 'Version',
 		variableId: 'version',
 	})
+	variables.push({
+		name: 'Presentation Slide Index',
+		variableId: 'presentation_slide_index',
+	})
+	variables.push({
+		name: 'Active Presentation Name',
+		variableId: 'active_presentation_name',
+	})
+	variables.push({
+		name: 'Active Presentation UUID',
+		variableId: 'active_presentation_UUID',
+	})
 
 	return variables
 }
@@ -29,5 +41,8 @@ export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>) {
 		platform: undefined,
 		os_version: undefined,
 		version: undefined,
+		presentation_slide_index: undefined,
+		active_presentation_name: undefined,
+		active_presentation_UUID: undefined,
 	})
 }

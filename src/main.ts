@@ -2,11 +2,8 @@ import { InstanceBase, runEntrypoint, InstanceStatus } from '@companion-module/b
 import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
-import { ProPresenter } from 'renewedvision-propresenter'
+import { ProPresenter, StatusJSON } from 'renewedvision-propresenter'
 import { GetVariableDefinitions } from './variables'
-//import { WebSocket } from 'ws'
-import { StatusJSON } from 'renewedvision-propresenter/dist/propresenter'
-
 
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
@@ -39,7 +36,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port)
-			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate},2000)
+			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate},2000)
 			this.ProPresenter.version().then((result: any) => {
 				this.processIncommingData(result)
 			})
@@ -57,6 +54,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	timersCurrentUpdate = (statusJSONObject: StatusJSON) => {
 		this.log('debug',JSON.stringify(statusJSONObject))
+	}
+
+	presentationSlideIndexUpdate = (statusJSONObject: StatusJSON) => {
+		this.log('debug',JSON.stringify(statusJSONObject))
+		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active - nothing to update if this happens
+			this.setVariableValues({
+				presentation_slide_index: statusJSONObject.data.presentation_index.index,
+				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
+				active_presentation_UUID: statusJSONObject.data.presentation_index.presentation_id.uuid
+			})
+		}
 	}
 
 	// Return config fields for web config
@@ -79,6 +87,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			platform: undefined,
 			os_version: undefined,
 			version: undefined,
+			presentation_slide_index: undefined,
+			active_presentation_name: undefined,
 		})
 	}
 

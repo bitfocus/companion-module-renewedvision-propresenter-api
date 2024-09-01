@@ -3,29 +3,6 @@ import { ActionId } from './actions'
 
 export function GetPresets(): CompanionPresetDefinitions {
 	const presets: CompanionPresetDefinitions = {
-		[ActionId.version]: {
-			name: 'Version',
-			category: 'Status',
-			type: 'button',
-			style: {
-				text: `Version`,
-				size: 'auto',
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: [
-						{
-							actionId: ActionId.version,
-							options: {},
-						},
-					],
-					up: [],
-				},
-			],
-			feedbacks: [],
-		},
 		[ActionId.announcementActiveFocus]: {
 			name: 'Announcement Active Focus',
 			category: 'Announcement',
@@ -49,35 +26,12 @@ export function GetPresets(): CompanionPresetDefinitions {
 			],
 			feedbacks: [],
 		},
-		[ActionId.announcementTrigger]: {
-			name: 'Announcement Trigger',
-			category: 'Announcement',
-			type: 'button',
-			style: {
-				text: `Announcement Trigger`,
-				size: 'auto',
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: [
-						{
-							actionId: ActionId.announcementTrigger,
-							options: {},
-						},
-					],
-					up: [],
-				},
-			],
-			feedbacks: [],
-		},
-		[ActionId.announcementNextTrigger]: {
+		[ActionId.announcementActiveNextTrigger]: {
 			name: 'Announcement Next Trigger',
 			category: 'Announcement',
 			type: 'button',
 			style: {
-				text: `Announcement Next Trigger`,
+				text: `Announcement Next`,
 				size: 'auto',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
@@ -86,7 +40,7 @@ export function GetPresets(): CompanionPresetDefinitions {
 				{
 					down: [
 						{
-							actionId: ActionId.announcementNextTrigger,
+							actionId: ActionId.announcementActiveNextTrigger,
 							options: {},
 						},
 					],
@@ -95,12 +49,12 @@ export function GetPresets(): CompanionPresetDefinitions {
 			],
 			feedbacks: [],
 		},
-		[ActionId.announcementPreviousTrigger]: {
+		[ActionId.announcementActivePreviousTrigger]: {
 			name: 'Announcement Previous Trigger',
 			category: 'Announcement',
 			type: 'button',
 			style: {
-				text: `Announcement Previous Trigger`,
+				text: `Announcement Previous`,
 				size: 'auto',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
@@ -109,7 +63,7 @@ export function GetPresets(): CompanionPresetDefinitions {
 				{
 					down: [
 						{
-							actionId: ActionId.announcementPreviousTrigger,
+							actionId: ActionId.announcementActivePreviousTrigger,
 							options: {},
 						},
 					],
@@ -123,7 +77,7 @@ export function GetPresets(): CompanionPresetDefinitions {
 			category: 'Announcement',
 			type: 'button',
 			style: {
-				text: `Announcement Active Index Trigger`,
+				text: `Announcement Active Index`,
 				size: 'auto',
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(0, 0, 0),
@@ -141,29 +95,7 @@ export function GetPresets(): CompanionPresetDefinitions {
 			],
 			feedbacks: [],
 		},
-		[ActionId.announcementActiveTimelineOperation]: {
-			name: 'Announcement Active Timeline Operation',
-			category: 'Announcement',
-			type: 'button',
-			style: {
-				text: `Announcement Active Timeline Operation`,
-				size: 'auto',
-				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(0, 0, 0),
-			},
-			steps: [
-				{
-					down: [
-						{
-							actionId: ActionId.announcementActiveTimelineOperation,
-							options: {},
-						},
-					],
-					up: [],
-				},
-			],
-			feedbacks: [],
-		},
+		/*
 		[ActionId.audioPlaylistsNextFocus]: {
 			name: 'Focus next audio playlist',
 			category: 'Audio',
@@ -210,6 +142,7 @@ export function GetPresets(): CompanionPresetDefinitions {
 			],
 			feedbacks: [],
 		},
+		*/
 	}
 	return presets
 }

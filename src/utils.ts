@@ -7,7 +7,7 @@ export interface Options {
     playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
     id: EnforceDefault<CompanionInputFieldTextInput, string>
     index: EnforceDefault<CompanionInputFieldTextInput, string>
-    
+    layer: EnforceDefault<CompanionInputFieldDropdown, string>
     timeline_operation: EnforceDefault<CompanionInputFieldDropdown, string>
 }
 
@@ -26,14 +26,29 @@ export const options: Options = {
         default: '',
         useVariables: true,
     },
+    layer: {
+        type: 'dropdown',
+        label: 'Layer',
+        id: 'layer',
+        choices: [
+            { label: 'Audio', id: 'audio' },
+            { label: 'Props', id: 'props' },
+            { label: 'Messages', id: 'messages' },
+            { label: 'Announcements', id: 'announcements' },
+            { label: 'Slide', id: 'slide' },
+            { label: 'Media', id: 'media' },
+            { label: 'Video_input', id: 'video_input' },
+        ],
+        default: 'slide',
+    },
     timeline_operation: {
         type: 'dropdown',
-        label: 'operation',
+        label: 'Operation',
         id: 'operation',
         choices: [
-            { label: 'play', id: 'play' },
-            { label: 'pause', id: 'pause' },
-            { label: 'rewind', id: 'rewind' },
+            { label: 'Play', id: 'play' },
+            { label: 'Pause', id: 'pause' },
+            { label: 'Rewind', id: 'rewind' },
         ],
         default: 'play',
     },
