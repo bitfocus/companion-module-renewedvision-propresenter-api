@@ -31,6 +31,14 @@ export function GetVariableDefinitions() {
 		name: 'Active Presentation UUID',
 		variableId: 'active_presentation_UUID',
 	})
+	variables.push({
+		name: 'Active Look Name',
+		variableId: 'active_look_name',
+	})
+	variables.push({
+		name: 'Timers Current JSON',
+		variableId: 'timers_current_JSON',
+	})
 
 	return variables
 }
@@ -44,5 +52,7 @@ export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>) {
 		presentation_slide_index: undefined,
 		active_presentation_name: undefined,
 		active_presentation_UUID: undefined,
+		active_look_name: undefined,
+		timers_current_JSON: undefined,
 	})
 }

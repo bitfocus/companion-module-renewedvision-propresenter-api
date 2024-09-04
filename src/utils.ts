@@ -9,6 +9,7 @@ export interface Options {
     index: EnforceDefault<CompanionInputFieldTextInput, string>
     layer: EnforceDefault<CompanionInputFieldDropdown, string>
     timeline_operation: EnforceDefault<CompanionInputFieldDropdown, string>
+    capture_operation: EnforceDefault<CompanionInputFieldDropdown, string>
 }
 
 export const options: Options = {
@@ -25,6 +26,16 @@ export const options: Options = {
         id: 'id',
         default: '',
         useVariables: true,
+    },
+    capture_operation: {
+        type: 'dropdown',
+        label: 'Operation',
+        id: 'operation',
+        choices: [
+            { label: 'Start', id: 'start' },
+            { label: 'Stop', id: 'stop' },
+        ],
+        default: 'start',
     },
     layer: {
         type: 'dropdown',

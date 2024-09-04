@@ -36,7 +36,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port)
-			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate},2000)
+			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged},2000)
 			this.ProPresenter.version().then((result: any) => {
 				this.processIncommingData(result)
 			})
@@ -54,6 +54,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	timersCurrentUpdate = (statusJSONObject: StatusJSON) => {
 		this.log('debug',JSON.stringify(statusJSONObject))
+		/*
+		this.setVariableValues({
+			timers_current_JSON: JSON.stringify(statusJSONObject.data.map((timer: { id: { name: string }; time: string }) => { return {[timer.id.name]:timer.time} }), null, 2).replace(', ', ', \n\n')
+		})
+		this.log('debug',this.getVariableValue('timers_current_JSON') as string)
+		*/
 	}
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusJSON) => {
@@ -65,6 +71,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_UUID: statusJSONObject.data.presentation_index.presentation_id.uuid
 			})
 		}
+	}
+
+	activeLookChanged = (statusJSONObject: StatusJSON) => {
+		this.log('debug',JSON.stringify(statusJSONObject))
+		this.setVariableValues({
+			active_look_name: statusJSONObject.data.id.name
+		})
 	}
 
 	// Return config fields for web config

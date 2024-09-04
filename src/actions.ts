@@ -1,7 +1,7 @@
 import { CompanionActionDefinition, CompanionActionDefinitions } from '@companion-module/base'
 import { DeviceConfig, InstanceBaseExt, JSONValue } from './config'
 import { options } from './utils'
-import { ProPresenterLayerName } from 'renewedvision-propresenter'
+import { ProPresenterLayerName, ProPresenterCaptureOperation } from 'renewedvision-propresenter'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -58,89 +58,105 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		// **** AUDIO *****
 		[ActionId.audioPlaylistActiveFocus]: {
-			name: 'Audio: Focus Active Playlist',
+			name: 'Audio: Playlist: Active: Focus',
 			description: 'Focuses the active audio playlist.',
 			options: [],
 			callback: () => {
 				instance.ProPresenter.audioPlaylistActiveFocus()
 			},
 		},
-		[ActionId.audioPlaylistNextFocus]: {
-			name: 'Audio: Focus Next Playlist',
-			description: 'Focuses the active audio playlist.',
-			options: [],
-			callback: () => {
-				instance.ProPresenter.audioPlaylistNextFocus()
-			},
-		},
-		[ActionId.audioPlaylistPreviousFocus]: {
-			name: 'Audio: Focus Previous Playlist',
-			options: [],
-			callback: () => {
-				instance.ProPresenter.audioPlaylistPreviousFocus()
-			},
-		},
-		[ActionId.audioPlaylistByPlaylistIdFocus]: {
-			name: 'Audio: Focus Specified Playlist',
-			options: [options.playlist_id],
-			callback: async (action) => {
-				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
-				instance.ProPresenter.audioGetPlaylistByPlaylistId(playlist_id)
-			},
-		},
-		[ActionId.audioPlaylistFocusedTrigger]: {
-			name: 'Audio: Triggers Focused Playlist',
-			options: [],
-			callback: () => {
-				instance.ProPresenter.audioPlaylistFocusedTrigger()
-			},
-		},
-		[ActionId.audioPlaylistFocusedNextTrigger]: {
-			name: 'Audio: Triggers the next item in the focused audio playlist.',
-			options: [],
-			callback: () => {
-				instance.ProPresenter.audioPlaylistFocusedNextTrigger()
-			},
-		},
-		[ActionId.audioPlaylistFocusedPreviousTrigger]: {
-			name: 'Audio: Triggers the previous item in the focused audio playlist',
-			options: [],
-			callback: () => {
-				instance.ProPresenter.audioPlaylistFocusedPreviousTrigger()
-			},
-		},
-		[ActionId.audioPlaylistFocusedIdTrigger]: {
-			name: 'Audio: Triggers the specified item in the focused audio playlist',
-			options: [options.id],
-			callback: async (action) => {
-				const id = await instance.parseVariablesInString(action.options.id as string)
-				instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
-			},
-		},
 		[ActionId.audioPlaylistActiveNextTrigger]: {
-			name: 'Audio: Triggers the next item in the active audio playlist',
+			name: 'Audio: Playlist: Active: Next: Trigger',
+			description: 'Triggers the next item in the active audio playlist.',
 			options: [],
 			callback: () => {
 				instance.ProPresenter.audioPlaylistActiveNextTrigger()
 			},
 		},
 		[ActionId.audioPlaylistActivePreviousTrigger]: {
-			name: 'Audio: Triggers the previous item in the active audio playlist',
+			name: 'Audio: Playlist: Active: Previous: Trigger',
+			description: 'Triggers the previous item in the active audio playlist.',
 			options: [],
 			callback: () => {
 				instance.ProPresenter.audioPlaylistActivePreviousTrigger()
 			},
 		},
+		[ActionId.audioPlaylistActiveTrigger]: {
+			name: 'Audio: Playlist: Active: Trigger',
+			description: 'Triggers the active audio playlist (restarts from the beginning).',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.audioPlaylistActiveTrigger()
+			},
+		},
 		[ActionId.audioPlaylistActiveIdTrigger]: {
-			name: 'Audio: Triggers the specified item in the active audio playlist',
+			name: 'Audio: Playlist: Active: ID: Trigger',
+			description: 'Triggers the specified item in the active audio playlist.',
 			options: [options.id],
 			callback: async (action) => {
 				const id = await instance.parseVariablesInString(action.options.id as string)
 				instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
 			},
 		},
+		[ActionId.audioPlaylistFocusedNextTrigger]: {
+			name: 'Audio: Playlist: Focused: Next: Trigger',
+			description: 'Triggers the next item in the focused audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistFocusedNextTrigger()
+			},
+		},
+		[ActionId.audioPlaylistFocusedPreviousTrigger]: {
+			name: 'Audio: Playlist: Focused: Previous: Trigger',
+			description: 'Triggers the previous item in the focused audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistFocusedPreviousTrigger()
+			},
+		},
+		[ActionId.audioPlaylistFocusedTrigger]: {
+			name: 'Audio: Playlist: Focused: Trigger',
+			description: 'Triggers the focused audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistFocusedTrigger()
+			},
+		},
+		[ActionId.audioPlaylistFocusedIdTrigger]: {
+			name: 'Audio: Playlist: Focused: Id: Trigger',
+			description: 'Triggers the specified item in the focused audio playlist.',
+			options: [options.id],
+			callback: async (action) => {
+				const id = await instance.parseVariablesInString(action.options.id as string)
+				instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
+			},
+		},
+		[ActionId.audioPlaylistNextFocus]: {
+			name: 'Audio: Playlist: Next: Focus',
+			description: 'Focuses the next audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistNextFocus()
+			},
+		},
+		[ActionId.audioPlaylistPreviousFocus]: {
+			name: 'Audio: Playlist: Previous: Focus',
+			description: 'Focuses the previous audio playlist.',
+			options: [],
+			callback: () => {
+				instance.ProPresenter.audioPlaylistPreviousFocus()
+			},
+		},
+		[ActionId.audioPlaylistByPlaylistIdFocus]: {
+			name: 'Audio: Playlist: PlaylistID: Focus',
+			options: [options.playlist_id],
+			callback: async (action) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioFocusPlaylistByPlaylistId(playlist_id)
+			},
+		},
 		[ActionId.audioPlaylistByPlaylistIdNextTrigger]: {
-			name: 'Audio: Triggers the next item in the active audio playlist',
+			name: 'Audio: Playlist: PlaylistID: Next: Trigger',
 			options: [options.playlist_id],
 			callback: async (action) => {
 				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
@@ -148,21 +164,49 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		[ActionId.audioPlaylistByPlaylistIdPreviousTrigger]: {
-			name: 'Audio: Triggers the previous item in the active audio playlist',
+			name: 'Audio: Playlist: PlaylistID: Previous: Trigger',
 			options: [options.playlist_id],
 			callback: async (action) => {
 				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
 				instance.ProPresenter.audioPlaylistByPlaylistIdPreviousTrigger(playlist_id)
 			},
 		},
+		[ActionId.audioPlaylistByPlaylistIdTrigger]: {
+			name: 'Audio: Playlist: PlaylistID: Trigger',
+			description: 'Triggers the specified audio playlist.',
+			options: [options.playlist_id],
+			callback: async (action) => {
+				const playlist_id = await instance.parseVariablesInString(action.options.playlist_id as string)
+				instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(playlist_id)
+			},
+		},
+		// **** CAPTURE *****
+		[ActionId.captureOperation]: {
+			name: 'Capture: Operation',
+			description: 'Performs the requested capture operation (start, stop).',
+			options: [options.capture_operation],
+			callback: async (action) => {
+				//const layer = await instance.parseVariablesInString(action.options.layer as string)
+				instance.ProPresenter.captureOperation(action.options.operation as ProPresenterCaptureOperation)
+			},
+		},
 		// **** CLEAR *****
 		[ActionId.clearLayer]: {
 			name: 'Clear: Layer',
-			description: 'Clears the specified layer (audio, props, messages, announcements, slide, media, video_input)..',
+			description: 'Clears the specified layer (audio, props, messages, announcements, slide, media, video_input).',
 			options: [options.layer],
 			callback: async (action) => {
 				//const layer = await instance.parseVariablesInString(action.options.layer as string)
 				instance.ProPresenter.clearLayer(action.options.layer as ProPresenterLayerName)
+			},
+		},
+		// **** MISC ****
+		[ActionId.miscFindMyMouse]: {
+			name: 'Misc: Find My Mouse',
+			description: 'Moves mouse cursor to center of ProPresenter UI',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.findMyMouse()
 			},
 		},
 		// **** TRIGGER *****
@@ -241,21 +285,30 @@ export enum ActionId {
 	announcementActiveTimelineOperation = 'announcementActiveTimelineOperation',
 	// Audio
 	audioPlaylistActiveFocus = 'audioPlaylistActiveFocus',
-	audioPlaylistNextFocus = 'audioPlaylistNextFocus',
 	audioPlaylistActiveNextTrigger = 'audioPlaylistActiveNextTrigger',
 	audioPlaylistActivePreviousTrigger = 'audioPlaylistActivePreviousTrigger',
+	audioPlaylistActiveTrigger = 'audioPlaylistActiveTrigger',
 	audioPlaylistActiveIdTrigger = 'audioPlaylistActiveIdTrigger',
-	audioPlaylistPreviousFocus = 'audioPlaylistPreviousFocus',
-	audioPlaylistByPlaylistIdFocus = 'audioPlaylistByPlaylistIdFocus',
-	audioPlaylistFocusedTrigger = 'audioPlaylistFocusedTrigger',
 	audioPlaylistFocusedNextTrigger = 'audioPlaylistFocusedNextTrigger',
 	audioPlaylistFocusedPreviousTrigger = 'audioPlaylistFocusedPreviousTrigger',
+	audioPlaylistFocusedTrigger = 'audioPlaylistFocusedTrigger',
 	audioPlaylistFocusedIdTrigger = 'audioPlaylistFocusedIdTrigger',
+	audioPlaylistNextFocus = 'audioPlaylistNextFocus',
+	audioPlaylistPreviousFocus = 'audioPlaylistPreviousFocus',
+	audioPlaylistByPlaylistIdFocus = 'audioPlaylistByPlaylistIdFocus',
 	audioPlaylistByPlaylistIdNextTrigger = 'audioPlaylistByPlaylistIdNextTrigger',
 	audioPlaylistByPlaylistIdPreviousTrigger = 'audioPlaylistByPlaylistIdPreviousTrigger',
+	audioPlaylistByPlaylistIdTrigger = 'audioPlaylistByPlaylistIdTrigger',
+	
+	// Capture
+	captureOperation = 'captureOperation',
+
 	// Clear
 	clearLayer = 'clearLayer',
 	//clearGroup = 'clearGroup',
+
+	// Misc
+	miscFindMyMouse = 'miscFindMyMouse',
 
 	// Trigger
 	triggerCueNext = 'triggerCueNext',

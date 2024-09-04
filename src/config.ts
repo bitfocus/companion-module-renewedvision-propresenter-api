@@ -19,27 +19,27 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 export function GetConfigFields(): SomeCompanionConfigField[] {
 	return [
 		{
-			type: 'static-text',
-			label: 'ProPresenter',
-			id: 'intro text',
-			width: 12,
-			value: 'Make sure you have Network enabled and also the controller remote with a password'
-		},
-		{
 			type: 'textinput',
 			id: 'host',
-			label: 'Target ProPresenter Instance',
-			width: 8,
+			label: 'ProPresenter Computer IP Address (Or Hostname)',
+			width: 6,
 			default: '',
 		},
 		{
 			type: 'number',
 			id: 'port',
-			label: 'Target Port',
+			label: 'ProPresenter Network Port',
 			width: 4,
 			default: 1025,
 			min: 1,
 			max: 99999,
+		},
+		{
+			type: 'static-text',
+			label: 'Tip',
+			id: 'intro text',
+			width: 12,
+			value: '👉 You can read this module\'s help file by clicking the (? in a black circle) symbol next to the module name...'
 		},
 		// {
 		// 	type: 'textinput',
