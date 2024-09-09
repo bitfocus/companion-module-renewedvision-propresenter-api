@@ -1,7 +1,7 @@
-import { CompanionActionDefinition, CompanionActionDefinitions } from '@companion-module/base'
-import { DeviceConfig, InstanceBaseExt, JSONValue } from './config'
+import { CompanionActionDefinition, CompanionActionDefinitions, CompanionInputFieldDropdown } from '@companion-module/base'
+import { DeviceConfig, InstanceBaseExt } from './config'
 import { options } from './utils'
-import { ProPresenterLayerName, ProPresenterCaptureOperation } from 'renewedvision-propresenter'
+import { ProPresenterLayerName, ProPresenterCaptureOperation, RequestAndResponseJSONValue} from 'renewedvision-propresenter'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -92,7 +92,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.audioPlaylistActiveIdTrigger]: {
 			name: 'Audio: Playlist: Active: ID: Trigger',
 			description: 'Triggers the specified item in the active audio playlist.',
-			options: [options.id],
+			options: [options.audio_item_id],
 			callback: async (action) => {
 				const id = await instance.parseVariablesInString(action.options.id as string)
 				instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
@@ -125,7 +125,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.audioPlaylistFocusedIdTrigger]: {
 			name: 'Audio: Playlist: Focused: Id: Trigger',
 			description: 'Triggers the specified item in the focused audio playlist.',
-			options: [options.id],
+			options: [options.audio_item_id],
 			callback: async (action) => {
 				const id = await instance.parseVariablesInString(action.options.id as string)
 				instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
@@ -200,6 +200,39 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.clearLayer(action.options.layer as ProPresenterLayerName)
 			},
 		},
+		// **** LIBRARY ****
+		[ActionId.libraryByIdPresentationIdCueTrigger]: {
+			name: 'Library: LibraryID: PresentationID: CueIndex: Trigger',
+			description: 'Triggers the specified cue of the specified presentation in the specified library.',
+			options: [options.library_id, options.presentation_id, options.index],
+			callback: async (action) => {
+				const library_id = await instance.parseVariablesInString(action.options.library_id as string)
+				const presentation_id = await instance.parseVariablesInString(action.options.presentation_id as string)
+				const cue_index = await instance.parseVariablesInString(action.options.index as string)
+				instance.ProPresenter.libraryByIdPresentationIdCueTrigger(library_id, presentation_id, cue_index)
+			}
+		},
+		// **** LOOKS ****
+		[ActionId.lookIdTrigger]: {
+			name: 'Look: ID: Trigger',
+			description: 'Triggers the specified audience look to make it the live/current look.',
+			options: [options.look_id_dropdown, options.look_id_text],
+			subscribe: (action) => { //TODO: remove this debug code
+				if (action.options.look_id_dropdown)
+					action.options.look_id_dropdown
+				instance.log('debug', 'subscribed to lookIdTrigger: ' + JSON.stringify(action)) 
+			},
+			callback: async (action) => {
+				// user can either choose a look from the dropdown, or choose to manaully enter a look ID as text (in a separate input that supports variables)
+				let look_id: string = ''
+				if (action.options.look_id_dropdown == 'manually_specify_lookid')
+					look_id = await instance.parseVariablesInString(action.options.look_id_text as string)
+				else
+					look_id = action.options.look_id_dropdown as string
+
+				instance.ProPresenter.lookIdTrigger(look_id)
+			}
+		},
 		// **** MISC ****
 		[ActionId.miscFindMyMouse]: {
 			name: 'Misc: Find My Mouse',
@@ -265,11 +298,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Refresh ProPresenter, API and host version variables.',
 			options: [],
 			callback: () => {
-				instance.ProPresenter.version().then((result: JSONValue) => {
+				instance.ProPresenter.version().then((result: RequestAndResponseJSONValue) => {
 					instance.processIncommingData(result)
-				})
+			9	})
 			},
 		},
+	}
+
+	// Update look choices with list of looks from ProPresenter
+	// TODO: handle error cases (when things are missing)
+	if (instance.looksChoices) {
+		let lookChoicesDropDown = actions[ActionId.lookIdTrigger]?.options[0] as CompanionInputFieldDropdown
+		const manual_look_choice = lookChoicesDropDown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Look (in another text input)
+		lookChoicesDropDown.choices = instance.looksChoices.concat(manual_look_choice) 
+		lookChoicesDropDown.default = lookChoicesDropDown.choices[0].id
 	}
 	return actions
 }
@@ -306,6 +348,12 @@ export enum ActionId {
 	// Clear
 	clearLayer = 'clearLayer',
 	//clearGroup = 'clearGroup',
+
+	// Library
+	libraryByIdPresentationIdCueTrigger = 'libraryByIdPresentationIdCueTrigger',
+
+	// Looks
+	lookIdTrigger = 'lookIdTrigger',
 
 	// Misc
 	miscFindMyMouse = 'miscFindMyMouse',

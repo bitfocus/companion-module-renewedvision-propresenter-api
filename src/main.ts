@@ -2,7 +2,7 @@ import { InstanceBase, runEntrypoint, InstanceStatus } from '@companion-module/b
 import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
-import { ProPresenter, StatusJSON } from 'renewedvision-propresenter'
+import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions } from './variables'
 
 
@@ -15,9 +15,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		ProPresenter: null,
 		host: '',
 		port: 1025,
-		//password: '',
+		timeout: 1000,
 	}
 	public ProPresenter: any
+	public looksChoices: [{id: string, label: string}] | undefined
 	//private socket: WebSocket | undefined
 
 	public async init(config: DeviceConfig): Promise<void> {
@@ -35,24 +36,42 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (this.config.host === '' || this.config.host === undefined) {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
-			this.ProPresenter = new ProPresenter(this.config.host, this.config.port)
-			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged},2000)
-			this.ProPresenter.version().then((result: any) => {
+			this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout)
+			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged,"looks":this.looksUpdated},2000)
+			this.ProPresenter.version().then((result: RequestAndResponseJSONValue) => {
 				this.processIncommingData(result)
+				this.ProPresenter.looksGet().then((result: RequestAndResponseJSONValue) => {
+					console.log(result)
+					// Construct a statusJSONObject and call the callback for looksUpdated()
+					const looksStatusJSONObject: StatusUpdateJSON = {
+						url: 'looks',
+						data: result.data
+					}
+					this.looksUpdated(looksStatusJSONObject)
+					// TODO: Macros, Props, and then video input
+					this.initActions()
+				})
 			})
-			
-			this.initActions()
+
 			this.initPresets()
 			this.initVariables()
+			
+			// TODO: Move up into the promise chain of getting looks, macros, props and video_input first
+			/*
+			const self=this
+			setTimeout(function () {
+				self.initActions()
+			}, 500)
+			*/
 		}
 	}
 
 	// Status callbacks: Use arrow notation to create property functions that capture *this* instance of ModuleInstance class
-	statusSlideUpdate = (statusJSONObject: StatusJSON) => {
+	statusSlideUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug',JSON.stringify(statusJSONObject))
 	}
 
-	timersCurrentUpdate = (statusJSONObject: StatusJSON) => {
+	timersCurrentUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug',JSON.stringify(statusJSONObject))
 		/*
 		this.setVariableValues({
@@ -62,7 +81,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		*/
 	}
 
-	presentationSlideIndexUpdate = (statusJSONObject: StatusJSON) => {
+	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug',JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active - nothing to update if this happens
 			this.setVariableValues({
@@ -73,11 +92,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 	}
 
-	activeLookChanged = (statusJSONObject: StatusJSON) => {
-		this.log('debug',JSON.stringify(statusJSONObject))
+	activeLookChanged = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'lookchanged: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name)
 		this.setVariableValues({
 			active_look_name: statusJSONObject.data.id.name
 		})
+	}
+
+	looksUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', JSON.stringify(statusJSONObject.data))
+		// Create a list of looks in the dropdown choices format  { id: string, label: string}
+		this.looksChoices = statusJSONObject.data.map((look: {id: {uuid: string, name:string}}) => ({id:look.id.uuid, label:look.id.name}))
 	}
 
 	// Return config fields for web config
@@ -105,16 +130,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
-	// processWSIncommingData(msg: any) {
-	// 	this.log('debug', `WebSocket: ${msg}`)
-	// }
-
-	processIncommingData(msg: any) {
-		this.log('debug', `${JSON.stringify(msg)}`)
-		if (msg && msg.command && msg.data) {
-			const jsonData = msg.data
-			this.updateStatus(InstanceStatus.Ok)
-			switch (msg.command) {
+	processIncommingData(requestResponse: RequestAndResponseJSONValue) {
+		this.log('debug', `processingIncommingData: ${JSON.stringify(requestResponse)}`)
+		if (requestResponse && requestResponse.path && requestResponse.data && requestResponse.status && requestResponse.ok) {
+			this.updateStatus(InstanceStatus.Ok) // Each time we receive an "ok" response, update module status to Ok
+			const jsonData = requestResponse.data
+			switch (requestResponse.path) {
 				case '/version':
 					this.setVariableValues({
 						name: jsonData.name,
@@ -125,85 +146,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					break
 
 				default:
-					this.log('debug', 'missed an response handler for: ' + msg.command)
+					this.log('debug', 'missed an response handler for: ' + requestResponse.path)
 					break
 			}
 		} else {
-			this.log('error', `Getting this: ${JSON.stringify(msg)}`)
+			this.updateStatus(InstanceStatus.UnknownWarning)
+			this.log('error', `Getting this: ${JSON.stringify(requestResponse)}`)
 		}
 	}
-
-	// /**
-	//  * Attempts to open a websocket connection with ProPresenter.
-	//  */
-	// connectToProPresenterWebsocket() {
-	// 	// Check for undefined host or port. Also make sure port is [1-65535] and host is least 1 char long.
-	// 	if (
-	// 		!this.config.host ||
-	// 		this.config.host.length < 1 ||
-	// 		!this.config.port ||
-	// 		this.config.port < 1 ||
-	// 		this.config.port > 65535 ||
-	// 		!this.config.password ||
-	// 		this.config.password === ''
-	// 	) {
-	// 		// Do not try to connect with invalid host or port
-	// 		return
-	// 	}
-
-	// 	// Disconnect if already connected
-	// 	this.disconnectFromProPresenter()
-
-	// 	// Connect to remote control websocket of ProPresenter
-	// 	this.socket = new WebSocket('ws://' + this.config.host + ':' + this.config.port + '/remote')
-
-	// 	this.socket.on('open', () => {
-	// 		this.log('info', 'Opened websocket to ProPresenter remote control: ' + this.config.host + ':' + this.config.port)
-	// 		if (this.socket) {
-	// 			this.socket.send(
-	// 				JSON.stringify({
-	// 					password: this.config.password,
-	// 					protocol: '701', // This will connect to Pro6 and Pro7 (the version check is happy with higher versions - but versions too low will be refused)
-	// 					action: 'authenticate',
-	// 				})
-	// 			)
-	// 		}
-	// 	})
-
-	// 	this.socket.on('error', (err) => {
-	// 		this.log('debug', 'Socket error: ' + err.message)
-	// 		this.updateStatus(InstanceStatus.UnknownError, err.message)
-	// 	})
-
-	// 	this.socket.on('connect', () => {
-	// 		this.log('debug', 'Connected to ProPresenter remote control')
-	// 	})
-
-	// 	this.socket.on('close', () => {
-	// 		// Event is also triggered when a reconnect attempt fails.
-	// 		// Reset the current state then abort; don't flood logs with disconnected notices.
-	// 		this.log('debug', 'socket closed')
-	// 		this.updateStatus(InstanceStatus.Disconnected, 'Not connected to ProPresenter')
-	// 	})
-
-	// 	this.socket.on('message', (message) => {
-	// 		// Handle the message received from ProPresenter
-	// 		this.processWSIncommingData(message)
-	// 	})
-	// }
-
-	// /**
-	//  * Disconnect the websocket from ProPresenter, if connected.
-	//  */
-	// disconnectFromProPresenter() {
-	// 	if (this.socket !== undefined) {
-	// 		// Disconnect if already connected
-	// 		if (this.socket.readyState !== 3 /*CLOSED*/) {
-	// 			this.socket.terminate()
-	// 		}
-	// 		delete this.socket
-	// 	}
-	// }
 }
 
 runEntrypoint(ModuleInstance, [])
