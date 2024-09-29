@@ -55,6 +55,14 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 		})
 	}
 
+	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
+	for (const stageScreenWithLayout of localStateCache.stageScreensWithLayout) {
+		variables.push({
+			name: stageScreenWithLayout.name,
+			variableId: stageScreenWithLayout.varid
+		})
+	}
+
 	return variables
 }
 
