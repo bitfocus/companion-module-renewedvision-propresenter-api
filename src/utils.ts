@@ -1,4 +1,4 @@
-import { CompanionInputFieldCheckbox, CompanionInputFieldDropdown, CompanionInputFieldTextInput } from "@companion-module/base"
+import { CompanionInputFieldCheckbox, CompanionInputFieldDropdown, CompanionInputFieldTextInput, DropdownChoice } from "@companion-module/base"
 
 // Force options to have a default to prevent sending undefined values
 type EnforceDefault<T, U> = Omit<T, 'default'> & { default: U }
@@ -28,6 +28,7 @@ export interface Options {
     video_input_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     video_input_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     index: EnforceDefault<CompanionInputFieldTextInput, string>
+    presentation_uuid: EnforceDefault<CompanionInputFieldTextInput, string>
     layer: EnforceDefault<CompanionInputFieldDropdown, string>
     timeline_operation: EnforceDefault<CompanionInputFieldDropdown, string>
     timer_optional_operation: EnforceDefault<CompanionInputFieldDropdown, string>
@@ -58,7 +59,7 @@ export const options: Options = {
     presentation_id: {
         type: 'textinput',
         label: 'Presentation ID',
-        tooltip: 'Enter Presentation Name or Index or UUID',
+        tooltip: 'Enter Presentation Name or Index or UUID.  Also can use a path.',
         id: 'presentation_id',
         default: '',
         useVariables: true,
@@ -142,7 +143,7 @@ export const options: Options = {
         tooltip: 'Enter Message Name or Index or UUID',
         id: 'message_id_text',
         isVisible: ((options) => options.message_id_dropdown == 'manually_specify_messageid'),
-        default: '',
+        default: 'TODO: not yet implemented',
         useVariables: true,
     },
     message_id_dropdown: {
@@ -228,6 +229,7 @@ export const options: Options = {
         choices: [
             { id: 'show', label: 'Show'},
             { id: 'hide', label: 'Hide'},
+            { id: 'toggle', label: 'Toggle'},
         ],
         default: 'show',
     },
@@ -239,6 +241,7 @@ export const options: Options = {
         choices: [
             { id: 'show', label: 'Show'},
             { id: 'hide', label: 'Hide'},
+            { id: 'toggle', label: 'Toggle'},
         ],
         default: 'show',
     },
@@ -421,23 +424,41 @@ export const options: Options = {
         useVariables: true,
     },
     index: {
-        type: 'textinput',
+        type: 'textinput', // I know, you would think this input field would be a number, but this is a textinput instead - so that it can support "useVariables"
         label: 'Index',
         id: 'index',
         default: '0',
+        useVariables: true,
+    },
+    presentation_uuid: {
+        type: 'textinput',
+        label: 'Presentation UUID',
+        id: 'presentation_uuid',
+        default: '',
         useVariables: true,
     }
 }
 
 // Used for module local cache of state
 // varid is a clean form of the variable ID with - removed from UUID
-export type Timer = {uuid: string, time: string, name: string, varid: string, state: string, index: number}
+export type ProTimer = {uuid: string, time: string, name: string, varid: string, state: string, index: number}
 export type StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
-export type MessageIDWithTokenNames = {message_uuid: string, token_names: string[]}
-export type LocalStateCache = {
-	timers: Timer[],
+export type ProMessageToken = {name:string,text?:{text:string},timer?:{allows_overrun:boolean, id:{uuid: string, name: string, index: number}}} //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
+export type ProMessage = {id:{uuid: string, name: string, index: number},tokens:ProMessageToken[]} 
+
+export type ProPresenterStateStore = {
+	proTimers: ProTimer[],
     stageScreensWithLayout: StageScreenWithLayout[],
-    messageIDsWithTokenNames: MessageIDWithTokenNames[],
+    messageTokenInputs: CompanionInputFieldTextInput[], // Dynamically created text inputs for ALL message tokens across ALL messages.  Where the ID of each input is in form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName' and it's visbility is based on the uuid of the selected message.
+    looksChoices: DropdownChoice[],
+    macroChoices: DropdownChoice[],
+	propChoices: DropdownChoice[],
+	videoInputChoices: DropdownChoice[],
+	timerChoices: DropdownChoice[],
+	stageScreenChoices: DropdownChoice[],
+	stageScreenLayoutChoices: DropdownChoice[],
+	groupChoices: DropdownChoice[],
+	messageChoices: DropdownChoice[],
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number)

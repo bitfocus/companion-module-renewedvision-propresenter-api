@@ -1,5 +1,6 @@
 import { InstanceBase, SomeCompanionConfigField } from '@companion-module/base'
 import { ProPresenter } from 'renewedvision-propresenter'
+import { ProPresenterStateStore } from './utils'
 
 export interface DeviceConfig {
 	ProPresenter: ProPresenter | null
@@ -14,6 +15,7 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 	[x: string]: any
 	config: TConfig
 	ProPresenter: ProPresenter
+	propresenterStateStore: ProPresenterStateStore
 }
 
 export function GetConfigFields(): SomeCompanionConfigField[] {

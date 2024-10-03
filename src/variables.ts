@@ -1,10 +1,10 @@
 import { CompanionVariableValues } from "@companion-module/base"
 import { DeviceConfig, InstanceBaseExt } from "./config"
-import { LocalStateCache } from './utils'
+import { ProPresenterStateStore } from './utils'
 
-let variableValuesCache: CompanionVariableValues
+let variableValuesCache: CompanionVariableValues // Local cache of variable values - used in ResetVariablesFromLocalCache() to return values to variables each time they are re-created.
 
-export function GetVariableDefinitions(localStateCache: LocalStateCache) {
+export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore) {
 	const variables = []
 
 	variables.push({
@@ -44,19 +44,31 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 		variableId: 'active_look_UUID',
 	})
 	variables.push({
+		name: 'Audience Screen Active',
+		variableId: 'audience_screen_active',
+	})
+	variables.push({
+		name: 'Stage Screen Active',
+		variableId: 'stage_screen_active',
+	})
+	variables.push({
+		name: 'Video Countdown Timer',
+		variableId: 'video_countdown_timer',
+	})
+	variables.push({
 		name: 'Timers Current JSON',
 		variableId: 'timers_current_JSON',
 	})
 	// Get Timer variable definitions from module cache of timers state
-	for (const timer of localStateCache.timers) {
+	for (const proTimer of propresenterStateStore.proTimers) {
 		variables.push({
-			name: timer.name,
-			variableId: timer.varid,
+			name: proTimer.name,
+			variableId: proTimer.varid,
 		})
 	}
 
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
-	for (const stageScreenWithLayout of localStateCache.stageScreensWithLayout) {
+	for (const stageScreenWithLayout of propresenterStateStore.stageScreensWithLayout) {
 		variables.push({
 			name: stageScreenWithLayout.name,
 			variableId: stageScreenWithLayout.varid
@@ -72,7 +84,7 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
  * @param values 
  */
 export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>, values: CompanionVariableValues) {
-	// Cache values that were set so they can be used to reset after setting defs again later
+	// Cache values that were set so they can be used as an easy method to reset values after setting definitions again later
 	variableValuesCache = {...variableValuesCache, ...values}
 
 	// Set variable values

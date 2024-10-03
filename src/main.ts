@@ -1,10 +1,10 @@
-import { InstanceBase, runEntrypoint, InstanceStatus } from '@companion-module/base'
+import { InstanceBase, runEntrypoint, InstanceStatus, CompanionInputFieldTextInput } from '@companion-module/base'
 import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues} from './variables' // TODO comment explaining use of this SetVariableValues(this, CompanionVariableValues) function
-import { LocalStateCache, Timer, StageScreenWithLayout, MessageIDWithTokenNames} from './utils'
+import { ProPresenterStateStore, ProMessage} from './utils'
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
 	constructor(internal: unknown) {
@@ -21,17 +21,21 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
 	public ProPresenter: any
 	
-	// These following properties are used to locally cache the state of ProPresenter. They are used to build dynamic Actions and Variables that "know" about the current state of ProPresenter.
-	public looksChoices: [{id: string, label: string}] | undefined
-	public macroChoices: [{id: string, label: string}] | undefined
-	public propChoices: [{id: string, label: string}] | undefined
-	public videoInputChoices: [{id: string, label: string}] | undefined
-	public timerChoices: [{id: string, label: string}] | undefined
-	public stageScreenChoices: [{id: string, label: string}] | undefined
-	public stageScreenLayoutChoices: [{id: string, label: string}] | undefined
-	public groupChoices: [{id: string, label: string}] | undefined
-	public messageChoices: [{id: string, label: string}] | undefined
-	public localStateCache: LocalStateCache = {timers: <Timer[]>[], stageScreensWithLayout: <StageScreenWithLayout[]>[], messageIDsWithTokenNames: <MessageIDWithTokenNames[]>[]} // These types are defined in utils.ts
+	// propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
+	public propresenterStateStore: ProPresenterStateStore = {
+		proTimers: [],
+		stageScreensWithLayout: [],
+		messageTokenInputs: [],
+		looksChoices: [],
+		macroChoices: [],
+		propChoices: [],
+		videoInputChoices: [],
+		timerChoices: [],
+		stageScreenChoices: [],
+		stageScreenLayoutChoices: [],
+		groupChoices: [],
+		messageChoices: []
+	} 
 	
 	// Private variables
 	private lastSetActionDefinitionsTime: number = 0 // A timestamp (in ms) of the last time that setActionDefinitions() was called (0 means not yet called)
@@ -58,7 +62,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout) // This object is our "API manager" that handles all the network calls for us
-			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers":this.timersUpdate, "timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged,"looks":this.looksUpdated,"macros":this.macrosUpdated,"props":this.propsUpdated,"stage/layout_map":this.stageScreensUpdated, "stage/layouts":this.stageScreenLayoutsUpdated, "messages":this.messagesUpdated},2000)
+			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers":this.timersUpdate, "timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged,"looks":this.looksUpdated,"macros":this.macrosUpdated,"props":this.propsUpdated,"stage/layout_map":this.stageScreensUpdated, "stage/layouts":this.stageScreenLayoutsUpdated, "messages":this.messagesUpdated, "status/audience_screens":this.screenStatusUpdated,"status/stage_screens":this.screenStatusUpdated, "timer/video_countdown":this.videoCountdownTimerUpdated},2000)
 			
 			this.initPresets()
 			
@@ -127,7 +131,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 				// Get Global Groups
 				const globalGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.groupsGet()
-				// If we got an ok response, Construct a statusJSONObject (even though video inputs are not available from the /v1/status POST) and call the callback for globalGroupsUpdated()
+				// If we got an ok response, Construct a statusJSONObject and call the callback for globalGroupsUpdated()
 				if (globalGroupsResult.ok) {
 					const globalGroupsStatusJSONObject: StatusUpdateJSON = {
 						url: 'groups',
@@ -138,13 +142,46 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 				// Get Video Inputs info
 				const videoInputsResult: RequestAndResponseJSONValue = await this.ProPresenter.videoInputsGet()
-				// Construct a statusJSONObject (even though video inputs are not available from the /v1/status POST) and call the callback for videoInputsUpdated()
+				/// If we got an ok response, Construct a statusJSONObject and call the callback for videoInputsUpdated()
 				if (videoInputsResult.ok) {
 					const videoInputsStatusJSONObject: StatusUpdateJSON = {
 						url: '/v1/video_inputs',
 						data: videoInputsResult.data
 					}
 					this.videoInputsUpdated(videoInputsStatusJSONObject) // This will update the local cache of available Video Input choices and then call initActions() - which is rate limited and coalesced.
+				}
+
+				// Get Messages info
+				const messagesResult: RequestAndResponseJSONValue = await this.ProPresenter.messagesGet()
+				// If we got an ok response, Construct a statusJSONObject and call the callback for messagesUpdated()
+				if (messagesResult.ok) {
+					const messagesStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/messages',
+						data: messagesResult.data
+					}
+					this.messagesUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
+				}
+
+				// Get audience screens status
+				const audienceScreensStatusResult: RequestAndResponseJSONValue = await this.ProPresenter.statusAudienceScreensGet()
+				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
+				if (audienceScreensStatusResult.ok) {
+					const messagesStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/status/audience_screens',
+						data: audienceScreensStatusResult.data
+					}
+					this.screenStatusUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
+				}
+
+				// Get stage screens status
+				const stageScreensResult: RequestAndResponseJSONValue = await this.ProPresenter.statusStageScreensGet()
+				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
+				if (stageScreensResult.ok) {
+					const messagesStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/status/stage_screens',
+						data: stageScreensResult.data
+					}
+					this.screenStatusUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
 				}
 
 				// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
@@ -207,23 +244,33 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
+	screenStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (statusJSONObject.url.includes('audience'))
+			SetVariableValues(this, {audience_screen_active: statusJSONObject.data})
+		if (statusJSONObject.url.includes('stage'))
+			SetVariableValues(this, {stage_screen_active: statusJSONObject.data})
+	}
+
+	videoCountdownTimerUpdated = (videoCountdownTimerJSONObject: StatusUpdateJSON) => {
+		SetVariableValues(this, {video_countdown_timer: videoCountdownTimerJSONObject.data})
+	}
+
 	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		// The definition of one or more timers has been updated/added - refresh variabl definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
 		this.log('debug', 'timersUpdate: ' + JSON.stringify(statusJSONObject))
 
 		// Update localState with new timer definitions
-		this.localStateCache.timers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'', index:timer.id.index}))
+		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'', index:timer.id.index}))
 
 		// Update list of Timers in the dropdown choices format { id: string, label: string}
-		this.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
+		this.propresenterStateStore.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 
 		// Reset variable definitions (rate-limited)
 		this.initVariables()
-		ResetVariablesFromLocalCache(this)
 
-		this.log('debug', 'localstate.timers: ' + JSON.stringify(this.localStateCache.timers))
+		this.log('debug', 'localstate.timers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
 	}
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
@@ -248,7 +295,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	looksUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'looksUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of looks in the dropdown choices format  { id: string, label: string}
-		this.looksChoices = statusJSONObject.data.map((look: {id: {uuid: string, name:string}}) => ({id:look.id.uuid, label:look.id.name}))
+		this.propresenterStateStore.looksChoices = statusJSONObject.data.map((look: {id: {uuid: string, name:string}}) => ({id:look.id.uuid, label:look.id.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -256,7 +303,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	macrosUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'macrosUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of macros in the dropdown choices format  { id: string, label: string}
-		this.macroChoices = statusJSONObject.data.map((macro: {id: {uuid: string, name:string}}) => ({id:macro.id.uuid, label:macro.id.name}))
+		this.propresenterStateStore.macroChoices = statusJSONObject.data.map((macro: {id: {uuid: string, name:string}}) => ({id:macro.id.uuid, label:macro.id.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -264,7 +311,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	propsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of props in the dropdown choices format  { id: string, label: string}
-		this.propChoices = statusJSONObject.data.map((prop: {id: {uuid: string, name:string}}) => ({id:prop.id.uuid, label:prop.id.name}))
+		this.propresenterStateStore.propChoices = statusJSONObject.data.map((prop: {id: {uuid: string, name:string}}) => ({id:prop.id.uuid, label:prop.id.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -272,7 +319,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	globalGroupsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of global groups in the dropdown choices format  { id: string, label: string}
-		this.groupChoices = statusJSONObject.data.map((group: {id: {uuid: string, name:string}}) => ({id:group.id.name, label:group.id.name})) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid fails, so using name as a workaround - at the risk of clashing id user had two groups with same name!
+		this.propresenterStateStore.groupChoices = statusJSONObject.data.map((group: {id: {uuid: string, name:string}}) => ({id:group.id.name, label:group.id.name})) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid fails, so using name as a workaround - at the risk of clashing id user had two groups with same name!
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -280,7 +327,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	videoInputsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'videoInputsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of video inputs in the dropdown choices format  { id: string, label: string}
-		this.videoInputChoices = statusJSONObject.data.map((videoInput: {uuid: string, name:string}) => ({id:videoInput.uuid, label:videoInput.name}))
+		this.propresenterStateStore.videoInputChoices = statusJSONObject.data.map((videoInput: {uuid: string, name:string}) => ({id:videoInput.uuid, label:videoInput.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -289,11 +336,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'stageScreensUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update localState with new stageScreensWithLayout definitions
 		// StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number} (varid is a clean form of the variable ID with - remvoed from UUID)
-		this.localStateCache.stageScreensWithLayout = statusJSONObject.data.map((stageScreenWithLayout: { screen: { uuid: string, name: string, index: number }, layout: {uuid: string, name: string, index: number} }) => 
+		this.propresenterStateStore.stageScreensWithLayout = statusJSONObject.data.map((stageScreenWithLayout: { screen: { uuid: string, name: string, index: number }, layout: {uuid: string, name: string, index: number} }) => 
 			({uuid:stageScreenWithLayout.screen.uuid, name:stageScreenWithLayout.screen.name, varid:'stagescreen_'+stageScreenWithLayout.screen.uuid.replace(/-/g,'')+'_layout', index:stageScreenWithLayout.screen.index, layout_uuid:stageScreenWithLayout.layout.uuid, layout_name:stageScreenWithLayout.layout.name, layout_index:stageScreenWithLayout.layout.index}))
 
 		// Create a list of stage screens in the dropdown choices format  { id: string, label: string}
-		this.stageScreenChoices = statusJSONObject.data.map((stageScreenWithLayout: {screen :{uuid: string, name:string}}) => ({id:stageScreenWithLayout.screen.uuid, label:stageScreenWithLayout.screen.name}))
+		this.propresenterStateStore.stageScreenChoices = statusJSONObject.data.map((stageScreenWithLayout: {screen :{uuid: string, name:string}}) => ({id:stageScreenWithLayout.screen.uuid, label:stageScreenWithLayout.screen.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 
@@ -308,13 +355,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		// Reset variable definitions (rate-limited)
 		this.initVariables()
-		ResetVariablesFromLocalCache(this)
 	}
 
 	stageScreenLayoutsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'stageScreenLayoutsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of stage screen layouts in the dropdown choices format  { id: string, label: string}
-		this.stageScreenLayoutChoices = statusJSONObject.data.map((stageScreenLayout: {id:{uuid: string, name:string}}) => ({id:stageScreenLayout.id.uuid, label:stageScreenLayout.id.name}))
+		this.propresenterStateStore.stageScreenLayoutChoices = statusJSONObject.data.map((stageScreenLayout: {id:{uuid: string, name:string}}) => ({id:stageScreenLayout.id.uuid, label:stageScreenLayout.id.name}))
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -322,7 +368,38 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	messagesUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'messagesUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of stage screen layotus in the dropdown choices format  { id: string, label: string}
-		this.messageChoices = statusJSONObject.data.map((message: {id: {uuid: string, name:string}}) => ({id:message.id.uuid, label:message.id.name}))
+		this.propresenterStateStore.messageChoices = statusJSONObject.data.map((message: {id: {uuid: string, name:string}}) => ({id:message.id.uuid, label:message.id.name}))
+
+		// Update the list of dynamically created text inputs for all message tokens.
+		let newMessageTokenInputs: CompanionInputFieldTextInput[] = []
+		for (const message of statusJSONObject.data as ProMessage[]) {
+			const messageUUID: string = message.id.uuid
+			for (const messageToken of message.tokens) {
+
+				// The ID of a token field will contain 3 chars to designate the token type.
+				let messageTokenTypeCode: string = '???' // Default is unknown: '???'.
+				// Update to 'txt' for text tokens and 'tmr' for timer tokens.
+				if (messageToken.text)
+					messageTokenTypeCode = 'txt'
+				else if (messageToken.timer)
+					messageTokenTypeCode = 'tmr'
+
+				newMessageTokenInputs.push({
+					type: 'textinput',
+					label: messageToken.name,
+					id: messageUUID + '__' + messageTokenTypeCode + '__' + messageToken.name, // "Parent" message UUID __ 3 Char type __ TokenName
+					isVisibleData: messageUUID,
+					isVisible: (options, isVisibleData) =>  {
+						return (options.message_id_dropdown as string) == isVisibleData
+					},
+					useVariables: true,
+				})
+			}
+
+		}
+		// Update new tokens stored in local cache (initActions will use these to build Message action that includes these tokens)
+		this.propresenterStateStore.messageTokenInputs = newMessageTokenInputs
+
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -365,23 +442,25 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	initVariables() {
 		// This function is called whenever things like the definiations of timers, screens and stage layouts are updated in ProPresenter (sometimes at each keystroke during a rename)
-		// It will call setVariableDefinitions(GetVariableDefinitions(this.localStateCache)) to build/refresh ALL variables from scratch....
-		// However, calls to setVariableDefinitions(GetVariableDefinitions(this.localStateCache)) are prob a little "expensive", will cause all vars to reset values and should not be called "too often".
-		// Therefore, this function includes logic to rate-limit (and coalesce) calls to setVariableDefinitions(GetVariableDefinitions(this.localStateCache)) to ensure a gap of at least 2000msec between calls.
+		// It will call setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) to build/refresh ALL variables from scratch....
+		// However, calls to setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) are a little "expensive", and should not be called "too often".
+		// Therefore, this function includes logic to rate-limit (and coalesce) calls to setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) to ensure a gap of at least 2000msec between calls.
+		// It also employs ResetVariablesFromLocalCache() to return values to variables from cached data whenever variable are re-created.
 				
 		const timeSinceLastSetVariableDefinitionsTimeCall: number = (Date.now() - this.lastSetVariableDefinitionsTime) // Calculate time since last call of setVariableDefinitions
 		if (this.lastSetVariableDefinitionsTime == 0 ||  (Date.now() - timeSinceLastSetVariableDefinitionsTimeCall > 2000)) {
 			// If setVariableDefinitions has not yet been called, or the time since the last call is greater than 2000msec, then it's okay to call it now...
 			this.log('debug', 'setVariableDefinitions()1')
-			this.setVariableDefinitions(GetVariableDefinitions(this.localStateCache))
-			ResetVariablesFromLocalCache(this) // Update varariable values from previously cached old values
+			this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
+			ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 		} else {
 			// Create a pending call to setVariableDefinitions - ensuring at least a 2000 msec time since last time it was called
 			if (!this.setVariableDefinitionsTimeoutId) {
 				this.setVariableDefinitionsTimeoutId = setTimeout(() => {
 					this.lastSetVariableDefinitionsTime = Date.now()
 					this.log('debug', 'setVariableDefinitions()2')
-					this.setVariableDefinitions(GetVariableDefinitions(this.localStateCache))
+					this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
+					ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 					if (this.setVariableDefinitionsTimeoutId)
 						clearTimeout(this.setVariableDefinitionsTimeoutId)
 					this.setVariableDefinitionsTimeoutId = null

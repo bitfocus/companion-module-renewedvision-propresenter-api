@@ -1,8 +1,7 @@
 import { CompanionActionDefinition, CompanionActionDefinitions, CompanionInputFieldDropdown, DropdownChoice } from '@companion-module/base'
 import { DeviceConfig, InstanceBaseExt } from './config'
 import { options, timestampToSeconds} from './utils'
-import { ProPresenterLayerName, ProPresenterCaptureOperation, RequestAndResponseJSONValue, ProPresenterTimerOperation} from 'renewedvision-propresenter'
-import { ProPresenterTimelineOperation, ProPresenterTimePeriod } from 'renewedvision-propresenter/dist/propresenter'
+import { ProPresenterLayerName, ProPresenterCaptureOperation, RequestAndResponseJSONValue, ProPresenterTimerOperation, ProPresenterTimelineOperation, ProPresenterTimePeriod} from 'renewedvision-propresenter'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -44,7 +43,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified cue (by index) in the currently active announcement presentation.',
 			options: [options.index],
 			callback: async (actionEvent) => {
-				const index = await instance.parseVariablesInString(actionEvent.options.index as string)
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 				instance.ProPresenter.announcementActiveIndexTrigger(index)
 			},
 		},
@@ -53,7 +52,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Performs the requested timeline operation for the active announcment presentation.',
 			options: [options.timeline_operation],
 			callback: async (actionEvent) => {
-				const operation = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
+				const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
 				instance.ProPresenter.announcementActiveTimelineOperation(operation as ProPresenterTimelineOperation)
 			},
 		},
@@ -95,7 +94,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified item in the active audio playlist.',
 			options: [options.audio_item_id],
 			callback: async (actionEvent) => {
-				const id = await instance.parseVariablesInString(actionEvent.options.id as string)
+				const id: string = await instance.parseVariablesInString(actionEvent.options.id as string)
 				instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
 			},
 		},
@@ -128,7 +127,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified item in the focused audio playlist.',
 			options: [options.audio_item_id],
 			callback: async (actionEvent) => {
-				const id = await instance.parseVariablesInString(actionEvent.options.id as string)
+				const id: string = await instance.parseVariablesInString(actionEvent.options.id as string)
 				instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
 			},
 		},
@@ -152,7 +151,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			name: 'Audio: Playlist: PlaylistID: Focus',
 			options: [options.playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
 				instance.ProPresenter.audioFocusPlaylistByPlaylistId(playlist_id)
 			},
 		},
@@ -160,7 +159,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			name: 'Audio: Playlist: PlaylistID: Next: Trigger',
 			options: [options.playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
 				instance.ProPresenter.audioPlaylistByPlaylistIdNextTrigger(playlist_id)
 			},
 		},
@@ -177,7 +176,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified audio playlist.',
 			options: [options.playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
 				instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(playlist_id)
 			},
 		},
@@ -187,7 +186,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Performs the requested capture operation (start, stop).',
 			options: [options.capture_operation],
 			callback: async (actionEvent) => {
-				//const layer = await instance.parseVariablesInString(actionEvent.options.layer as string)
+				//const layer: string = await instance.parseVariablesInString(actionEvent.options.layer as string)
 				instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
 			},
 		},
@@ -197,7 +196,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Clears the specified layer (audio, props, messages, announcements, slide, media, video_input).',
 			options: [options.layer],
 			callback: async (actionEvent) => {
-				//const layer = await instance.parseVariablesInString(actionEvent.options.layer as string)
+				//const layer: string = await instance.parseVariablesInString(actionEvent.options.layer as string)
 				instance.ProPresenter.clearLayer(actionEvent.options.layer as ProPresenterLayerName)
 			},
 		},
@@ -264,7 +263,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.messageIdTrigger]: {
 			name: 'Messages: ID: Trigger',
 			description: 'Triggers/Shows the specified message',
-			options: [options.message_id_dropdown, options.message_id_text],
+			options: [options.message_id_dropdown,
+				options.message_id_text,
+			],
 			callback: async (actionEvent) => {
 				// user can either choose a message from the dropdown, or choose to manaully enter a message ID as text (in a separate input that supports variables)
 				let message_id: string = ''
@@ -272,8 +273,27 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					message_id = await instance.parseVariablesInString(actionEvent.options.message_id_text as string)
 				else
 					message_id = actionEvent.options.message_id_dropdown as string
+
+				// The (intially empty) array of text tokens to pass to MessageTrigger API
+				let tokenNamesAndTextArray: {"name": string, "text":{"text":string}}[] = [];
+
+				// For the messageIdTriggeraction, there are two fixed inputs "message_id_dropdown" and "message_id_text", and then a variable number of inputs for message tokens.
+				// Note that this action actually has inputs for ALL message tokens for ALL messages and uses visability logic to only show the inputs for tokens relevent the selected message.
+				// But we also need a way to know which token inputs belong to which message...
+				// I could not find anywhere "proper" to store the message UUID with each token input (that seems to be accessible from this action's callback) so I have stuffed the "parent" message UUID into the ID of each token input field so this determination can be made by looking at the ID string!
+				// Each input for a message token has an ID in the form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName', where MessageUUID is the uuid of the message that this token belongs to and then two underscores, *3 CHARS* for the token type and 2 more underscores and then the token name which is variable length.
+				// For now, this is the only way I could think ot to support a dynamic number of tokens inputs per selected message in Companion ¯\_(ツ)_/¯
+				// This loop will interate all token inputs and find matching token inputs for the selected message to build up the tokenNamesAndTextArray ready to pass to the API call
+				for (const companionOptionValue in actionEvent.options) {
+					//instance.log('debug', 'ZZZZ Checking: ' + JSON.stringify(companionOptionValue) + ' = ' + JSON.stringify(actionEvent.options[companionOptionValue]))
+					if (companionOptionValue.startsWith(actionEvent.options.message_id_dropdown as string)) { // The ID of the token input fields have the uuid of the message they belong to at the start of their own id string
+						const token_name = companionOptionValue.slice((actionEvent.options.message_id_dropdown as string + '__???__').length) // Extract name from the ID that is always a contacatination of the uuid, 2 underscores, 3 char for the token type and 2 more underscores before the variable length token name
+						const token_value = await instance.parseVariablesInString(actionEvent.options[companionOptionValue] as string)
+						tokenNamesAndTextArray.push({"name": token_name, "text":{"text":token_value}})
+					}
+				}
 				
-				instance.ProPresenter.messageIdTrigger(message_id,'todo')
+				instance.ProPresenter.messageIdTrigger(message_id, JSON.stringify(tokenNamesAndTextArray))
 			}
 		},
 		[ActionId.messageIdClear]: {
@@ -300,7 +320,35 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.findMyMouse()
 			},
 		},
+		// **** PLAYLIST ****
+		[ActionId.playlistIdentifierTrigger]: {
+			name: 'Playlist: ID: Trigger',
+			description: 'Triggers the first item in the specified playlist.',
+			options: [options.playlist_id],
+			callback: async (actionEvent) => {
+				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				instance.ProPresenter.playlistIdentifierTrigger(playlist_id)
+			}
+		},
+		[ActionId.playlistIdentifierIndexTrigger]: {
+			name: 'Playlist: ID: Index: Trigger',
+			description: 'Triggers the specified item in the specified playlist.',
+			options: [options.playlist_id, options.index],
+			callback: async (actionEvent) => {
+				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+				instance.ProPresenter.playlistIdentifierIndexTrigger(playlist_id, index)
+			}
+		},
 		// **** PRESENTATION ****
+		[ActionId.presentationActiveFocus]: {
+			name: 'Presentation: Active: Focus',
+			description: 'Sets the focus to the active presentation.',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.presentationActiveFocus()
+			}
+		},
 		[ActionId.presentationActiveGroupGroup_IdTrigger]: {
 			name: 'Presentation: Active: Group: ID: Trigger',
 			description: 'Triggers the specified group of the active presentation',
@@ -316,14 +364,49 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.presentationActiveGroupGroup_IdTrigger(group_id)
 			}
 		},
-		[ActionId.presenationActiveTimelineOperation]: {
+		[ActionId.presentationActiveTimelineOperation]: {
 			name: 'Presentation: Active: Timeline Operation',
 			description: 'Performs the requested timeline operation for the active presentation.',
 			options: [options.timeline_operation],
 			callback: async (actionEvent) => {
-				const operation = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
+				const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
 				instance.ProPresenter.presentationActiveTimelineOperation(operation as ProPresenterTimelineOperation)
 			},
+		},
+		[ActionId.presentationActiveIndexTrigger]: {
+			name: 'Presentation: Active: Index: Trigger',
+			description: 'Triggers the specified cue of the active presentation.',
+			options: [options.index],
+			callback: async (actionEvent) => {
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+				instance.ProPresenter.presentationActiveIndexTrigger(index)
+			}
+		},
+		[ActionId.presentationUUIDIndexTrigger]: {
+			name: 'Presentation: PresentationUUID: Index: Trigger',
+			description: 'riggers the specified cue of the specified presentation.',
+			options: [options.presentation_uuid, options.index],
+			callback: async (actionEvent) => {
+				const presentation_uuid: string = await instance.parseVariablesInString(actionEvent.options.presentation_uuid as string)
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+				instance.ProPresenter.presentationUUIDIndexTrigger(presentation_uuid, index)
+			}
+		},
+		[ActionId.presentationNextFocus]: {
+			name: 'Presentation: Next: Focus',
+			description: 'Sets the focus to the next presentation',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.presentationNextFocus()
+			}
+		},
+		[ActionId.presentationPreviousFocus]: {
+			name: 'Presentation: Previous: Focus',
+			description: 'Sets the focus to the previous presentation',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.presentationPreviousFocus()
+			}
 		},
 		// **** PROPS ****
 		[ActionId.propIdTrigger]: {
@@ -362,7 +445,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Show stage message',
 			options: [options.stage_message_text],
 			callback: async (actionEvent) => {
-				const stage_message_text = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
+				const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
 				instance.ProPresenter.stageMessage(stage_message_text).then((requestAndResponseJSON: RequestAndResponseJSONValue) => {
 						if (!requestAndResponseJSON.ok){
 							instance.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with body: ' + stage_message_text)
@@ -384,7 +467,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Show or hide Audience screens',
 			options: [options.status_audience_screens_dropdown],
 			callback: async (actionEvent) => {
-				instance.ProPresenter.statusAudienceScreensSet(actionEvent.options.status_audience_screens_dropdown == 'show')
+				if (actionEvent.options.status_audience_screens_dropdown == 'toggle') {
+					const currentStatus: RequestAndResponseJSONValue = await instance.ProPresenter.statusAudienceScreensGet()
+					instance.ProPresenter.statusAudienceScreensSet(!currentStatus.data)
+				} else {
+					instance.ProPresenter.statusAudienceScreensSet(actionEvent.options.status_audience_screens_dropdown == 'show')
+				}
 			},
 		},
 		[ActionId.statusStageScreensSet]: {
@@ -392,7 +480,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Show or hide Stage screens',
 			options: [options.status_stage_screens_dropdown],
 			callback: async (actionEvent) => {
-				instance.ProPresenter.statusStageScreensSet(actionEvent.options.status_stage_screens_dropdown == 'show')
+				if (actionEvent.options.status_stage_screens_dropdown == 'toggle') {
+					const currentStatus: RequestAndResponseJSONValue = await instance.ProPresenter.statusStageScreensGet()
+					instance.ProPresenter.statusStageScreensSet(!currentStatus.data)
+				} else {
+					instance.ProPresenter.statusStageScreensSet(actionEvent.options.status_stage_screens_dropdown == 'show')
+				}
 			},
 		},
 		[ActionId.stageScreenIdSetLayoutId]: {
@@ -564,61 +657,66 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 	}
 
-	// Update look choices with list of looks from ProPresenter
-	// TODO: handle error cases (when things are missing???)
-	if (instance.looksChoices) {
-		const lookChoicesDropDown = actions[ActionId.lookIdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_look_choice = lookChoicesDropDown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Look (in another text input)
-		lookChoicesDropDown.choices = instance.looksChoices.concat(manual_look_choice) 
-		lookChoicesDropDown.default = lookChoicesDropDown.choices[0].id
-	}
-	if (instance.macroChoices) {
-		const macroChoicesDropDown = actions[ActionId.marcoIdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_look_choice = macroChoicesDropDown.choices.pop() // The last item in the macro choices list (after all the current macros list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Macro (in another text input)
-		macroChoicesDropDown.choices = instance.macroChoices.concat(manual_look_choice) 
-		macroChoicesDropDown.default = macroChoicesDropDown.choices[0].id
-	}
-	if (instance.propChoices) {
-		const propChoicesDropDown = actions[ActionId.propIdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_prop_choice = propChoicesDropDown.choices.pop() // The last item in the prop choices list (after all the current props list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Prop (in another text input)
-		propChoicesDropDown.choices = instance.propChoices.concat(manual_prop_choice) 
-		propChoicesDropDown.default = propChoicesDropDown.choices[0].id
-	}
-	if (instance.videoInputChoices) {
-		const videoInputChoicesDropDown = actions[ActionId.videoInputsIdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_video_input_choice = videoInputChoicesDropDown.choices.pop() // The last item in the video inputs choices list (after all the current video inputs list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Video Input (in another text input)
-		videoInputChoicesDropDown.choices = instance.videoInputChoices.concat(manual_video_input_choice) 
-		videoInputChoicesDropDown.default = videoInputChoicesDropDown.choices[0].id
-	}
-	if (instance.timerChoices) {
-		const timerChoicesDropDown = actions[ActionId.timerIdSet]?.options[0] as CompanionInputFieldDropdown
-		const manual_timer_choice = timerChoicesDropDown.choices.pop() // The last item in the timer choices list (after all the current timers list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Timer (in another text input)
-		timerChoicesDropDown.choices = instance.timerChoices.concat(manual_timer_choice) 
-		timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
-	}
-	if (instance.stageScreenChoices) {
-		const stageScreenChoicesDropDown = actions[ActionId.stageScreenIdSetLayoutId]?.options[0] as CompanionInputFieldDropdown
-		const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
-		stageScreenChoicesDropDown.choices = instance.stageScreenChoices.concat(manual_stagescreen_choice) 
-		stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
-	}
-	if (instance.stageScreenLayoutChoices) {
-		const stageScreenLayoutChoicesDropDown = actions[ActionId.stageScreenIdSetLayoutId]?.options[2] as CompanionInputFieldDropdown
-		const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
-		stageScreenLayoutChoicesDropDown.choices = instance.stageScreenLayoutChoices.concat(manual_stagescreenlayout_choice) 
-		stageScreenLayoutChoicesDropDown.default = stageScreenLayoutChoicesDropDown.choices[0].id
-	}
-	if(instance.messageChoices) {
-		const messageChoicesDropDown = actions[ActionId.messageIdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_message_choice = messageChoicesDropDown.choices.pop() // The last item in the message choices list (after all the current messages list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the message (in another text input)
-		messageChoicesDropDown.choices = instance.messageChoices.concat(manual_message_choice) 
-		messageChoicesDropDown.default = messageChoicesDropDown.choices[0].id
-	}
-	if(instance.groupChoices) {
-		const groupChoicesDropDown = actions[ActionId.presentationActiveGroupGroup_IdTrigger]?.options[0] as CompanionInputFieldDropdown
-		const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
-		groupChoicesDropDown.choices = instance.groupChoices.concat(manual_group_choice) 
-		groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
+	// Update look choices with data from propresenterStateStore
+	const lookChoicesDropDown = actions[ActionId.lookIdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_look_choice = lookChoicesDropDown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is ALWAYS a placeholder, that when selected, allows for manually specifing the Look (in another text input)
+	lookChoicesDropDown.choices = instance.propresenterStateStore.looksChoices.concat(manual_look_choice as DropdownChoice)
+	lookChoicesDropDown.default = lookChoicesDropDown.choices[0].id
+
+	// Update macro choices with data from propresenterStateStore
+	const macroChoicesDropDown = actions[ActionId.marcoIdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_macro_choice = macroChoicesDropDown.choices.pop() // The last item in the macro choices list (after all the current macros list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Macro (in another text input)
+	macroChoicesDropDown.choices = instance.propresenterStateStore.macroChoices.concat(manual_macro_choice as DropdownChoice) 
+	macroChoicesDropDown.default = macroChoicesDropDown.choices[0].id
+	
+	// Update prop choices with data from propresenterStateStore
+	const propChoicesDropDown = actions[ActionId.propIdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_prop_choice = propChoicesDropDown.choices.pop() // The last item in the prop choices list (after all the current props list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Prop (in another text input)
+	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(manual_prop_choice as DropdownChoice) 
+	propChoicesDropDown.default = propChoicesDropDown.choices[0].id
+	
+	// Update video input choices with data from propresenterStateStore
+	const videoInputChoicesDropDown = actions[ActionId.videoInputsIdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_video_input_choice = videoInputChoicesDropDown.choices.pop() // The last item in the video inputs choices list (after all the current video inputs list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Video Input (in another text input)
+	videoInputChoicesDropDown.choices = instance.propresenterStateStore.videoInputChoices.concat(manual_video_input_choice as DropdownChoice) 
+	videoInputChoicesDropDown.default = videoInputChoicesDropDown.choices[0].id
+	
+	// Update timer choices with data from propresenterStateStore
+	const timerChoicesDropDown = actions[ActionId.timerIdSet]?.options[0] as CompanionInputFieldDropdown
+	const manual_timer_choice = timerChoicesDropDown.choices.pop() // The last item in the timer choices list (after all the current timers list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Timer (in another text input)
+	timerChoicesDropDown.choices = instance.propresenterStateStore.timerChoices.concat(manual_timer_choice as DropdownChoice) 
+	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
+	
+	// Update stagescreen choices with data from propresenterStateStore
+	const stageScreenChoicesDropDown = actions[ActionId.stageScreenIdSetLayoutId]?.options[0] as CompanionInputFieldDropdown
+	const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
+	stageScreenChoicesDropDown.choices = instance.propresenterStateStore.stageScreenChoices.concat(manual_stagescreen_choice as DropdownChoice) 
+	stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
+	
+	// Update stagescreen layout choices with data from propresenterStateStore
+	const stageScreenLayoutChoicesDropDown = actions[ActionId.stageScreenIdSetLayoutId]?.options[2] as CompanionInputFieldDropdown
+	const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
+	stageScreenLayoutChoicesDropDown.choices = instance.propresenterStateStore.stageScreenLayoutChoices.concat(manual_stagescreenlayout_choice as DropdownChoice) 
+	stageScreenLayoutChoicesDropDown.default = stageScreenLayoutChoicesDropDown.choices[0].id
+	
+	// Update message choices with data from propresenterStateStore
+	const messageChoicesDropDown = actions[ActionId.messageIdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_message_choice = messageChoicesDropDown.choices.pop() // The last item in the message choices list (after all the current messages list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the message (in another text input)
+	messageChoicesDropDown.choices = instance.propresenterStateStore.messageChoices.concat(manual_message_choice as DropdownChoice) 
+	messageChoicesDropDown.default = messageChoicesDropDown.choices[0].id
+	
+	// Update group choices with data from propresenterStateStore
+	const groupChoicesDropDown = actions[ActionId.presentationActiveGroupGroup_IdTrigger]?.options[0] as CompanionInputFieldDropdown
+	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
+	groupChoicesDropDown.choices = instance.propresenterStateStore.groupChoices.concat(manual_group_choice as DropdownChoice) 
+	groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
+	
+	// Update messageTokenInputs with data from propresenterStateStore
+	let messageIdTriggerAction = actions[ActionId.messageIdTrigger]
+	if (messageIdTriggerAction) {
+		let messsageIdTriggerActionOptions = messageIdTriggerAction?.options
+		messageIdTriggerAction.options = [...messsageIdTriggerActionOptions, ...instance.propresenterStateStore.messageTokenInputs]
+		//instance.log('debug', 'MMMMM messageIdTriggerAction.options: ' + JSON.stringify(messageIdTriggerAction.options))
 	}
 
 	return actions
@@ -672,9 +770,18 @@ export enum ActionId {
 	// Misc
 	miscFindMyMouse = 'miscFindMyMouse',
 
+	// Playlist
+	playlistIdentifierTrigger = 'playlistIdentifierTrigger',
+	playlistIdentifierIndexTrigger = 'playlistIdentifierIndexTrigger',
+
 	// Presentation
+	presentationActiveFocus = 'presentationActiveFocus',
 	presentationActiveGroupGroup_IdTrigger = 'presentationActiveGroupGroup_IdTrigger',
-	presenationActiveTimelineOperation = 'presenationActiveTimelineOperation',
+	presentationActiveTimelineOperation = 'presentationActiveTimelineOperation',
+	presentationActiveIndexTrigger = 'presentationActiveIndexTrigger',
+	presentationNextFocus = 'presentationNextFocus',
+	presentationPreviousFocus = 'presentationPreviousFocus',
+	presentationUUIDIndexTrigger = 'presentationUUIDIndexTrigger',
 
 	// Props
 	propIdTrigger = 'propIdTrigger',
