@@ -367,10 +367,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	messagesUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'messagesUpdated: ' + JSON.stringify(statusJSONObject.data))
-		// Create a list of stage screen layotus in the dropdown choices format  { id: string, label: string}
+		// Create a list of messages in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.messageChoices = statusJSONObject.data.map((message: {id: {uuid: string, name:string}}) => ({id:message.id.uuid, label:message.id.name}))
 
-		// Update the list of dynamically created text inputs for all message tokens.
+		// Update the list of dynamically created text inputs for all message tokens...
 		let newMessageTokenInputs: CompanionInputFieldTextInput[] = []
 		for (const message of statusJSONObject.data as ProMessage[]) {
 			const messageUUID: string = message.id.uuid
