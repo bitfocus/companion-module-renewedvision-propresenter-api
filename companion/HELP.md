@@ -25,6 +25,7 @@ Introduce concept of naming convention (Actions are logically grouped by their n
 Introduce how to search for actions, knowing the naming convention
 Introduce concept of trigger actions (vs say, presentation trigger)
 When using indexes - counting starts at 0.
+For the action: "Propresenter-API: Presentation: PresentationUUID: Index: Trigger", you can use "Active Presentation UUID" variable to get uuid of active presentation - this is a globally unique identifier of that presentation that should not change
 
 
 #### Variables:

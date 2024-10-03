@@ -7,6 +7,7 @@ export interface Options {
     library_id: EnforceDefault<CompanionInputFieldTextInput, string>
     presentation_id: EnforceDefault<CompanionInputFieldTextInput, string>
     playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
+    audio_playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
     audio_item_id: EnforceDefault<CompanionInputFieldTextInput, string>
     group_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     group_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
@@ -14,6 +15,8 @@ export interface Options {
     look_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     macro_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     macro_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
+    media_playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
+    media_id: EnforceDefault<CompanionInputFieldTextInput, string>
     message_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     message_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     prop_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -44,6 +47,10 @@ export interface Options {
     timer_new_name: EnforceDefault<CompanionInputFieldTextInput, string>
     timer_allows_overrun: EnforceDefault<CompanionInputFieldCheckbox, boolean>
     timer_increment_value : EnforceDefault<CompanionInputFieldTextInput, string>
+    transport_layer: EnforceDefault<CompanionInputFieldDropdown, string>
+    transport_skip_time: EnforceDefault<CompanionInputFieldTextInput, string>
+    transport_goto_time: EnforceDefault<CompanionInputFieldTextInput, string>
+    transport_operation: EnforceDefault<CompanionInputFieldDropdown, string>
     capture_operation: EnforceDefault<CompanionInputFieldDropdown, string>
 }
 
@@ -69,6 +76,14 @@ export const options: Options = {
         label: 'Playlist Id',
         tooltip: 'Enter Playlist Name or Index or UUID',
         id: 'playlist_id',
+        default: '',
+        useVariables: true,
+    },
+    audio_playlist_id: {
+        type: 'textinput',
+        label: 'Audio Playlist Id',
+        tooltip: 'Enter Audio Playlist Name or Index or UUID',
+        id: 'audio_playlist_id',
         default: '',
         useVariables: true,
     },
@@ -136,6 +151,22 @@ export const options: Options = {
             { id: 'manually_specify_macroid', label: 'Manually Specify Macro ID Below'},
         ],
         default: '',
+    },
+    media_playlist_id: {
+        type: 'textinput',
+        label: 'Media Playlist Id',
+        tooltip: 'Enter Media Playlist Name or Index or UUID',
+        id: 'media_playlist_id',
+        default: '',
+        useVariables: true,
+    },
+    media_id: {
+        type: 'textinput',
+        label: 'Media Id',
+        tooltip: 'Enter Media Name or Index or UUID',
+        id: 'media_id',
+        default: '',
+        useVariables: true,
     },
     message_id_text: {
         type: 'textinput',
@@ -421,6 +452,49 @@ export const options: Options = {
         tooltip: 'The number of seconds to add to this currently running timer. A negative number will subtract time from this timer.',
         id: 'timer_increment_value',
         default: '30',
+        useVariables: true,
+    },
+    transport_layer: {
+        type: 'dropdown',
+        label: 'Layer',
+        id: 'transport_layer',
+        choices: [
+            { label: 'Presentation', id: 'presentation' },
+            { label: 'Announcement', id: 'announcement' },
+            { label: 'Audio', id: 'audio' },
+        ],
+        default: 'presentation',
+    },
+    transport_operation: {
+        type: 'dropdown',
+        label: 'Operation',
+        id: 'transport_operation',
+        choices: [
+            { label: 'Play', id: 'play' },
+            { label: 'Pause', id: 'pause' },
+            { label: 'Skip Forward', id: 'skip_forward' },
+            { label: 'Skip Backward', id: 'skip_backward' },
+            { label: 'Go To Time', id: 'go_to_time' },
+            { label: 'Go To End', id: 'go_to_end' },
+        ],
+        default: 'play',
+    },
+    transport_skip_time: {
+        type: 'textinput',
+        label: 'Number Of Seconds To Skip',
+        tooltip: 'Positive Integer',
+        id: 'transport_skip_time',
+        isVisible: ((options) => options.transport_operation == 'skip_forward' || options.transport_operation == 'skip_backward'),
+        default: '15',
+        useVariables: true,
+    },
+    transport_goto_time: {
+        type: 'textinput',
+        label: 'Number Of Seconds To Skip',
+        tooltip: 'Positive Integer',
+        id: 'transport_goto_time',
+        isVisible: ((options) => options.transport_operation == 'go_to_time'),
+        default: '15',
         useVariables: true,
     },
     index: {

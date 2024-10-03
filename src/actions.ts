@@ -1,7 +1,7 @@
 import { CompanionActionDefinition, CompanionActionDefinitions, CompanionInputFieldDropdown, DropdownChoice } from '@companion-module/base'
 import { DeviceConfig, InstanceBaseExt } from './config'
 import { options, timestampToSeconds} from './utils'
-import { ProPresenterLayerName, ProPresenterCaptureOperation, RequestAndResponseJSONValue, ProPresenterTimerOperation, ProPresenterTimelineOperation, ProPresenterTimePeriod} from 'renewedvision-propresenter'
+import { ProPresenterLayerName, ProPresenterCaptureOperation, RequestAndResponseJSONValue, ProPresenterTimerOperation, ProPresenterTimelineOperation, ProPresenterTimePeriod, ProPresenterLayerWithTransportControl} from 'renewedvision-propresenter'
 
 export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionActionDefinitions {
 	const actions: { [id in ActionId]: CompanionActionDefinition | undefined } = {
@@ -94,7 +94,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified item in the active audio playlist.',
 			options: [options.audio_item_id],
 			callback: async (actionEvent) => {
-				const id: string = await instance.parseVariablesInString(actionEvent.options.id as string)
+				const id: string = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
 				instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
 			},
 		},
@@ -127,7 +127,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Triggers the specified item in the focused audio playlist.',
 			options: [options.audio_item_id],
 			callback: async (actionEvent) => {
-				const id: string = await instance.parseVariablesInString(actionEvent.options.id as string)
+				const id: string = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
 				instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
 			},
 		},
@@ -149,36 +149,46 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		[ActionId.audioPlaylistByPlaylistIdFocus]: {
 			name: 'Audio: Playlist: PlaylistID: Focus',
-			options: [options.playlist_id],
+			options: [options.audio_playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				instance.ProPresenter.audioFocusPlaylistByPlaylistId(playlist_id)
+				const audio_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
+				instance.ProPresenter.audioFocusPlaylistByPlaylistId(audio_playlist_id)
 			},
 		},
 		[ActionId.audioPlaylistByPlaylistIdNextTrigger]: {
 			name: 'Audio: Playlist: PlaylistID: Next: Trigger',
-			options: [options.playlist_id],
+			options: [options.audio_playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				instance.ProPresenter.audioPlaylistByPlaylistIdNextTrigger(playlist_id)
+				const audio_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
+				instance.ProPresenter.audioPlaylistByPlaylistIdNextTrigger(audio_playlist_id)
 			},
 		},
 		[ActionId.audioPlaylistByPlaylistIdPreviousTrigger]: {
 			name: 'Audio: Playlist: PlaylistID: Previous: Trigger',
-			options: [options.playlist_id],
+			options: [options.audio_playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				instance.ProPresenter.audioPlaylistByPlaylistIdPreviousTrigger(playlist_id)
+				const audio_playlist_id = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
+				instance.ProPresenter.audioPlaylistByPlaylistIdPreviousTrigger(audio_playlist_id)
 			},
 		},
 		[ActionId.audioPlaylistByPlaylistIdTrigger]: {
 			name: 'Audio: Playlist: PlaylistID: Trigger',
 			description: 'Triggers the specified audio playlist.',
-			options: [options.playlist_id],
+			options: [options.audio_playlist_id],
 			callback: async (actionEvent) => {
-				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(playlist_id)
+				const audio_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
+				instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(audio_playlist_id)
 			},
+		},
+		[ActionId.audioPlaylistByPlaylistIDAudioItemIDTrigger]: {
+			name: 'Audio: Playlist: PlaylistID: AudioItemID: Trigger',
+			description: 'Triggers the specified audio item, in the specified audio playlist.',
+			options: [options.audio_playlist_id, options.audio_item_id],
+			callback: async (actionEvent) => {
+				const audio_playlist_id = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
+				const audio_item_id = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
+				instance.ProPresenter.triggerAudioPlaylistIDAudioID(audio_playlist_id, audio_item_id)
+			}
 		},
 		// **** CAPTURE *****
 		[ActionId.captureOperation]: {
@@ -186,7 +196,6 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Performs the requested capture operation (start, stop).',
 			options: [options.capture_operation],
 			callback: async (actionEvent) => {
-				//const layer: string = await instance.parseVariablesInString(actionEvent.options.layer as string)
 				instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
 			},
 		},
@@ -196,7 +205,6 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Clears the specified layer (audio, props, messages, announcements, slide, media, video_input).',
 			options: [options.layer],
 			callback: async (actionEvent) => {
-				//const layer: string = await instance.parseVariablesInString(actionEvent.options.layer as string)
 				instance.ProPresenter.clearLayer(actionEvent.options.layer as ProPresenterLayerName)
 			},
 		},
@@ -258,6 +266,18 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 
 				instance.ProPresenter.marcoIdTrigger(macro_id)
 			},
+		},
+		// **** MEDIA ****
+		[ActionId.mediaPlaylistPlaylistIdMediaIdTrigger]: {
+			name: 'Media: PlaylistId: MediaId: Trigger',
+			description: 'Triggers the specified item in the specified media playlist.',
+			options: [options.media_playlist_id, options.media_id],
+			callback: async (actionEvent) => {
+				const media_playlist_id = await instance.parseVariablesInString(actionEvent.options.media_playlist_id as string)
+				const media_id = await instance.parseVariablesInString(actionEvent.options.media_id as string)
+				instance.ProPresenter.mediaPlaylistPlaylistIdMediaIdTrigger(media_playlist_id, media_id)
+			}
+
 		},
 		// **** MESSAGES ****
 		[ActionId.messageIdTrigger]: {
@@ -382,9 +402,41 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				instance.ProPresenter.presentationActiveIndexTrigger(index)
 			}
 		},
+		[ActionId.presentationFocusedGroupGroup_IdTrigger]: {
+			name: 'Presentation: Focused: Group: ID: Trigger',
+			description: 'Triggers the specified group of the focused presentation',
+			options: [options.group_id_dropdown, options.group_id_text],
+			callback: async (actionEvent) => {
+				// user can either choose a Group from the dropdown, or choose to manually enter a Group ID as text (in a separate input that supports variables)
+				let group_id: string = ''
+				if (actionEvent.options.group_id_dropdown == 'manually_specify_groupid')
+					group_id = await instance.parseVariablesInString(actionEvent.options.group_id_text as string)
+				else
+					group_id = actionEvent.options.group_id_dropdown as string
+
+				instance.ProPresenter.presentationFocusedGroupGroup_IdTrigger(group_id)
+			}
+		},
+		[ActionId.presentationFocusedTrigger]: {
+			name: 'Presentation: Focused: Trigger',
+			description: 'Triggers the currently focused presentation in the main UI.',
+			options: [],
+			callback: async () => {
+				instance.ProPresenter.presentationFocusedTrigger()
+			}
+		},
+		[ActionId.presentationFocusedIndexTrigger]: {
+			name: 'Presentation: Focused: Index: Trigger',
+			description: 'Triggers the specified cue of the focused presentation.',
+			options: [options.index],
+			callback: async (actionEvent) => {
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+				instance.ProPresenter.presentationFocusedIndexTrigger(index)
+			}
+		},
 		[ActionId.presentationUUIDIndexTrigger]: {
 			name: 'Presentation: PresentationUUID: Index: Trigger',
-			description: 'riggers the specified cue of the specified presentation.',
+			description: 'Triggers the specified cue of the specified presentation.',
 			options: [options.presentation_uuid, options.index],
 			callback: async (actionEvent) => {
 				const presentation_uuid: string = await instance.parseVariablesInString(actionEvent.options.presentation_uuid as string)
@@ -578,6 +630,39 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				
 			}
 		},
+		// **** TRANSPORT ****
+		[ActionId.transportLayerOperation]: {
+			name: 'Transport: Layer: Operation',
+			description: 'Perform a transport control action for the specified layer',
+			options: [options.transport_layer, options.transport_operation, options.transport_skip_time, options.transport_goto_time],
+			callback: async (actionEvent) => {
+				switch (actionEvent.options.transport_operation) {
+					case 'play':
+						instance.ProPresenter.transportLayerPlay(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
+						break
+					case 'pause':
+						instance.ProPresenter.transportLayerPause(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
+						break
+					case 'skip_forward':
+						const transport_skip_forward_time_string = await instance.parseVariablesInString(actionEvent.options.transport_skip_time as string)
+						instance.ProPresenter.transportLayerSkipForwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_forward_time_string))
+						break
+					case 'skip_backward':
+						const transport_skip_backward_time_string = await instance.parseVariablesInString(actionEvent.options.transport_skip_time as string)
+						instance.ProPresenter.transportLayerSkipBackwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_backward_time_string))
+						break
+					case 'go_to_time':
+						const transport_goto_time_string = await instance.parseVariablesInString(actionEvent.options.transport_goto_time as string)
+						instance.ProPresenter.transportLayerTimeSet(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_goto_time_string))
+						break
+					case 'go_to_end':
+						instance.ProPresenter.transportLayerGoToEnd(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
+						break
+					default:
+						instance.log('debug', 'Invalid Transport Operation: ' + actionEvent.options.transport_operation)
+				}
+			}
+		},
 		// **** TRIGGER *****
 		[ActionId.triggerCueNext]: {
 			name: 'Trigger: Cue: Next',
@@ -730,6 +815,7 @@ export enum ActionId {
 	announcementActivePreviousTrigger = 'announcementActivePreviousTrigger',
 	announcementActiveIndexTrigger = 'announcementActiveIndexTrigger',
 	announcementActiveTimelineOperation = 'announcementActiveTimelineOperation',
+
 	// Audio
 	audioPlaylistActiveFocus = 'audioPlaylistActiveFocus',
 	audioPlaylistActiveNextTrigger = 'audioPlaylistActiveNextTrigger',
@@ -746,6 +832,7 @@ export enum ActionId {
 	audioPlaylistByPlaylistIdNextTrigger = 'audioPlaylistByPlaylistIdNextTrigger',
 	audioPlaylistByPlaylistIdPreviousTrigger = 'audioPlaylistByPlaylistIdPreviousTrigger',
 	audioPlaylistByPlaylistIdTrigger = 'audioPlaylistByPlaylistIdTrigger',
+	audioPlaylistByPlaylistIDAudioItemIDTrigger = 'audioPlaylistByPlaylistIDAudioItemIDTrigger', // calls triggerAudioPlaylistIDAudioID()
 	
 	// Capture
 	captureOperation = 'captureOperation',
@@ -763,7 +850,10 @@ export enum ActionId {
 	// Macros
 	marcoIdTrigger = 'marcoIdTrigger',
 
-	//Messages
+	// Media
+	mediaPlaylistPlaylistIdMediaIdTrigger = 'mediaPlaylistPlaylistIdMediaIdTrigger',
+
+	// Messages
 	messageIdTrigger = 'messageIdTrigger',
 	messageIdClear = 'messageIdClear',
 
@@ -779,8 +869,14 @@ export enum ActionId {
 	presentationActiveGroupGroup_IdTrigger = 'presentationActiveGroupGroup_IdTrigger',
 	presentationActiveTimelineOperation = 'presentationActiveTimelineOperation',
 	presentationActiveIndexTrigger = 'presentationActiveIndexTrigger',
+
+	presentationFocusedGroupGroup_IdTrigger = 'presentationFocusedGroupGroup_IdTrigger',
+	presentationFocusedTrigger = 'presentationFocusedTrigger',
+	presentationFocusedIndexTrigger = 'presentationFocusedIndexTrigger',
+
 	presentationNextFocus = 'presentationNextFocus',
 	presentationPreviousFocus = 'presentationPreviousFocus',
+
 	presentationUUIDIndexTrigger = 'presentationUUIDIndexTrigger',
 
 	// Props
@@ -800,6 +896,10 @@ export enum ActionId {
 	timerIdOperation = 'timerIdOperation',
 	timerIdIncrement = 'timerIdIncrement',
 	timerIdSet = 'timerIdSet',
+
+	// Transport
+	transportLayerOperation = 'transportLayerOperation',
+	// TODO transportlayercancelautoadvance
 
 	// Trigger
 	triggerCueNext = 'triggerCueNext',
