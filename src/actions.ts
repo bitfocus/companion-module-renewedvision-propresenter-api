@@ -643,6 +643,16 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'pause':
 						instance.ProPresenter.transportLayerPause(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
 						break
+					case 'toggle_play_pause':
+						const transport_layer = actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl
+						const layer_transport_status = await instance.ProPresenter.transportLayerCurrent(transport_layer)
+						if (layer_transport_status.ok) {
+							if (layer_transport_status.data.is_playing)
+								instance.ProPresenter.transportLayerPause(transport_layer)
+							else
+								instance.ProPresenter.transportLayerPlay(transport_layer)
+						}
+						break
 					case 'skip_forward':
 						const transport_skip_forward_time_string = await instance.parseVariablesInString(actionEvent.options.transport_skip_time as string)
 						instance.ProPresenter.transportLayerSkipForwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_forward_time_string))

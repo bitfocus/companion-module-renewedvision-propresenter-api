@@ -33,7 +33,67 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	})
 	variables.push({
 		name: 'Active Presentation UUID',
-		variableId: 'active_presentation_UUID',
+		variableId: 'active_presentation_uuid',
+	})
+	variables.push({
+		name: 'Announcement Slide Index',
+		variableId: 'announcement_slide_index',
+	})
+	variables.push({
+		name: 'Active Announcement Name',
+		variableId: 'active_announcement_name',
+	})
+	variables.push({
+		name: 'Active Announcement UUID',
+		variableId: 'active_announcement_uuid',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist Name',
+		variableId: 'active_presentation_playlist_name',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist Index',
+		variableId: 'active_presentation_playlist_index',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist UUID',
+		variableId: 'active_presentation_playlist_uuid',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem Name',
+		variableId: 'active_presentation_playlist_item_name',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem Index',
+		variableId: 'active_presentation_playlist_item_index',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem UUID',
+		variableId: 'active_presentation_playlist_item_uuid',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist Name',
+		variableId: 'active_announcement_playlist_name',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist Index',
+		variableId: 'active_announcement_playlist_index',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist UUID',
+		variableId: 'active_announcement_playlist_uuid',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem Name',
+		variableId: 'active_announcement_playlist_item_name',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem Index',
+		variableId: 'active_announcement_playlist_item_index',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem UUID',
+		variableId: 'active_announcement_playlist_item_uuid',
 	})
 	variables.push({
 		name: 'Active Look Name',
@@ -41,7 +101,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	})
 	variables.push({
 		name: 'Active Look UUID',
-		variableId: 'active_look_UUID',
+		variableId: 'active_look_uuid',
 	})
 	variables.push({
 		name: 'Audience Screen Active',
@@ -57,7 +117,47 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	})
 	variables.push({
 		name: 'Timers Current JSON',
-		variableId: 'timers_current_JSON',
+		variableId: 'timers_current_json',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist JSON',
+		variableId: 'active_presentation_playlist_json',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer IsPlaying',
+		variableId: 'transport_presentation_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer Media Name',
+		variableId: 'transport_presentation_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer Media Duration',
+		variableId: 'transport_presentation_layer_media_duration',
+	})
+	variables.push({
+		name: 'Transport Audio Layer IsPlaying',
+		variableId: 'transport_audio_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Audio Layer Media Name',
+		variableId: 'transport_audio_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Audio Layer Media Duration',
+		variableId: 'transport_audio_layer_media_duration',
+	})
+	variables.push({
+		name: 'Transport Announcement IsPlaying',
+		variableId: 'transport_announcement_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Announcement Layer Media Name',
+		variableId: 'transport_announcement_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Announcement Layer Media Duration',
+		variableId: 'transport_announcement_layer_media_duration',
 	})
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {

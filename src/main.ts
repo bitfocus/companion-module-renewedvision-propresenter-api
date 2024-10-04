@@ -1,3 +1,5 @@
+// Warning: Use SetVariableValues() to set all variable values instead of this.setVariableValues() - this is so the module can track the value of all variables and restore those values when redefining variables defs at runtime!
+
 import { InstanceBase, runEntrypoint, InstanceStatus, CompanionInputFieldTextInput } from '@companion-module/base'
 import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
@@ -62,17 +64,42 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('info', 'Please fill in ip address or hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout) // This object is our "API manager" that handles all the network calls for us
-			this.ProPresenter.registerCallbacksForStatusUpdates({"status/slide":this.statusSlideUpdate,"timers":this.timersUpdate, "timers/current":this.timersCurrentUpdate,"presentation/slide_index":this.presentationSlideIndexUpdate,"look/current":this.activeLookChanged,"looks":this.looksUpdated,"macros":this.macrosUpdated,"props":this.propsUpdated,"stage/layout_map":this.stageScreensUpdated, "stage/layouts":this.stageScreenLayoutsUpdated, "messages":this.messagesUpdated, "status/audience_screens":this.screenStatusUpdated,"status/stage_screens":this.screenStatusUpdated, "timer/video_countdown":this.videoCountdownTimerUpdated},2000)
+
+			// Register callbacks for live updates to various status'
+			this.ProPresenter.registerCallbacksForStatusUpdates({
+				"status/slide":this.statusSlideUpdate,
+				"timers":this.timersUpdate,
+				"timers/current":this.timersCurrentUpdate,
+				"presentation/slide_index":this.presentationSlideIndexUpdate,
+				"announcement/slide_index":this.announcementSlideIndexUpdate,
+				"playlist/active":this.activePlaylistUpdate,
+				"look/current":this.activeLookChanged,
+				"looks":this.looksUpdated,
+				"macros":this.macrosUpdated,
+				"props":this.propsUpdated,
+				"stage/layout_map":this.stageScreensUpdated,
+				"stage/layouts":this.stageScreenLayoutsUpdated,
+				"messages":this.messagesUpdated,
+				"status/audience_screens":this.screenStatusUpdated,
+				"status/stage_screens":this.screenStatusUpdated,
+				"timer/video_countdown":this.videoCountdownTimerUpdated,
+				"transport/presentation/current":this.transportLayerUpdated,
+				"transport/announcement/current":this.transportLayerUpdated,
+				"transport/audio/current":this.transportLayerUpdated
+			} ,2000)
 			
 			this.initPresets()
+			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
 			
 			this.ProPresenter.on('statusConnectionDisconnected', () => {
 				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
 				this.updateStatus(InstanceStatus.Disconnected)
+				//TODO: empty propresenterStateStore and reset variables.
 			})
 			this.ProPresenter.on('statusConnectionError', () => {
 				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
 				this.updateStatus(InstanceStatus.UnknownError)
+				///TODO: empty propresenterStateStore and reset variables.
 			})
 
 			this.ProPresenter.on('statusConnectionConnected', async () => {
@@ -166,22 +193,55 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				const audienceScreensStatusResult: RequestAndResponseJSONValue = await this.ProPresenter.statusAudienceScreensGet()
 				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
 				if (audienceScreensStatusResult.ok) {
-					const messagesStatusJSONObject: StatusUpdateJSON = {
+					const audienceScreensStatusJSONObject: StatusUpdateJSON = {
 						url: '/v1/status/audience_screens',
 						data: audienceScreensStatusResult.data
 					}
-					this.screenStatusUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
+					this.screenStatusUpdated(audienceScreensStatusJSONObject)
 				}
 
 				// Get stage screens status
 				const stageScreensResult: RequestAndResponseJSONValue = await this.ProPresenter.statusStageScreensGet()
 				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
 				if (stageScreensResult.ok) {
-					const messagesStatusJSONObject: StatusUpdateJSON = {
+					const stageScreensJSONObject: StatusUpdateJSON = {
 						url: '/v1/status/stage_screens',
 						data: stageScreensResult.data
 					}
-					this.screenStatusUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
+					this.screenStatusUpdated(stageScreensJSONObject)
+				}
+
+				// Get Presentation layer transport status
+				const transportPresentationLayerStatus: RequestAndResponseJSONValue = await this.ProPresenter.transportLayerCurrent("presentation")
+				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+				if (transportPresentationLayerStatus.ok) {
+					const transportPresentationLayerStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/transport/presentation/current',
+						data: stageScreensResult.data
+					}
+					this.transportLayerUpdated(transportPresentationLayerStatusJSONObject)
+				}
+
+				// Get Announcement layer transport status
+				const transportAnnouncementLayerStatus: RequestAndResponseJSONValue = await this.ProPresenter.transportLayerCurrent("presentation")
+				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+				if (transportAnnouncementLayerStatus.ok) {
+					const transportAnnouncementLayerStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/transport/announcement/current',
+						data: stageScreensResult.data
+					}
+					this.transportLayerUpdated(transportAnnouncementLayerStatusJSONObject)
+				}
+
+				// Get Audio layer transport status
+				const transportAudioLayerStatus: RequestAndResponseJSONValue = await this.ProPresenter.transportLayerCurrent("presentation")
+				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+				if (transportAudioLayerStatus.ok) {
+					const transportAudioLayerStatusJSONObject: StatusUpdateJSON = {
+						url: '/v1/transport/audio/current',
+						data: stageScreensResult.data
+					}
+					this.transportLayerUpdated(transportAudioLayerStatusJSONObject)
 				}
 
 				// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
@@ -233,14 +293,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// We have new values for one or more of the timers.
 		this.log('debug', 'timersCurrentUpdate: ' + JSON.stringify(statusJSONObject))
 
-		// Update all the dynamic timer var values (& timers_current_JSON)
+		// Update all the dynamic timer var values (& timers_current_json)
 		let newTimerValues = {}
 		for (const timercurrent of statusJSONObject.data) {
 			newTimerValues = {...newTimerValues, ...{['timer_'+timercurrent.id.uuid.replace(/-/g,'')]:timercurrent.time}}
 		}
 		SetVariableValues(this, {
-			// timers_current_JSON is the complete JSON response (so advanced users can use jsonpath() to extract/process what they want) 
-			timers_current_JSON: JSON.stringify(statusJSONObject.data), ...newTimerValues
+			// timers_current_json is the complete JSON response (so advanced users can use jsonpath() to extract/process what they want) 
+			timers_current_json: JSON.stringify(statusJSONObject.data), ...newTimerValues
 		})
 	}
 
@@ -275,11 +335,96 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
-		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active - nothing to update if this happens
+		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
 				presentation_slide_index: statusJSONObject.data.presentation_index.index,
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
-				active_presentation_UUID: statusJSONObject.data.presentation_index.presentation_id.uuid
+				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				presentation_slide_index: '',
+				active_presentation_name: '',
+				active_presentation_uuid: ''
+			})
+		}
+	}
+
+	activePlaylistUpdate = async (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'activePlaylistUpdate: ' + JSON.stringify(statusJSONObject))
+		if (statusJSONObject.data.presentation.playlist) {
+			SetVariableValues(this, {
+				active_presentation_playlist_name: statusJSONObject.data.presentation.playlist.name,
+				active_presentation_playlist_index: statusJSONObject.data.presentation.playlist.index,
+				active_presentation_playlist_uuid: statusJSONObject.data.presentation.playlist.uuid,
+			})
+			const activePlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(statusJSONObject.data.presentation.playlist.uuid)
+			if (activePlaylistItemsResponse.ok)
+				SetVariableValues(this, {active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items)})
+		} else {
+			SetVariableValues(this, {
+				active_presentation_playlist_name: '',
+				active_presentation_playlist_index: '',
+				active_presentation_playlist_uuid: '',
+			})
+		}
+
+		if (statusJSONObject.data.presentation.item) {
+			SetVariableValues(this, {
+				active_presentation_playlist_item_name: statusJSONObject.data.presentation.item.name,
+				active_presentation_playlist_item_index: statusJSONObject.data.presentation.item.index,
+				active_presentation_playlist_item_uuid: statusJSONObject.data.presentation.item.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				active_presentation_playlist_item_name: '',
+				active_presentation_playlist_item_index: '',
+				active_presentation_playlist_item_uuid: '',
+			})
+		}
+
+		if (statusJSONObject.data.announcements.playlist) {
+			SetVariableValues(this, {
+				active_announcement_playlist_name: statusJSONObject.data.announcements.playlist.name,
+				active_announcement_playlist_index: statusJSONObject.data.announcements.playlist.index,
+				active_announcement_playlist_uuid: statusJSONObject.data.announcements.playlist.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				active_announcement_playlist_name: '',
+				active_announcement_playlist_index: '',
+				active_announcement_playlist_uuid: '',
+			})
+		}
+
+		if (statusJSONObject.data.announcements.item) {
+			SetVariableValues(this, {
+				active_announcement_playlist_item_name: statusJSONObject.data.announcements.item.name,
+				active_announcement_playlist_item_index: statusJSONObject.data.announcements.item.index,
+				active_announcement_playlist_item_uuid: statusJSONObject.data.announcements.item.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				active_announcement_playlist_item_name: '',
+				active_announcement_playlist_item_index: '',
+				active_announcement_playlist_item_uuid: '',
+			})
+		}
+	}
+
+	announcementSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'announcementSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
+		if (statusJSONObject.data.announcement_index) { // ProPresenter can return a null presentation_index when no announcement is active
+			SetVariableValues(this, {
+				announcement_slide_index: statusJSONObject.data.announcement_index.index,
+				active_announcement_name: statusJSONObject.data.announcement_index.presentation_id.name,
+				active_announcement_uuid: statusJSONObject.data.announcement_index.presentation_id.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				announcement_slide_index: '',
+				active_announcement_name: '',
+				active_announcement_uuid: ''
 			})
 		}
 	}
@@ -288,7 +433,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'activeLookChanged: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name)
 		SetVariableValues(this, {
 			active_look_name: statusJSONObject.data.id.name,
-			active_look_UUID: statusJSONObject.data.id.uuid
+			active_look_uuid: statusJSONObject.data.id.uuid
 		})
 	}
 
@@ -404,6 +549,33 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.initActions()
 	}
 
+	transportLayerUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		const url = statusJSONObject.url
+		switch (url) {
+			case 'transport/presentation/current':
+				SetVariableValues(this, {
+					transport_presentation_layer_isplaying: statusJSONObject.data.is_playing,
+					transport_presentation_layer_media_name: statusJSONObject.data.name,
+					transport_presentation_layer_media_duration: statusJSONObject.data.duration,
+				})
+				break
+			case 'transport/announcement/current':
+				SetVariableValues(this, {
+					transport_announcement_layer_isplaying: statusJSONObject.data.is_playing,
+					transport_announcement_layer_media_name: statusJSONObject.data.name,
+					transport_announcement_layer_media_duration: statusJSONObject.data.duration,
+				})
+				break
+			case 'transport/audio/current':
+				SetVariableValues(this, {
+					transport_audio_layer_isplaying: statusJSONObject.data.is_playing,
+					transport_audio_layer_media_name: statusJSONObject.data.name,
+					transport_audio_layer_media_duration: statusJSONObject.data.duration,
+				})
+				break
+		}
+	}
+
 	// Return config fields for web config
 	getConfigFields() {
 		return GetConfigFields()
@@ -441,9 +613,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	initVariables() {
-		// This function is called whenever things like the definiations of timers, screens and stage layouts are updated in ProPresenter (sometimes at each keystroke during a rename)
-		// It will call setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) to build/refresh ALL variables from scratch....
-		// However, calls to setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) are a little "expensive", and should not be called "too often".
+		// This function is called at startup to deinfe the basic set of static variables.
+		// But it is ALSO called  whenever things like the definitions of timers, screens and stage layouts are updated in ProPresenter (sometimes at each keystroke during a rename) to set dynamic variable based on state data updates from ProPresenter
+		// It will call setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) to build/refresh ALL variables from scratch....(There is no way to keep existing vars and just add/remove as state changes)
+		// However, calls to setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) are a little "expensive", so this should not be called "too often".
 		// Therefore, this function includes logic to rate-limit (and coalesce) calls to setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore)) to ensure a gap of at least 2000msec between calls.
 		// It also employs ResetVariablesFromLocalCache() to return values to variables from cached data whenever variable are re-created.
 				

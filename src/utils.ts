@@ -472,6 +472,7 @@ export const options: Options = {
         choices: [
             { label: 'Play', id: 'play' },
             { label: 'Pause', id: 'pause' },
+            { label: 'Toggle Play/Pause', id: 'toggle_play_pause'},
             { label: 'Skip Forward', id: 'skip_forward' },
             { label: 'Skip Backward', id: 'skip_backward' },
             { label: 'Go To Time', id: 'go_to_time' },

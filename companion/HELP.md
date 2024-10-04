@@ -41,3 +41,5 @@ If you use  to "Presentation: PresentationUUID: Index: Trigger" to trigger a spe
 You can however, trigger the **first** slide in *any* specific presentation in a playlist using "Playlist: ID: Index: Trigger" and then once it's the active presentation you can then trigger specific slides within it with "Presentation: Active: Index: Trigger"
 
 When using a Timer set action to update a timer, I have seen that doing an operation (start/reset) too soon after you have updated it seems to revert the changes made by timer set action - wait a little while or use the option to set AND perform operation.
+
+Variables are not yet "reset" when disconnected or connection is lost - the last values just stay!
