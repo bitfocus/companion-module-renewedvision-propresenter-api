@@ -6,7 +6,7 @@ import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues} from './variables' // TODO comment explaining use of this SetVariableValues(this, CompanionVariableValues) function
-import { ProPresenterStateStore, ProMessage} from './utils'
+import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp} from './utils'
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
 	constructor(internal: unknown) {
@@ -18,6 +18,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		host: '',
 		port: 1025,
 		timeout: 1000,
+		custom_timer_format_string: 'mm:ss',
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -296,7 +297,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// Update all the dynamic timer var values (& timers_current_json)
 		let newTimerValues = {}
 		for (const timercurrent of statusJSONObject.data) {
-			newTimerValues = {...newTimerValues, ...{['timer_'+timercurrent.id.uuid.replace(/-/g,'')]:timercurrent.time}}
+			newTimerValues = {...newTimerValues, ...{
+				['timer_'+timercurrent.id.uuid.replace(/-/g,'')]:timercurrent.time,
+				['timer_'+timercurrent.id.uuid.replace(/-/g,'')+'_seconds']:timestampToSeconds(timercurrent.time),
+				['timer_'+timercurrent.id.uuid.replace(/-/g,'')+'_custom']:secondsToTimestamp(timestampToSeconds(timercurrent.time),this.config.custom_timer_format_string)
+			}}
 		}
 		SetVariableValues(this, {
 			// timers_current_json is the complete JSON response (so advanced users can use jsonpath() to extract/process what they want) 

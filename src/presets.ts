@@ -3,6 +3,30 @@ import { ActionId } from './actions'
 
 export function GetPresets(): CompanionPresetDefinitions {
 	const presets: CompanionPresetDefinitions = {
+		[ActionId.activeAnnouncementCommand]: {
+			name: 'Announcement Active Focus',
+			category: 'Announcement',
+			type: 'button',
+			style: {
+				text: `Announcement Active Focus`,
+				size: 'auto',
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(0, 0, 0),
+			},
+			steps: [
+				{
+					down: [
+						{
+							actionId: ActionId.activeAnnouncementCommand,
+							options: {},
+						},
+					],
+					up: [],
+				},
+			],
+			feedbacks: [],
+		},
+		/*
 		[ActionId.announcementActiveFocus]: {
 			name: 'Announcement Active Focus',
 			category: 'Announcement',
@@ -95,7 +119,6 @@ export function GetPresets(): CompanionPresetDefinitions {
 			],
 			feedbacks: [],
 		},
-		/*
 		[ActionId.audioPlaylistsNextFocus]: {
 			name: 'Focus next audio playlist',
 			category: 'Audio',

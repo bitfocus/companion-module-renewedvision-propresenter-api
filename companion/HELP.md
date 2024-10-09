@@ -20,9 +20,7 @@ To setup this module you will need the to do the following:
 
 #### Actions:
 TODO:  
-Introduce concept of active vs focused.
-Introduce concept of naming convention (Actions are logically grouped by their naming convertion)
-Introduce how to search for actions, knowing the naming convention
+Introduce concept of active vs focused vs specified - THIS IS IMPORTANT.. Start with this in mind - which one of these do I want to act on??? and then choose a command within the action!!!
 Introduce concept of trigger actions (vs say, presentation trigger)
 When using indexes - counting starts at 0.
 For the action: "Propresenter-API: Presentation: PresentationUUID: Index: Trigger", you can use "Active Presentation UUID" variable to get uuid of active presentation - this is a globally unique identifier of that presentation that should not change
@@ -43,3 +41,5 @@ You can however, trigger the **first** slide in *any* specific presentation in a
 When using a Timer set action to update a timer, I have seen that doing an operation (start/reset) too soon after you have updated it seems to revert the changes made by timer set action - wait a little while or use the option to set AND perform operation.
 
 Variables are not yet "reset" when disconnected or connection is lost - the last values just stay!
+
+Many dynamic variables use UUID in ID instead of name - Names can contain invalid characters for variable names. Also, ProPresenter allows duplicates names for items and Companion variable names must be unique.  This has the drawback of not being very readable when reading expressions tha tcontain these variables.  The nice thing about uuid is that is never changes - so you can rename objects as often as you like in ProPresenter and the _uuid_ style variables that refer to them will continue to work.

@@ -161,10 +161,20 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	})
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {
-		variables.push({
+		variables.push(
+		{
 			name: proTimer.name,
 			variableId: proTimer.varid,
-		})
+		},
+		{
+			name: proTimer.name + ' (Seconds)',
+			variableId: proTimer.varid + '_seconds',
+		},
+		{
+			name: proTimer.name + ' (Custom Format)',
+			variableId: proTimer.varid + '_custom',
+		},
+	)
 	}
 
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}

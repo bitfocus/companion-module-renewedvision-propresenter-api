@@ -7,6 +7,7 @@ export interface DeviceConfig {
 	host: string
 	port: number
 	timeout: number
+	custom_timer_format_string: string
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -50,6 +51,13 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 			id: 'advanced ',
 			width: 12,
 			value: '<br><br><br><hr><h5>🔥 Advanced Settings:</h5><i>Normally, there is no need to change these.</i>'
+		},
+		{
+			type: 'textinput',
+			id: 'custom_timer_format_string',
+			label: 'Custom Timer Format String (Supports HH H mm m ss s)',
+			width: 4,
+			default: 'mm:ss',
 		},
 		{
 			type: 'number',

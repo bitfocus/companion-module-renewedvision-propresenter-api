@@ -7,6 +7,17 @@ export interface Options {
     library_id: EnforceDefault<CompanionInputFieldTextInput, string>
     presentation_id: EnforceDefault<CompanionInputFieldTextInput, string>
     playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
+    active_announcement_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    active_audioplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    focused_audioplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    specific_audioplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    active_presentation_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    active_announcement_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    active_presentation_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    focused_presentation_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    specific_presentation_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    focused_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    specific_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
     audio_playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
     audio_item_id: EnforceDefault<CompanionInputFieldTextInput, string>
     group_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -32,7 +43,10 @@ export interface Options {
     video_input_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     index: EnforceDefault<CompanionInputFieldTextInput, string>
     presentation_uuid: EnforceDefault<CompanionInputFieldTextInput, string>
-    layer: EnforceDefault<CompanionInputFieldDropdown, string>
+    clear_layer_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
+    clear_layer_or_group_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
+    clear_group_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
+    clear_group_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     timeline_operation: EnforceDefault<CompanionInputFieldDropdown, string>
     timer_optional_operation: EnforceDefault<CompanionInputFieldDropdown, string>
     timer_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
@@ -47,6 +61,8 @@ export interface Options {
     timer_new_name: EnforceDefault<CompanionInputFieldTextInput, string>
     timer_allows_overrun: EnforceDefault<CompanionInputFieldCheckbox, boolean>
     timer_increment_value : EnforceDefault<CompanionInputFieldTextInput, string>
+    trigger_type:EnforceDefault<CompanionInputFieldDropdown, string>
+    trigger_next_previous: EnforceDefault<CompanionInputFieldDropdown, string>
     transport_layer: EnforceDefault<CompanionInputFieldDropdown, string>
     transport_skip_time: EnforceDefault<CompanionInputFieldTextInput, string>
     transport_goto_time: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -55,6 +71,166 @@ export interface Options {
 }
 
 export const options: Options = {
+    active_announcement_command: {
+        type: 'dropdown',
+        label: 'Active Announcement: Command',
+        tooltip: 'Choose a command to perform on the ACTIVE announcement.',
+        id: 'active_announcement_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Announcement'},
+            { id: 'trigger_next', label: 'Trigger Next Slide'},
+            { id: 'trigger_previous', label: 'Trigger Previous Slide'},
+            { id: 'trigger_first', label: 'Trigger First Slide'},
+            { id: 'trigger_index', label: 'Trigger Slide By Index'},
+            { id: 'timeline_operation', label: 'Perform Timeline Operation'},
+        ],
+        default: 'focus',
+    },
+    active_audioplaylist_command: {
+        type: 'dropdown',
+        label: 'Active Audio Playlist: Command',
+        tooltip: 'Choose a command to perform on the ACTIVE audio playlist.',
+        id: 'active_audioplaylist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Audio Playlist'},
+            { id: 'trigger_next', label: 'Trigger Next Audio Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Audio Item'},
+            { id: 'trigger_first', label: 'Trigger First Audio Item'},
+            { id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID'},
+        ],
+        default: 'focus',
+    },
+    focused_audioplaylist_command: {
+        type: 'dropdown',
+        label: 'Focused Audio Playlist: Command',
+        tooltip: 'Choose a command to perform on the FOCUSED audio playlist.',
+        id: 'focused_audioplaylist_command',
+        choices: [
+            { id: 'trigger_next', label: 'Trigger Next Audio Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Audio Item'},
+            { id: 'trigger_first', label: 'Trigger First Audio Item'},
+            { id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID'},
+            { id: 'focus_next', label: 'Move Focus To Next Playlist'},
+            { id: 'focus_previous', label: 'Move Focus To Previous Playlist'},
+        ],
+        default: 'trigger_next',
+    },
+    specific_audioplaylist_command: {
+        type: 'dropdown',
+        label: 'Specific Audio Playlist: Command',
+        tooltip: 'Choose a command to perform on a specifically identified audio playlist',
+        id: 'specific_audioplaylist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Specified Audio Playlist'},
+            { id: 'trigger_next', label: 'Trigger Next Audio Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Audio Item'},
+            { id: 'trigger_first', label: 'Trigger First Audio Item'},
+            { id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID'},
+        ],
+        default: 'focus',
+    },
+    active_presentation_playlist_command: {
+        type: 'dropdown',
+        label: 'Active Presentation Playlist: Command',
+        tooltip: 'Choose a command to perform on the PLAYLIST with the currently ACTIVE PRESENTATION.',
+        id: 'active_presentation_playlist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Presentation Playlist'},
+            { id: 'trigger_first', label: 'Trigger First Playlist Item'},
+            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s Index'},
+        ],
+        default: 'focus',
+    },
+    active_announcement_playlist_command: {
+        type: 'dropdown',
+        label: 'Active Announcement Playlist: Command',
+        tooltip: 'Choose a command to perform on the PLAYLIST with the currently ACTIVE ANNOUNCEMENT.',
+        id: 'active_announcement_playlist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Announcement Playlist'},
+            { id: 'trigger_first', label: 'Trigger First Playlist Item'},
+            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s Index'},
+        ],
+        default: 'focus',
+    },
+    focused_playlist_command: {
+        type: 'dropdown',
+        label: 'Focused Playlist: Command',
+        tooltip: 'Choose a command to perform on the FOCUSED Playlist.',
+        id: 'focused_playlist_command',
+        choices: [
+            { id: 'trigger_next', label: 'Trigger Next Playlist Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Playlist Item'},
+            { id: 'trigger_first', label: 'Trigger First Playlist Item'},
+            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s ID'},
+            { id: 'focus_next', label: 'Move Focus To Next Playlist'},
+            { id: 'focus_previous', label: 'Move Focus To Previous Playlist'},
+        ],
+        default: 'trigger_next',
+    },
+    specific_playlist_command: {
+        type: 'dropdown',
+        label: 'Specific Playlist: Command',
+        tooltip: 'Choose a command to perform on a specifically identified Playlist',
+        id: 'specific_playlist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Specified Playlist'},
+            { id: 'trigger_next', label: 'Trigger Next Playlist Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Playlist Item'},
+            { id: 'trigger_first', label: 'Trigger First Playlist Item'},
+            { id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index'},
+        ],
+        default: 'focus',
+    },
+    active_presentation_command: {
+        type: 'dropdown',
+        label: 'Active Presentation: Command',
+        tooltip: 'Choose a command to perform on the ACTIVE Presentation.',
+        id: 'active_presentation_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Presentation'},
+            { id: 'trigger_next', label: 'Trigger Next Slide'},
+            { id: 'trigger_previous', label: 'Trigger Previous Slide'},
+            { id: 'trigger_first', label: 'Trigger First Slide'},
+            { id: 'trigger_index', label: 'Trigger Slide By It\'s Index'},
+            { id: 'group', label: 'Trigger Specified Group'},
+            { id: 'timeline_operation', label: 'Perform Timeline Operation'},
+        ],
+        default: 'focus',
+    },
+    focused_presentation_command: {
+        type: 'dropdown',
+        label: 'Focused Presentation: Command',
+        tooltip: 'Choose a command to perform on the FOCUSED Presentation.',
+        id: 'focused_presentation_command',
+        choices: [
+            { id: 'trigger_next', label: 'Trigger Next Slide'},
+            { id: 'trigger_previous', label: 'Trigger Previous Slide'},
+            { id: 'trigger_first', label: 'Trigger First Slide'},
+            { id: 'trigger_index', label: 'Trigger Slide By It\'s Index'},
+            { id: 'group', label: 'Trigger Specified Group'},
+            { id: 'timeline_operation', label: 'Perform Timeline Operation'},
+            { id: 'focus_next', label: 'Move Focus To Next Presentation'},
+            { id: 'focus_previous', label: 'Move Focus To Previous Presentation'},
+        ],
+        default: 'trigger_next',
+    },
+    specific_presentation_command: {
+        type: 'dropdown',
+        label: 'Specific Presentation: Command',
+        tooltip: 'Choose a command to perform on a specifically identified Presentation. NOTE: This action targets the presentation in the library - not a playlist!',
+        id: 'specific_presentation_command',
+        choices: [
+            { id: 'focus', label: 'Focus Specified Presentation'},
+            { id: 'trigger_next', label: 'Trigger Next Slide'},
+            { id: 'trigger_previous', label: 'Trigger Previous Slide'},
+            { id: 'trigger_first', label: 'Trigger First Slide'},
+            { id: 'trigger_index', label: 'Trigger Slide By It\'s Index'},
+            { id: 'group', label: 'Trigger Specified Group'},
+            { id: 'timeline_operation', label: 'Perform Timeline Operation'},
+        ],
+        default: 'focus',
+    },
     library_id: {
         type: 'textinput',
         label: 'Library Id',
@@ -92,6 +268,11 @@ export const options: Options = {
         label: 'Audio Item ID',
         tooltip: 'Enter Audio Item Name or Index or UUID',
         id: 'audio_item_id',
+        isVisible: ((options) => 
+            options.active_audioplaylist_command == 'trigger_id' ||
+            options.focused_audioplaylist_command == 'trigger_id' ||
+            options.specific_audioplaylist_command == 'trigger_id'
+        ),
         default: '',
         useVariables: true,
     },
@@ -100,7 +281,12 @@ export const options: Options = {
         label: 'Group ID',
         tooltip: 'Enter Group Name or Index or UUID',
         id: 'group_id_text',
-        isVisible: ((options) => options.group_id_dropdown == 'manually_specify_groupid'),
+        isVisible: ((options) => 
+            options.group_id_dropdown == 'manually_specify_groupid' ||
+            options.active_presentation_command == 'group' ||
+            options.focused_presentation_command == 'group' ||
+            options.specific_presentation_command == 'group'
+        ),
         default: '',
         useVariables: true,
     },
@@ -109,6 +295,11 @@ export const options: Options = {
         label: 'Group',
         tooltip: 'Choose an existing Group\nOr manually specify via text/variable)',
         id: 'group_id_dropdown',
+        isVisible: ((options) => 
+            options.active_presentation_command == 'group' ||
+            options.focused_presentation_command == 'group' ||
+            options.specific_presentation_command == 'group'
+        ),
         choices: [
             { id: 'manually_specify_groupid', label: 'Manually Specify Group ID Below'},
         ],
@@ -229,7 +420,7 @@ export const options: Options = {
         tooltip: 'Choose an existing Stage Screen\nOr manually specify via text/variable',
         id: 'stagescreen_id_dropdown',
         choices: [
-            { id: 'manually_specify_stagescreenid', label: 'Manually Specify Stage Screen ID Below'}
+            { id: 'manually_specify_stagescreenid', label: 'Manually Specify Stage Screen ID Below'},
         ],
         default: '',
     },
@@ -248,7 +439,7 @@ export const options: Options = {
         tooltip: 'Choose an existing Stage Screen Layout\nOr manually specify via text/variable',
         id: 'stagescreenlayout_id_dropdown',
         choices: [
-            { id: 'manually_specify_stagescreenlayoutid', label: 'Manually Specify Stage Screen Layout ID Below'}
+            { id: 'manually_specify_stagescreenlayoutid', label: 'Manually Specify Stage Screen Layout ID Below'},
         ],
         default: '',
     },
@@ -291,7 +482,7 @@ export const options: Options = {
         tooltip: 'Choose an existing Video Input\nOr manually specify via text/variable',
         id: 'video_input_id_dropdown',
         choices: [
-            { id: 'manually_specify_videoinputsid', label: 'Manually Specify Video Input ID Below'}
+            { id: 'manually_specify_videoinputsid', label: 'Manually Specify Video Input ID Below'},
         ],
         default: '',
     },
@@ -305,10 +496,40 @@ export const options: Options = {
         ],
         default: 'start',
     },
-    layer: {
+    clear_layer_or_group_dropdown: {
+        type: 'dropdown',
+        label: 'Clear Layer or Group',
+        id: 'clear_layer_or_group_dropdown',
+        choices: [
+            { label: 'Layer', id: 'layer' },
+            { label: 'Group', id: 'group' },
+        ],
+        default: 'layer',
+    },
+    clear_group_id_dropdown: {
+        type: 'dropdown',
+        label: 'Clear Group',
+        id: 'clear_group_id_dropdown',
+        isVisible: ((options) => options.clear_layer_or_group_dropdown == 'group'),
+        choices: [
+            { id: 'manually_specify_cleargroupid', label: 'Manually Specify Clear Group ID Below'},
+        ],
+        default: '',
+    },
+    clear_group_id_text: {
+        type: 'textinput',
+        label: 'Clear Group ID',
+        tooltip: 'Enter Clear Group Name or Index or UUID',
+        id: 'clear_group_id_text',
+        isVisible: ((options) => options.clear_group_id_dropdown == 'manually_specify_cleargroupid' && options.clear_layer_or_group_dropdown == 'group'),
+        default: '',
+        useVariables: true,
+    },
+    clear_layer_dropdown: {
         type: 'dropdown',
         label: 'Layer',
-        id: 'layer',
+        id: 'clear_layer_dropdown',
+        isVisible: ((options) => options.clear_layer_or_group_dropdown == 'layer'),
         choices: [
             { label: 'Audio', id: 'audio' },
             { label: 'Props', id: 'props' },
@@ -324,6 +545,12 @@ export const options: Options = {
         type: 'dropdown',
         label: 'Operation',
         id: 'timeline_operation',
+        isVisible: ((options) => 
+            options.active_announcement_command == 'timeline_operation' || 
+            options.active_presentation_command == 'timeline_operation' || 
+            options.focused_presentation_command == 'timeline_operation' ||
+            options.specific_presentation_command == 'timeline_operation'
+        ),
         choices: [
             { label: 'Play', id: 'play' },
             { label: 'Pause', id: 'pause' },
@@ -337,7 +564,7 @@ export const options: Options = {
         tooltip: 'Choose an existing Timer\nOr manually specify via text/variable',
         id: 'timer_id_dropdown',
         choices: [
-            { id: 'manually_specify_timerid', label: 'Manually Specify Timer ID Below'}
+            { id: 'manually_specify_timerid', label: 'Manually Specify Timer ID Below'},
         ],
         default: 'manually_specify_timerid',
     },
@@ -498,10 +725,37 @@ export const options: Options = {
         default: '15',
         useVariables: true,
     },
+    trigger_type: {
+        type: 'dropdown',
+        label: 'Trigger Type',
+        id: 'trigger_type',
+        choices: [
+            { label: 'Presentation', id: 'presentation' },
+            { label: 'Media', id: 'media' },
+            { label: 'Audio', id: 'audio'},
+        ],
+        default: 'presentation',
+    },
+    trigger_next_previous: {
+        type: 'dropdown',
+        label: 'Next or Previous',
+        id: 'trigger_next_previous',
+        choices: [
+            { label: 'Next', id: 'next' },
+            { label: 'Previous', id: 'previous' },
+        ],
+        default: 'next',
+    },
     index: {
-        type: 'textinput', // I know, you would think this input field would be a number, but this is a textinput instead - so that it can support "useVariables"
+        type: 'textinput', // I know, you would think this input field would be a Number -  Nut this is a textinput so that it can support "useVariables"
         label: 'Index',
         id: 'index',
+        isVisible: ((options) => 
+            options.active_announcement_command == 'trigger_index' || 
+            options.active_presentation_command == 'trigger_index' || 
+            options.focused_presentation_command == 'trigger_index' ||
+            options.specific_presentation_command == ' trigger_index'
+        ),
         default: '0',
         useVariables: true,
     },
@@ -536,17 +790,48 @@ export type ProPresenterStateStore = {
 	messageChoices: DropdownChoice[],
 }
 
-// Custom function to convert HH:mm:ss or mm:ss to seconds (number)
+// Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps
 export function timestampToSeconds(timestampString: string):number {
-    const components: string[] = timestampString.split(":")
+    const isNegative = timestampString.startsWith('-') // Check and record if negative
+    const absTimestampString = timestampString.replace('-', '') // Remove the negative sign if present
+
+    const components: string[] = absTimestampString.split(":")
     
     if (components.length == 3) {
-        return Number(components[0]) * 3600 + Number(components[1]) * 60 + Number(components[2])
+        return Number(components[0]) * 3600 + Number(components[1]) * 60 + Number(components[2]) * (isNegative ? -1 : 1)
     } else if (components.length == 2) {
-        return Number(components[0]) * 60 + Number(components[1])
+        return Number(components[0]) * 60 + Number(components[1]) * (isNegative ? -1 : 1)
     } else {
         return 0
     }
+}
+
+// Custom function to convert a timestamp (in seconds) to a formated string - supports hh|h|mm|m|ss|s
+export function secondsToTimestamp(seconds: number, format:string):string {
+    // Get the absolute value of seconds for formatting
+    const isNegative = seconds < 0;
+    const absSeconds = Math.abs(seconds);
+    
+    // Calculate hours, minutes, and seconds
+    const hours = Math.floor(absSeconds / 3600);
+    const minutes = Math.floor((absSeconds % 3600) / 60);
+    const secs = absSeconds % 60;
+    
+
+    // Replace double specifiers first (HH, hh, mm, ss) with zero-padded values
+    let formattedTime = format
+        .replace(/hh|HH/g, pad(hours, '0', 2))
+        .replace(/mm/g, pad(minutes, '0', 2))
+        .replace(/ss/g, pad(secs, '0', 2));
+
+    // Replace single specifiers (H, h, m, s) with non-padded values
+    formattedTime = formattedTime
+        .replace(/h|H/g, hours.toString())
+        .replace(/m/g, minutes.toString())
+        .replace(/s/g, secs.toString());
+    
+    // Add negative sign if the original time was negative
+    return isNegative ? `-${formattedTime}` : formattedTime;
 }
 
 // Borrowed pad function from Companion/shared-lib/lib/Utils.ts
@@ -561,7 +846,7 @@ export function pad(str0: string | number, ch: string, len: number): string {
 }
 
 // Borrowed secondsToTimestamp function from Companion/shared-lib/lib/Expression/ExpressionFunctions.ts
-export function secondsToTimestamp(v: number, type:string):string {
+export function secondsToTimestampBF(v: number, type:string):string {
     let negative = v < 0
     v = Math.abs(v)
 
