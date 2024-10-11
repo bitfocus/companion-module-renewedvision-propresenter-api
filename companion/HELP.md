@@ -20,10 +20,12 @@ To setup this module you will need the to do the following:
 
 #### Actions:
 TODO:  
-Introduce concept of active vs focused vs specified - THIS IS IMPORTANT.. Start with this in mind - which one of these do I want to act on??? and then choose a command within the action!!!
-Introduce concept of trigger actions (vs say, presentation trigger)
-When using indexes - counting starts at 0.
-For the action: "Propresenter-API: Presentation: PresentationUUID: Index: Trigger", you can use "Active Presentation UUID" variable to get uuid of active presentation - this is a globally unique identifier of that presentation that should not change
+Introduce concept of active vs focused vs specified - THIS IS IMPORTANT.. Start with this in mind - which one of these do I want to act on??? and then choose a command within the action!
+Within each action - many have multiple commands/operations.
+Introduce variables/support in actions (eg show stage message)
+Introduce the quick lists - many have option to manually specifying (and using variables)
+Concept of UUID vs indexes and names (indexes - counting starts at 0, UUID look up vars)
+For the action: "Specific Presentation: Command", you can use "Active Presentation UUID" variable to get uuid of active presentation - this is a globally unique identifier of that presentation that should not change.
 
 
 #### Variables:

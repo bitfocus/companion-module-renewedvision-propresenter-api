@@ -8,7 +8,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		// **** ANNOUNCEMENT *****
 		[ActionId.activeAnnouncementCommand]: {
 			name: 'Active Announcement: Command',
-			description: 'Perform a command on the ACTIVE Announcement',
+			description: 'Perform a command on the Active Announcement',
 			options: [options.active_announcement_command, options.index, options.timeline_operation],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_announcement_command) {
@@ -42,7 +42,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		// **** AUDIO *****
 		[ActionId.activeAudioPlaylistCommand]: {
 			name: 'Active Audio Playlist: Command',
-			description: 'Perform a command on the ACTIVE Audio Playlist.',
+			description: 'Perform a command on the Active Audio Playlist.',
 			options: [options.active_audioplaylist_command, options.audio_item_id],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_audioplaylist_command) {
@@ -69,7 +69,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		[ActionId.focusedAudioPlaylistCommand]: {
 			name: 'Focused Audio Playlist: Command',
-			description: 'Perform a command on the FOCUSED Audio Playlist.',
+			description: 'Perform a command on the Focused Audio Playlist.',
 			options: [options.focused_audioplaylist_command, options.audio_item_id],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_audioplaylist_command) {
@@ -215,16 +215,90 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		// **** MEDIA ****
-		[ActionId.mediaPlaylistPlaylistIdMediaIdTrigger]: {
-			name: 'Media: PlaylistId: MediaId: Trigger',
-			description: 'Triggers the specified item in the specified media playlist.',
-			options: [options.media_playlist_id, options.media_id],
+		[ActionId.activeMediaPlaylistCommand]: {
+			name: 'Active Media Playlist: Command',
+			description: 'Perform a command on the Active Media Playlist.',
+			options: [options.active_mediaplaylist_command, options.media_item_id],
 			callback: async (actionEvent) => {
-				const media_playlist_id = await instance.parseVariablesInString(actionEvent.options.media_playlist_id as string)
-				const media_id = await instance.parseVariablesInString(actionEvent.options.media_id as string)
-				instance.ProPresenter.mediaPlaylistPlaylistIdMediaIdTrigger(media_playlist_id, media_id)
-			}
-
+				switch (actionEvent.options.active_mediaplaylist_command) {
+					case 'focus':
+						instance.ProPresenter.mediaPlaylistActiveFocus()
+						break
+					case 'trigger_next':
+						instance.ProPresenter.mediaPlaylistActiveNextTrigger()
+						break
+					case 'trigger_previous':
+						instance.ProPresenter.mediaPlaylistActivePreviousTrigger()
+						break
+					case 'trigger_first':
+						instance.ProPresenter.mediaPlaylistActiveTrigger()
+						break
+					case 'trigger_id':
+						const media_item_id: string = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
+						instance.ProPresenter.mediaPlaylistActiveMediaIdTrigger(media_item_id)
+						break
+					default:
+						instance.log('debug', 'Invalid active_mediaplaylist_command: ' + options.active_mediaplaylist_command)
+				}
+			},
+		},
+		[ActionId.focusedMediaPlaylistCommand]: {
+			name: 'Focused Media Playlist: Command',
+			description: 'Perform a command on the Focused Media Playlist.',
+			options: [options.focused_mediaplaylist_command, options.media_item_id],
+			callback: async (actionEvent) => {
+				switch (actionEvent.options.focused_mediaplaylist_command) {
+					case 'trigger_next':
+						instance.ProPresenter.mediaPlaylistFocusedNextTrigger()
+						break
+					case 'trigger_previous':
+						instance.ProPresenter.mediaPlaylistFocusedPreviousTrigger()
+						break
+					case 'trigger_first':
+						instance.ProPresenter.mediaPlaylistFocusedTrigger()
+						break
+					case 'trigger_id':
+						const media_item_id: string = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
+						instance.ProPresenter.mediaPlaylistFocusedMediaIdTrigger(media_item_id)
+						break
+					case 'focus_next':
+						instance.ProPresenter.mediaPlaylistNextFocus()
+						break
+					case 'focus_previous':
+						instance.ProPresenter.mediaPlaylistPreviousFocus()
+						break
+					default:
+						instance.log('debug', 'Invalid focused_mediaplaylist_command: ' + options.focused_mediaplaylist_command)
+				}
+			},
+		},
+		[ActionId.identifiedMediaPlaylistCommand]: {
+			name: 'Specific Media Playlist: Command',
+			description: 'Perform a command on a specifically identified Media Playlist.',
+			options: [options.specific_mediaplaylist_command, options.media_playlist_id, options.media_item_id],
+			callback: async (actionEvent) => {
+				const media_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.media_playlist_id as string)
+				switch (actionEvent.options.specific_mediaplaylist_command) {
+					case 'focus':
+						instance.ProPresenter.mediaPlaylistByPlaylistIdFocus(media_playlist_id)
+						break
+					case 'trigger_next':
+						instance.ProPresenter.mediaPlaylistByPlaylistIdNextTrigger(media_playlist_id)
+						break
+					case 'trigger_previous':
+						instance.ProPresenter.mediaPlaylistByPlaylistIdPreviousTrigger(media_playlist_id)
+						break
+					case 'trigger_first':
+						instance.ProPresenter.mediaPlaylistByPlaylistIdTrigger(media_playlist_id)
+						break
+					case 'trigger_id':
+						const media_item_id = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
+						instance.ProPresenter.mediaPlaylistByPlaylistIdMediaIdTrigger(media_playlist_id, media_item_id)
+						break
+					default:
+						instance.log('debug', 'Invalid specific_mediaplaylist_command: ' + options.specific_mediaplaylist_command)
+				}
+			},
 		},
 		// **** MESSAGES ****
 		[ActionId.messageIdTrigger]: {
@@ -288,29 +362,107 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		// **** PLAYLIST ****
-		[ActionId.playlistIdentifierTrigger]: {
-			name: 'Playlist: ID: Trigger',
-			description: 'Triggers the first item in the specified playlist.',
-			options: [options.playlist_id],
+		[ActionId.activeAnnouncementPlaylistCommand]: {
+			name: 'Active Announcement Playlist: Command',
+			description: 'Perform a command on the Playlist that has the active announcement in it.',
+			options: [options.active_announcement_playlist_command, options.index],
 			callback: async (actionEvent) => {
-				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				instance.ProPresenter.playlistIdentifierTrigger(playlist_id)
+				switch (actionEvent.options.active_announcement_playlist_command) {
+					case 'focus':
+						instance.ProPresenter.playlistActiveAnnouncementFocus()
+						break
+					case 'trigger_first':
+						instance.ProPresenter.playlistActiveAnnouncementTrigger()
+						break
+					case 'trigger_index':
+						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+						instance.ProPresenter.playlistActiveAnnouncementIndexTrigger(index)
+						break
+					default:
+						console.log('debug', 'Invalid active_announcement_playlist_command: ' + actionEvent.options.active_announcement_playlist_command)
+				}
 			}
 		},
-		[ActionId.playlistIdentifierIndexTrigger]: {
-			name: 'Playlist: ID: Index: Trigger',
-			description: 'Triggers the specified item in the specified playlist.',
-			options: [options.playlist_id, options.index],
+		[ActionId.activePresentationPlaylistCommand]: {
+			name: 'Active Presentation Playlist: Command',
+			description: 'Perform a command on the Playlist that has the active presentation in it.',
+			options: [options.active_presentation_playlist_command, options.index],
+			callback: async (actionEvent) => {
+				switch (actionEvent.options.active_presentation_playlist_command) {
+					case 'focus':
+						instance.ProPresenter.playlistActivePresentationFocus()
+						break
+					case 'trigger_first':
+						instance.ProPresenter.playlistActivePresentationTrigger()
+						break
+					case 'trigger_index':
+						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+						instance.ProPresenter.playlistActivePresentationIndexTrigger(index)
+						break
+					default:
+						console.log('debug', 'Invalid active_presentation_playlist_command: ' + actionEvent.options.active_presentation_playlist_command)
+				}
+			}
+		},
+		[ActionId.focusedPlaylistCommand]: {
+			name: 'Focused Playlist: Command',
+			description: 'Perform a command on the focused Playlist.',
+			options: [options.focused_playlist_command, options.index],
+			callback: async (actionEvent) => {
+				switch (actionEvent.options.focused_playlist_command) {
+					case 'trigger_next':
+						instance.ProPresenter.playlistFocusedNextTrigger()
+						break
+					case 'trigger_previous':
+						instance.ProPresenter.playlistFocusedPreviousTrigger()
+						break
+					case 'trigger_first':
+						instance.ProPresenter.playlistFocusedTrigger()
+						break
+					case 'trigger_index':
+						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+						instance.ProPresenter.playlistFocusedIndexTrigger(index)
+						break
+					case 'focus_next':
+						instance.ProPresenter.playlistNextFocus()
+						break
+					case 'focus_previous':
+						instance.ProPresenter.playlistPreviousFocus()
+						break
+					default:
+						console.log('debug', 'Invalid focused_playlist_command: ' + actionEvent.options.focused_playlist_command)
+				}
+			}
+		},
+		[ActionId.specificPlaylistCommand]: {
+			name: 'Specific Playlist: Command',
+			description: 'Perform a command on a specifically identified Playlist.',
+			options: [options.playlist_id, options.specific_playlist_command, options.index],
 			callback: async (actionEvent) => {
 				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
-				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-				instance.ProPresenter.playlistIdentifierIndexTrigger(playlist_id, index)
+				switch (actionEvent.options.specific_playlist_command) {
+					case 'trigger_next':
+						instance.ProPresenter.playlistByPlaylistIdNextTrigger(playlist_id)
+						break
+					case 'trigger_previous':
+						instance.ProPresenter.playlistByPlaylistIdPreviousTrigger(playlist_id)
+						break
+					case 'trigger_first':
+						instance.ProPresenter.playlistByPlaylistIdTrigger(playlist_id)
+						break
+					case 'trigger_index':
+						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
+						instance.ProPresenter.playlistByPlaylistIdIndexTrigger(playlist_id, index)
+						break
+					default:
+						console.log('debug', 'Invalid specific_playlist_command: ' + actionEvent.options.specific_playlist_command)
+				}
 			}
 		},
 		// **** PRESENTATION ****
-		[ActionId.active_presentation_command]: {
+		[ActionId.activePresentationCommand]: {
 			name: 'Active Presentation: Command',
-			description: 'Perform a command on the ACTIVE Presentation.',
+			description: 'Perform a command on the Active Presentation.',
 			options: [options.active_presentation_command, options.index, options.group_id_dropdown, options.group_id_text, options.timeline_operation],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_presentation_command) {
@@ -349,9 +501,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				}
 			}
 		},
-		[ActionId.focused_presentation_command]: {
+		[ActionId.focusedPresentationCommand]: {
 			name: 'Focused Presentation: Command',
-			description: 'Perform a command on the FOCUSED Presentation.',
+			description: 'Perform a command on the Focused Presentation.',
 			options: [options.focused_presentation_command , options.index, options.group_id_dropdown, options.group_id_text, options.timeline_operation],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_presentation_command) {
@@ -393,7 +545,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				}
 			}
 		},
-		[ActionId.specific_presentation_command]: {
+		[ActionId.specificPresentationCommand]: {
 			name: 'Specific Presentation: Command',
 			description: 'Perform a command on a specifically identified Presentation.',
 			options: [options.specific_presentation_command, options.presentation_uuid, options.index, options.group_id_dropdown, options.group_id_text, options.timeline_operation],
@@ -436,7 +588,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		// **** PROPS ****
 		[ActionId.propIdTrigger]: {
-			name: 'Prop: ID: Trigger',
+			name: 'Prop: Trigger',
 			description: 'Triggers the specified prop.',
 			options: [options.prop_id_dropdown, options.prop_id_text],
 			callback: async (actionEvent) => {
@@ -451,7 +603,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		[ActionId.propIdClear]: {
-			name: 'Prop: ID: Clear',
+			name: 'Prop: Clear',
 			description: 'Clears the specified prop.',
 			options: [options.prop_id_dropdown, options.prop_id_text],
 			callback: async (actionEvent) => {
@@ -467,7 +619,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		// **** STAGE ****
 		[ActionId.stageMessage]: {
-			name: 'Stage: Message: Show',
+			name: 'Stage Message: Show',
 			description: 'Show stage message',
 			options: [options.stage_message_text],
 			callback: async (actionEvent) => {
@@ -480,7 +632,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		[ActionId.stageMessageHide]: {
-			name: 'Stage: Message: Hide',
+			name: 'Stage Message: Hide',
 			description: 'Hide stage message',
 			options: [],
 			callback: async () => {
@@ -489,7 +641,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		},
 		// **** STATUS ****
 		[ActionId.statusAudienceScreensSet]: {
-			name: 'Status: AudienceScreens: Show/Hide',
+			name: 'AudienceScreens: Show/Hide',
 			description: 'Show or hide Audience screens',
 			options: [options.status_audience_screens_dropdown],
 			callback: async (actionEvent) => {
@@ -502,7 +654,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		[ActionId.statusStageScreensSet]: {
-			name: 'Status: StageScreens: Show/Hide',
+			name: 'StageScreens: Show/Hide',
 			description: 'Show or hide Stage screens',
 			options: [options.status_stage_screens_dropdown],
 			callback: async (actionEvent) => {
@@ -756,7 +908,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	messageChoicesDropDown.default = messageChoicesDropDown.choices[0].id
 	
 	// Update group choices with data from propresenterStateStore
-	const groupChoicesDropDown = actions[ActionId.active_presentation_command]?.options[2] as CompanionInputFieldDropdown  // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
+	const groupChoicesDropDown = actions[ActionId.activePresentationCommand]?.options[2] as CompanionInputFieldDropdown  // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
 	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
 	groupChoicesDropDown.choices = instance.propresenterStateStore.groupChoices.concat(manual_group_choice as DropdownChoice) 
 	groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
@@ -797,7 +949,9 @@ export enum ActionId {
 	marcoIdTrigger = 'marcoIdTrigger',
 
 	// Media
-	mediaPlaylistPlaylistIdMediaIdTrigger = 'mediaPlaylistPlaylistIdMediaIdTrigger',
+	activeMediaPlaylistCommand = 'activeMediaPlaylistCommand',
+	focusedMediaPlaylistCommand = 'focusedMediaPlaylistCommand',
+	identifiedMediaPlaylistCommand = 'identifiedMediaPlaylistCommand',
 
 	// Messages
 	messageIdTrigger = 'messageIdTrigger',
@@ -807,26 +961,19 @@ export enum ActionId {
 	miscFindMyMouse = 'miscFindMyMouse',
 
 	// Playlist
+	activePresentationPlaylistCommand = 'activePresentationPlaylistCommand',
+	activeAnnouncementPlaylistCommand = 'activeAnnouncementPlaylistCommand',
+	focusedPlaylistCommand = 'focusedPlaylistCommand',
+	specificPlaylistCommand = 'specificPlaylistCommand',
+	/*
 	playlistIdentifierTrigger = 'playlistIdentifierTrigger',
 	playlistIdentifierIndexTrigger = 'playlistIdentifierIndexTrigger',
+	*/
 
 	// Presentation
-	active_presentation_command = 'active_presentation_command',
-
-	focused_presentation_command = 'focused_presentation_command',
-	/*
-	presentationFocusedGroupGroup_IdTrigger = 'presentationFocusedGroupGroup_IdTrigger',
-	presentationFocusedTrigger = 'presentationFocusedTrigger',
-	presentationFocusedIndexTrigger = 'presentationFocusedIndexTrigger',
-	presentationNextFocus = 'presentationNextFocus',
-	presentationPreviousFocus = 'presentationPreviousFocus',
-	*/
-
-	specific_presentation_command = 'specific_presentation_command',
-
-	/*
-	presentationUUIDIndexTrigger = 'presentationUUIDIndexTrigger',
-	*/
+	activePresentationCommand = 'activePresentationCommand',
+	focusedPresentationCommand = 'focusedPresentationCommand',
+	specificPresentationCommand = 'specificPresentationCommand',
 
 	// Props
 	propIdTrigger = 'propIdTrigger',
@@ -835,6 +982,7 @@ export enum ActionId {
 	// Stage
 	stageMessage = 'stageMessage',
 	stageMessageHide = 'stageMessageHide',
+
 	stageScreenIdSetLayoutId = 'stageScreenIdSetLayoutId',
 
 	// Status

@@ -18,6 +18,9 @@ export interface Options {
     specific_presentation_command: EnforceDefault<CompanionInputFieldDropdown, string>
     focused_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
     specific_playlist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    active_mediaplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    focused_mediaplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
+    specific_mediaplaylist_command: EnforceDefault<CompanionInputFieldDropdown, string>
     audio_playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
     audio_item_id: EnforceDefault<CompanionInputFieldTextInput, string>
     group_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -27,7 +30,7 @@ export interface Options {
     macro_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     macro_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     media_playlist_id: EnforceDefault<CompanionInputFieldTextInput, string>
-    media_id: EnforceDefault<CompanionInputFieldTextInput, string>
+    media_item_id: EnforceDefault<CompanionInputFieldTextInput, string>
     message_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
     message_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
     prop_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -137,7 +140,7 @@ export const options: Options = {
         choices: [
             { id: 'focus', label: 'Focus Active Presentation Playlist'},
             { id: 'trigger_first', label: 'Trigger First Playlist Item'},
-            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s Index'},
+            { id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index'},
         ],
         default: 'focus',
     },
@@ -149,7 +152,7 @@ export const options: Options = {
         choices: [
             { id: 'focus', label: 'Focus Active Announcement Playlist'},
             { id: 'trigger_first', label: 'Trigger First Playlist Item'},
-            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s Index'},
+            { id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index'},
         ],
         default: 'focus',
     },
@@ -159,10 +162,10 @@ export const options: Options = {
         tooltip: 'Choose a command to perform on the FOCUSED Playlist.',
         id: 'focused_playlist_command',
         choices: [
-            { id: 'trigger_next', label: 'Trigger Next Playlist Item'},
+            { id: 'trigger_next', label: 'Trigger Next Item of'},
             { id: 'trigger_previous', label: 'Trigger Previous Playlist Item'},
             { id: 'trigger_first', label: 'Trigger First Playlist Item'},
-            { id: 'trigger_id', label: 'Trigger Playlist Item By It\'s ID'},
+            { id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index'},
             { id: 'focus_next', label: 'Move Focus To Next Playlist'},
             { id: 'focus_previous', label: 'Move Focus To Previous Playlist'},
         ],
@@ -343,6 +346,49 @@ export const options: Options = {
         ],
         default: '',
     },
+    active_mediaplaylist_command: {
+        type: 'dropdown',
+        label: 'Active Media Playlist: Command',
+        tooltip: 'Choose a command to perform on the ACTIVE media playlist.',
+        id: 'active_mediaplaylist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Active Media Playlist'},
+            { id: 'trigger_next', label: 'Trigger Next Media Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Media Item'},
+            { id: 'trigger_first', label: 'Trigger First Media Item'},
+            { id: 'trigger_id', label: 'Trigger Media Item By It\'s ID'},
+        ],
+        default: 'focus',
+    },
+    focused_mediaplaylist_command: {
+        type: 'dropdown',
+        label: 'Focused Media Playlist: Command',
+        tooltip: 'Choose a command to perform on the FOCUSED audio playlist.',
+        id: 'focused_mediaplaylist_command',
+        choices: [
+            { id: 'trigger_next', label: 'Trigger Next Media Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Media Item'},
+            { id: 'trigger_first', label: 'Trigger First Media Item'},
+            { id: 'trigger_id', label: 'Trigger Media Item By It\'s ID'},
+            { id: 'focus_next', label: 'Move Focus To Next Playlist'},
+            { id: 'focus_previous', label: 'Move Focus To Previous Playlist'},
+        ],
+        default: 'trigger_next',
+    },
+    specific_mediaplaylist_command: {
+        type: 'dropdown',
+        label: 'Specific Media Playlist: Command',
+        tooltip: 'Choose a command to perform on a specifically identified media playlist',
+        id: 'specific_mediaplaylist_command',
+        choices: [
+            { id: 'focus', label: 'Focus Specified Media Playlist'},
+            { id: 'trigger_next', label: 'Trigger Next Media Item'},
+            { id: 'trigger_previous', label: 'Trigger Previous Media Item'},
+            { id: 'trigger_first', label: 'Trigger First Media Item'},
+            { id: 'trigger_id', label: 'Trigger Media Item By It\'s ID'},
+        ],
+        default: 'focus',
+    },
     media_playlist_id: {
         type: 'textinput',
         label: 'Media Playlist Id',
@@ -351,11 +397,16 @@ export const options: Options = {
         default: '',
         useVariables: true,
     },
-    media_id: {
+    media_item_id: {
         type: 'textinput',
-        label: 'Media Id',
-        tooltip: 'Enter Media Name or Index or UUID',
-        id: 'media_id',
+        label: 'Media Item Id',
+        tooltip: 'Enter Media Item Name or Index or UUID',
+        id: 'media_item_id',
+        isVisible: ((options) => 
+            options.active_mediaplaylist_command == 'trigger_id' ||
+            options.focused_mediaplaylist_command == 'trigger_id' ||
+            options.specific_mediaplaylist_command == 'trigger_id'
+        ),
         default: '',
         useVariables: true,
     },
@@ -754,7 +805,12 @@ export const options: Options = {
             options.active_announcement_command == 'trigger_index' || 
             options.active_presentation_command == 'trigger_index' || 
             options.focused_presentation_command == 'trigger_index' ||
-            options.specific_presentation_command == ' trigger_index'
+            options.specific_presentation_command == ' trigger_index' ||
+            options.active_announcement_playlist_command == 'trigger_index' ||
+            options.active_presentation_playlist_command == 'trigger_index' ||
+            options.focused_playlist_command == 'trigger_index' ||
+            options.specific_playlist_command == 'trigger_index'
+
         ),
         default: '0',
         useVariables: true,

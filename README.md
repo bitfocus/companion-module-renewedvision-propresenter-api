@@ -8,6 +8,6 @@ Uses ProPresenter npm module (esp for RegisterStatusCallbacks)
 Dynamic Variables (based on ProPresenter state)
 Dynamic Action Options (based on ProPresenter state)
 ProPresenterStateStore stores state - refreshed at startup and during status updates
-Lot's of Action Input Options are defined in utils.ts - There is a lot of "logic" tied up in visibility (due to multiple actions being grouped/consolidated into single actions with option pickers for sub-actions)
+Lot's of Action Input Options are defined in utils.ts - There is a lot of "logic" tied up in visibility (due to multiple commands/operations being consolidated into single actions with dropdown command pickers for choosing commands)
 
 See [HELP.md](./HELP.md) and [LICENSE](./LICENSE)
