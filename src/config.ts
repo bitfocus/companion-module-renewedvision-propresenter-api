@@ -8,6 +8,7 @@ export interface DeviceConfig {
 	port: number
 	timeout: number
 	custom_timer_format_string: string
+	exta_debug_logs: boolean
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -21,6 +22,20 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 
 export function GetConfigFields(): SomeCompanionConfigField[] {
 	return [
+		{
+			type: 'static-text',
+			label: '',
+			id: 'intro text',
+			width: 12,
+			value: '<b>👉 Tip: You can read this module\'s help, guide and tooltips by clicking the (? in a black circle) symbol.</b>'
+		},
+		{
+			type: 'static-text',
+			label: '',
+			id: 'connection',
+			width: 12,
+			value: '<hr><h5>🛜 Connection Settings:</h5>'
+		},
 		{
 			type: 'textinput',
 			id: 'host',
@@ -41,23 +56,32 @@ export function GetConfigFields(): SomeCompanionConfigField[] {
 		{
 			type: 'static-text',
 			label: '',
-			id: 'intro text',
+			id: 'optional',
 			width: 12,
-			value: '<b>👉 Tip: You can read this module\'s help file by clicking the (? in a black circle) symbol next to the module name.</b>'
-		},
-		{
-			type: 'static-text',
-			label: '',
-			id: 'advanced ',
-			width: 12,
-			value: '<br><br><br><hr><h5>🔥 Advanced Settings:</h5><i>Normally, there is no need to change these.</i>'
+			value: '<br><hr><h5>✅ Optional Settings:</h5>'
 		},
 		{
 			type: 'textinput',
 			id: 'custom_timer_format_string',
-			label: 'Custom Timer Format String (Supports HH H mm m ss s)',
+			label: 'Custom Timer Format String',
+			tooltip: 'h/hh = hours. m/mm = minutes. s/ss=seconds.',
 			width: 4,
 			default: 'mm:ss',
+		},
+		{
+			type: 'static-text',
+			label: '',
+			id: 'advanced',
+			width: 12,
+			value: '<br><br><br><hr><h5>🔥 Advanced Settings:</h5><i>Normally, there is no need to change these.</i>'
+		},
+		{
+			type: 'checkbox',
+			id: 'exta_debug_logs',
+			label: 'Extra Debug Logs',
+			tooltip: 'Turn this on for more detailed debug logs.',
+			width: 4,
+			default: false,
 		},
 		{
 			type: 'number',

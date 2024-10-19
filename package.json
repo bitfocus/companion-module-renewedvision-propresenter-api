@@ -1,6 +1,6 @@
 {
 	"name": "renewedvision-propresenter-rest",
-	"version": "0.2.0",
+	"version": "0.4.0",
 	"main": "dist/index.js",
 	"scripts": {
 		"prepare": "husky install",
@@ -17,7 +17,7 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.10.0",
-		"renewedvision-propresenter": "^7.4.0"
+		"renewedvision-propresenter": "^7.7.0"
 	},
 	"devDependencies": {
 		"@companion-module/tools": "^0.5.1",

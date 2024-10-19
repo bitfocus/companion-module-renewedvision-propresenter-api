@@ -5,8 +5,42 @@ import { GetActions } from './actions'
 import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
-import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues} from './variables' // TODO comment explaining use of this SetVariableValues(this, CompanionVariableValues) function
+import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues} from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
 import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp} from './utils'
+import { GetFeedbacks } from './feedbacks'
+
+// propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
+const  emptyPropresenterStateStore:ProPresenterStateStore = {
+	proLayersStatus: {
+		video_input: false,
+		media: false,
+		slide: false,
+		announcements: false,
+		props: false,
+		messages: false,
+		audio: false
+	},
+	proTimers: [],
+	stageScreensWithLayout: [],
+	messageTokenInputs: [],
+	looksChoices: [],
+	macroChoices: [],
+	propChoices: [],
+	videoInputChoices: [],
+	timerChoices: [],
+	stageScreenChoices: [],
+	stageScreenLayoutChoices: [],
+	groupChoices: [],
+	messageChoices: [],
+	clearGroupChoices: [],
+	activeLookID: {
+		id: {
+			uuid: '',
+			name: '',
+			index: -1
+		}
+	},
+}
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
 	constructor(internal: unknown) {
@@ -19,32 +53,21 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		port: 1025,
 		timeout: 1000,
 		custom_timer_format_string: 'mm:ss',
+		exta_debug_logs: false,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
 	public ProPresenter: any
 	
-	// propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
-	public propresenterStateStore: ProPresenterStateStore = {
-		proTimers: [],
-		stageScreensWithLayout: [],
-		messageTokenInputs: [],
-		looksChoices: [],
-		macroChoices: [],
-		propChoices: [],
-		videoInputChoices: [],
-		timerChoices: [],
-		stageScreenChoices: [],
-		stageScreenLayoutChoices: [],
-		groupChoices: [],
-		messageChoices: []
-	} 
+	// Start with empty state
+	public propresenterStateStore: ProPresenterStateStore = emptyPropresenterStateStore
 	
 	// Private variables
-	private lastSetActionDefinitionsTime: number = 0 // A timestamp (in ms) of the last time that setActionDefinitions() was called (0 means not yet called)
+	private lastSetActionDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setActionDefinitions() was called (0 means not yet called)
 	private setActionDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
-	private lastSetVariableDefinitionsTime: number = 0 // A timestamp (in ms) of the last time that setVariableDefinitions() was called (0 means not yet called)
+	private lastSetVariableDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setVariableDefinitions() was called (0 means not yet called)
 	private setVariableDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
+	private timeOfLastStatusUpdate: number = 0 // A timestamp (in ms since epoch) of the last time that ProPresenter sent a timer/system_time status update.
 	public lastVideoInputJSON: string = ''  // Used for checking if video inputs has changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/video_inputs and "everyone" is running versions that support it)
 	public lastGlobalGroupsJSON: string = '' // Used for checking if global groups have changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/groups and "everyone" is running versions that support it)
 
@@ -54,7 +77,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 	// When module gets deleted
 	public async destroy() {
-		this.log('debug', 'destroy')
+		this.log('debug', 'Module destroy()')
 		
 	}
 
@@ -62,19 +85,19 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('info', 'Module Config: ' + JSON.stringify(config))
 		this.config = config
 		if (this.config.host === '' || this.config.host === undefined) {
-			this.log('info', 'Please fill in ip address or hit save')
+			this.log('info', 'Please fill in IP address and hit save')
 		} else {
 			this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout) // This object is our "API manager" that handles all the network calls for us
 
 			// Register callbacks for live updates to various status'
 			this.ProPresenter.registerCallbacksForStatusUpdates({
-				"status/slide":this.statusSlideUpdate,
+				"status/slide":this.statusSlideUpdated,
 				"timers":this.timersUpdate,
-				"timers/current":this.timersCurrentUpdate,
+				"timers/current":this.timersCurrentUpdated,
 				"presentation/slide_index":this.presentationSlideIndexUpdate,
-				"announcement/slide_index":this.announcementSlideIndexUpdate,
-				"playlist/active":this.activePlaylistUpdate,
-				"look/current":this.activeLookChanged,
+				"announcement/slide_index":this.announcementSlideIndexUpdated,
+				"playlist/active":this.activePlaylistUpdated,
+				"look/current":this.activeLookUpdated,
 				"looks":this.looksUpdated,
 				"macros":this.macrosUpdated,
 				"props":this.propsUpdated,
@@ -83,24 +106,29 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"messages":this.messagesUpdated,
 				"status/audience_screens":this.screenStatusUpdated,
 				"status/stage_screens":this.screenStatusUpdated,
+				"status/layers":this.layersStatusUpdated,
 				"timer/video_countdown":this.videoCountdownTimerUpdated,
 				"transport/presentation/current":this.transportLayerUpdated,
 				"transport/announcement/current":this.transportLayerUpdated,
-				"transport/audio/current":this.transportLayerUpdated
+				"transport/audio/current":this.transportLayerUpdated,
+				"timer/system_time":this.systemTimeUpdated,
 			} ,2000)
 			
-			this.initPresets()
+			// TODO: consider moving this to after all intiial state is gathered.
 			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
 			
+			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options:any) => {
+				this.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with options: ' + JSON.stringify(options))
+				this.updateStatus(InstanceStatus.UnknownWarning)
+			})
+
 			this.ProPresenter.on('statusConnectionDisconnected', () => {
 				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
 				this.updateStatus(InstanceStatus.Disconnected)
-				//TODO: empty propresenterStateStore and reset variables.
 			})
 			this.ProPresenter.on('statusConnectionError', () => {
 				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
 				this.updateStatus(InstanceStatus.UnknownError)
-				///TODO: empty propresenterStateStore and reset variables.
 			})
 
 			this.ProPresenter.on('statusConnectionConnected', async () => {
@@ -122,6 +150,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				const versionResult: RequestAndResponseJSONValue = await this.ProPresenter.version()
 				if (versionResult.ok) {
 					this.processIncommingData(versionResult) // This will update version based variables
+				}
+
+				// Get Clear Groups info
+				const clearGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.clearGroupsGet()
+				// If we got an ok response, Construct a statusJSONObject and call the callback for clearGroupsUpdated()
+				if (clearGroupsResult.ok) {
+					const clearGroupsJSONObject: StatusUpdateJSON = {
+						url: 'clear/groups',
+						data: clearGroupsResult.data
+					}
+					this.clearGroupsUpdated(clearGroupsJSONObject) // This will update the local cache of available ClearGroups choices and then call initActions() - which is rate limited and coalesced.
 				}
 
 				// Get Looks info
@@ -245,6 +284,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					this.transportLayerUpdated(transportAudioLayerStatusJSONObject)
 				}
 
+				// We have gathered initial state required to set these up:
+				this.initPresets()
+				this.initFeedbacks()
+
+				// Watchdog function - makes checks and updates every second.
+				setInterval(() => {
+					SetVariableValues(this, {time_since_last_status_update: (Date.now()-this.timeOfLastStatusUpdate)/1000})
+				},1000)
+
 				// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
 				// Until then, poll video inputs and groups every 3 seconds and check if changed.  Only when they have changed, call the callback for videoInputsUpdated()
 				setInterval(() => {
@@ -252,7 +300,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						if (videoInputsResult.ok) {
 							const currentVideoInputJSON: string = JSON.stringify(videoInputsResult.data)
 							if (currentVideoInputJSON != this.lastVideoInputJSON) { // If the video_inputs have changed
-								this.log('debug', 'Video Inputs Changed: ' + currentVideoInputJSON)
+								if (this.config.exta_debug_logs) {
+									this.log('debug', 'Video Inputs Changed: ' + currentVideoInputJSON)
+								}
 								this.lastVideoInputJSON = currentVideoInputJSON // Update for comparing next time
 								// Construct a statusJSONObject and call the callback for videoInputsUpdated()
 								const videoInputsStatusJSONObject: StatusUpdateJSON = {
@@ -267,7 +317,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						if (globalGroupsResult.ok) {
 							const currentGlobalGroupsJSON: string = JSON.stringify(globalGroupsResult.data)
 							if (currentGlobalGroupsJSON != this.lastGlobalGroupsJSON) { // If the Global Groups have changed
-								this.log('debug', 'Global Groups Changed: ' + currentGlobalGroupsJSON)
+								if (this.config.exta_debug_logs) {
+									this.log('debug', 'Global Groups Changed: ' + currentGlobalGroupsJSON)
+								}
 								this.lastGlobalGroupsJSON = currentGlobalGroupsJSON // Update for comparing next time
 								// Construct a statusJSONObject and call the callback for globalGroupsUpdated()
 								const globaGroupsStatusJSONObject: StatusUpdateJSON = {
@@ -280,19 +332,33 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					})
 				},3000)
 			})
-			
-			
 		}
 	}
 
+	// ******************************************************************************************************************************
 	// Status callbacks: Use arrow notation to create property functions that capture *this* instance of ModuleInstance class
-	statusSlideUpdate = (statusJSONObject: StatusUpdateJSON) => {
-		this.log('debug',JSON.stringify(statusJSONObject))
+	// ******************************************************************************************************************************
+
+	// This one is important - we get the system time sent every second.  When it arrives, we assume the module status is ok.
+	systemTimeUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.updateStatus(InstanceStatus.Ok)
+		this.timeOfLastStatusUpdate = Date.now()
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'System time: ' + statusJSONObject.data)
+		}
 	}
 
-	timersCurrentUpdate = (statusJSONObject: StatusUpdateJSON) => {
+	statusSlideUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
+		}
+	}
+
+	timersCurrentUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		// We have new values for one or more of the timers.
-		this.log('debug', 'timersCurrentUpdate: ' + JSON.stringify(statusJSONObject))
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'timersCurrentUpdated: ' + JSON.stringify(statusJSONObject))
+		}
 
 		// Update all the dynamic timer var values (& timers_current_json)
 		let newTimerValues = {}
@@ -316,13 +382,18 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			SetVariableValues(this, {stage_screen_active: statusJSONObject.data})
 	}
 
+	layersStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.propresenterStateStore.proLayersStatus = statusJSONObject.data
+		this.checkFeedbacks()
+	}
+
 	videoCountdownTimerUpdated = (videoCountdownTimerJSONObject: StatusUpdateJSON) => {
 		SetVariableValues(this, {video_countdown_timer: videoCountdownTimerJSONObject.data})
 	}
 
 	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
-		// The definition of one or more timers has been updated/added - refresh variabl definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
-		this.log('debug', 'timersUpdate: ' + JSON.stringify(statusJSONObject))
+		// The definition of one or more timers has been updated/added - refresh variable definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
+		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
 
 		// Update localState with new timer definitions
 		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'', index:timer.id.index}))
@@ -335,28 +406,30 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// Reset variable definitions (rate-limited)
 		this.initVariables()
 
-		this.log('debug', 'localstate.timers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'localstate.timers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
+		}
 	}
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
-				presentation_slide_index: statusJSONObject.data.presentation_index.index,
+				active_presentation_slide_index: statusJSONObject.data.presentation_index.index,
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
 			})
 		} else {
 			SetVariableValues(this, {
-				presentation_slide_index: '',
+				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: ''
 			})
 		}
 	}
 
-	activePlaylistUpdate = async (statusJSONObject: StatusUpdateJSON) => {
-		this.log('debug', 'activePlaylistUpdate: ' + JSON.stringify(statusJSONObject))
+	activePlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'activePlaylistUpdated: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation.playlist) {
 			SetVariableValues(this, {
 				active_presentation_playlist_name: statusJSONObject.data.presentation.playlist.name,
@@ -417,35 +490,51 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 	}
 
-	announcementSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
-		this.log('debug', 'announcementSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
+	announcementSlideIndexUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'announcementSlideIndexUpdated: ' + JSON.stringify(statusJSONObject))
+		}
 		if (statusJSONObject.data.announcement_index) { // ProPresenter can return a null presentation_index when no announcement is active
 			SetVariableValues(this, {
-				announcement_slide_index: statusJSONObject.data.announcement_index.index,
+				active_announcement_slide_index: statusJSONObject.data.announcement_index.index,
 				active_announcement_name: statusJSONObject.data.announcement_index.presentation_id.name,
 				active_announcement_uuid: statusJSONObject.data.announcement_index.presentation_id.uuid,
 			})
 		} else {
 			SetVariableValues(this, {
-				announcement_slide_index: '',
+				active_announcement_slide_index: '',
 				active_announcement_name: '',
 				active_announcement_uuid: ''
 			})
 		}
 	}
 
-	activeLookChanged = (statusJSONObject: StatusUpdateJSON) => {
-		this.log('debug', 'activeLookChanged: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name)
+	activeLookUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'activeLookUpdated: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name)
 		SetVariableValues(this, {
 			active_look_name: statusJSONObject.data.id.name,
 			active_look_uuid: statusJSONObject.data.id.uuid
 		})
+
+		// Update active look in state store
+		this.propresenterStateStore.activeLookID.id.uuid = statusJSONObject.data.id.uuid
+		this.propresenterStateStore.activeLookID.id.name = statusJSONObject.data.id.name
+		this.propresenterStateStore.activeLookID.id.index = statusJSONObject.data.id.index
+
+		this.checkFeedbacks()
+	}
+
+	clearGroupsUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'clearGroupsUpdated: ' + JSON.stringify(statusJSONObject))
+		// Update list of cleargroups in the dropdown choices format  { id: string, label: string}
+		this.propresenterStateStore.clearGroupChoices = statusJSONObject.data.map((clearGroup: {id: {uuid: string, name:string}}) => ({id:clearGroup.id.uuid, label:clearGroup.id.name}))
+		this.initActions()
 	}
 
 	looksUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'looksUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of looks in the dropdown choices format  { id: string, label: string}
-		this.propresenterStateStore.looksChoices = statusJSONObject.data.map((look: {id: {uuid: string, name:string}}) => ({id:look.id.uuid, label:look.id.name}))
+		this.propresenterStateStore.looksChoices = statusJSONObject.data.map((look: {id: {uuid: string, name:string}}) => ({id:look.id.name, label:look.id.name})) // Note that we use the look name and not the UUID - as the active look will always have a different UUID, than any of the UUID in the list of configured looks - no idea why or how this is useful.
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -540,7 +629,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					id: messageUUID + '__' + messageTokenTypeCode + '__' + messageToken.name, // "Parent" message UUID __ 3 Char type __ TokenName
 					isVisibleData: messageUUID,
 					isVisible: (options, isVisibleData) =>  {
-						return (options.message_id_dropdown as string) == isVisibleData
+						return (options.message_id_dropdown as string) == isVisibleData && (options.message_operation as string) == 'show'
 					},
 					useVariables: true,
 				})
@@ -614,7 +703,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	initPresets() {
-		this.setPresetDefinitions(GetPresets())
+		this.setPresetDefinitions(GetPresets(this))
 	}
 
 	initVariables() {
@@ -628,7 +717,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		const timeSinceLastSetVariableDefinitionsTimeCall: number = (Date.now() - this.lastSetVariableDefinitionsTime) // Calculate time since last call of setVariableDefinitions
 		if (this.lastSetVariableDefinitionsTime == 0 ||  (Date.now() - timeSinceLastSetVariableDefinitionsTimeCall > 2000)) {
 			// If setVariableDefinitions has not yet been called, or the time since the last call is greater than 2000msec, then it's okay to call it now...
-			this.log('debug', 'setVariableDefinitions()1')
+			if (this.config.exta_debug_logs) {
+				this.log('debug', 'Immediate call to setVariableDefinitions()')
+			}
 			this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
 			ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 		} else {
@@ -636,7 +727,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			if (!this.setVariableDefinitionsTimeoutId) {
 				this.setVariableDefinitionsTimeoutId = setTimeout(() => {
 					this.lastSetVariableDefinitionsTime = Date.now()
-					this.log('debug', 'setVariableDefinitions()2')
+					if (this.config.exta_debug_logs) {
+						this.log('debug', 'Delayed call to setVariableDefinitions()')
+					}
 					this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
 					ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 					if (this.setVariableDefinitionsTimeoutId)
@@ -647,10 +740,19 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}		
 	}
 
+	initFeedbacks() {
+		// TODO: add rate-limit (and coalesce) logic
+		this.setFeedbackDefinitions(GetFeedbacks(this))
+	}
+
 	processIncommingData(requestResponse: RequestAndResponseJSONValue) {
-		this.log('debug', `processingIncommingData: ${JSON.stringify(requestResponse)}`)
+		if (this.config.exta_debug_logs) {
+			this.log('debug', `processingIncommingData: ${JSON.stringify(requestResponse)}`)
+		}
 		if (requestResponse && requestResponse.path && requestResponse.data && requestResponse.status && requestResponse.ok) {
-			this.log('debug', 'STATUS OK')
+			if (this.config.exta_debug_logs) {
+				this.log('debug', 'STATUS OK')
+			}
 			this.updateStatus(InstanceStatus.Ok) // Each time we receive an "ok" response, update module status to Ok
 			const jsonData = requestResponse.data
 			switch (requestResponse.path) {

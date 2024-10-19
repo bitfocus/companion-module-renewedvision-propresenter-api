@@ -24,8 +24,16 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'version',
 	})
 	variables.push({
-		name: 'Presentation Slide Index',
-		variableId: 'presentation_slide_index',
+		name: 'Time Since Last Status Update',
+		variableId: 'time_since_last_status_update',
+	})
+	variables.push({
+		name: 'Active Presentation Slide Index',
+		variableId: 'active_presentation_slide_index',
+	})
+	variables.push({
+		name: 'Active Presentation Slides Count',
+		variableId: 'active_presentation_slides_count',
 	})
 	variables.push({
 		name: 'Active Presentation Name',
@@ -36,8 +44,8 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_presentation_uuid',
 	})
 	variables.push({
-		name: 'Announcement Slide Index',
-		variableId: 'announcement_slide_index',
+		name: 'Active Announcement Slide Index',
+		variableId: 'active_announcement_slide_index',
 	})
 	variables.push({
 		name: 'Active Announcement Name',
@@ -189,7 +197,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 }
 
 /**
- * This is an replacement function for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
+ * This is an override function for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
  * @param instance 
  * @param values 
  */
