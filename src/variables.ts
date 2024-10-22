@@ -1,10 +1,10 @@
 import { CompanionVariableValues } from "@companion-module/base"
 import { DeviceConfig, InstanceBaseExt } from "./config"
-import { LocalStateCache } from './utils'
+import { ProPresenterStateStore } from './utils'
 
-let variableValuesCache: CompanionVariableValues
+let variableValuesCache: CompanionVariableValues // Local cache of variable values - used in ResetVariablesFromLocalCache() to return values to variables each time they are re-created.
 
-export function GetVariableDefinitions(localStateCache: LocalStateCache) {
+export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore) {
 	const variables = []
 
 	variables.push({
@@ -24,8 +24,16 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 		variableId: 'version',
 	})
 	variables.push({
-		name: 'Presentation Slide Index',
-		variableId: 'presentation_slide_index',
+		name: 'Time Since Last Status Update',
+		variableId: 'time_since_last_status_update',
+	})
+	variables.push({
+		name: 'Active Presentation Slide Index',
+		variableId: 'active_presentation_slide_index',
+	})
+	variables.push({
+		name: 'Active Presentation Slides Count',
+		variableId: 'active_presentation_slides_count',
 	})
 	variables.push({
 		name: 'Active Presentation Name',
@@ -33,7 +41,67 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 	})
 	variables.push({
 		name: 'Active Presentation UUID',
-		variableId: 'active_presentation_UUID',
+		variableId: 'active_presentation_uuid',
+	})
+	variables.push({
+		name: 'Active Announcement Slide Index',
+		variableId: 'active_announcement_slide_index',
+	})
+	variables.push({
+		name: 'Active Announcement Name',
+		variableId: 'active_announcement_name',
+	})
+	variables.push({
+		name: 'Active Announcement UUID',
+		variableId: 'active_announcement_uuid',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist Name',
+		variableId: 'active_presentation_playlist_name',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist Index',
+		variableId: 'active_presentation_playlist_index',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist UUID',
+		variableId: 'active_presentation_playlist_uuid',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem Name',
+		variableId: 'active_presentation_playlist_item_name',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem Index',
+		variableId: 'active_presentation_playlist_item_index',
+	})
+	variables.push({
+		name: 'Active Presentation PlaylistItem UUID',
+		variableId: 'active_presentation_playlist_item_uuid',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist Name',
+		variableId: 'active_announcement_playlist_name',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist Index',
+		variableId: 'active_announcement_playlist_index',
+	})
+	variables.push({
+		name: 'Active Announcement Playlist UUID',
+		variableId: 'active_announcement_playlist_uuid',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem Name',
+		variableId: 'active_announcement_playlist_item_name',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem Index',
+		variableId: 'active_announcement_playlist_item_index',
+	})
+	variables.push({
+		name: 'Active Announcement PlaylistItem UUID',
+		variableId: 'active_announcement_playlist_item_uuid',
 	})
 	variables.push({
 		name: 'Active Look Name',
@@ -41,22 +109,84 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 	})
 	variables.push({
 		name: 'Active Look UUID',
-		variableId: 'active_look_UUID',
+		variableId: 'active_look_uuid',
+	})
+	variables.push({
+		name: 'Audience Screen Active',
+		variableId: 'audience_screen_active',
+	})
+	variables.push({
+		name: 'Stage Screen Active',
+		variableId: 'stage_screen_active',
+	})
+	variables.push({
+		name: 'Video Countdown Timer',
+		variableId: 'video_countdown_timer',
 	})
 	variables.push({
 		name: 'Timers Current JSON',
-		variableId: 'timers_current_JSON',
+		variableId: 'timers_current_json',
+	})
+	variables.push({
+		name: 'Active Presentation Playlist JSON',
+		variableId: 'active_presentation_playlist_json',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer IsPlaying',
+		variableId: 'transport_presentation_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer Media Name',
+		variableId: 'transport_presentation_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Presentation Layer Media Duration',
+		variableId: 'transport_presentation_layer_media_duration',
+	})
+	variables.push({
+		name: 'Transport Audio Layer IsPlaying',
+		variableId: 'transport_audio_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Audio Layer Media Name',
+		variableId: 'transport_audio_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Audio Layer Media Duration',
+		variableId: 'transport_audio_layer_media_duration',
+	})
+	variables.push({
+		name: 'Transport Announcement IsPlaying',
+		variableId: 'transport_announcement_layer_isplaying',
+	})
+	variables.push({
+		name: 'Transport Announcement Layer Media Name',
+		variableId: 'transport_announcement_layer_media_name',
+	})
+	variables.push({
+		name: 'Transport Announcement Layer Media Duration',
+		variableId: 'transport_announcement_layer_media_duration',
 	})
 	// Get Timer variable definitions from module cache of timers state
-	for (const timer of localStateCache.timers) {
-		variables.push({
-			name: timer.name,
-			variableId: timer.varid,
-		})
+	for (const proTimer of propresenterStateStore.proTimers) {
+		variables.push(
+		{
+			name: proTimer.name,
+			variableId: proTimer.varid,
+		},
+		{
+			name: proTimer.name + ' (Seconds)',
+			variableId: proTimer.varid + '_seconds',
+		},
+		{
+			name: proTimer.name + ' (Custom Format)',
+			variableId: proTimer.varid + '_custom',
+		},
+	)
 	}
 
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
-	for (const stageScreenWithLayout of localStateCache.stageScreensWithLayout) {
+	for (const stageScreenWithLayout of propresenterStateStore.stageScreensWithLayout) {
 		variables.push({
 			name: stageScreenWithLayout.name,
 			variableId: stageScreenWithLayout.varid
@@ -67,12 +197,12 @@ export function GetVariableDefinitions(localStateCache: LocalStateCache) {
 }
 
 /**
- * This is an replacement function for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
+ * This is an override function for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
  * @param instance 
  * @param values 
  */
 export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>, values: CompanionVariableValues) {
-	// Cache values that were set so they can be used to reset after setting defs again later
+	// Cache values that were set so they can be used as an easy method to reset values after setting definitions again later
 	variableValuesCache = {...variableValuesCache, ...values}
 
 	// Set variable values
