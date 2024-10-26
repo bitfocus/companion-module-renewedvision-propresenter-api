@@ -763,17 +763,38 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Performs an operation on the specified timer.',
 			options: [options.timer_id_dropdown, options.timer_id_text, options.timer_operation, options.timer_increment_value, options.timer_type, options.timer_duration, options.timer_time_of_day, options.timer_timeperiod, options.timer_start_time, options.timer_end_time, options.timer_allows_overrun, options.timer_optional_operation, options.timer_new_name],
 			callback: async (actionEvent) => {
+				// Determine the uuid of selected timer
 				let timerID: string = ''
-				if (actionEvent.options.video_input_id_dropdown == 'manually_specify_videoinputsid')
+				if (actionEvent.options.video_input_id_dropdown == 'manually_specify_videoinputsid') {
 					timerID = await instance.parseVariablesInString(actionEvent.options.timer_id_text as string)
-				else
+				} else {
 					timerID = actionEvent.options.timer_id_dropdown as string
+				}
+
+				if (instance.config.exta_debug_logs) {
+					instance.log('debug', 'timerID: ' +  timerID)
+				}
+
+				// Capture the current state of selected timer (based on current state data in propresenterStateStore)
+				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.uuid == timerID)
+
+				// Determine action to "toggle" current timer state
+				let timerToggleOperation: ProPresenterTimerOperation = 'stop'
+				if (thisProTimerState && instance.config.exta_debug_logs) {
+					instance.log('debug', 'Checking thisProTimerState.state: ' +  thisProTimerState.state)
+				}
+				if (thisProTimerState && (thisProTimerState.state == 'stopped' || thisProTimerState.state == 'overran')) {
+					timerToggleOperation = 'start'
+				}
 
 				switch (actionEvent.options.timer_operation) {
 					case 'start':
 					case 'stop':
 					case 'reset':
 						instance.ProPresenter.timerIdOperation(timerID, actionEvent.options.timer_operation as ProPresenterTimerOperation)
+						break
+					case 'toggle':
+						instance.ProPresenter.timerIdOperation(timerID, timerToggleOperation)
 						break
 					case 'increment':
 						const timer_increment_value = await instance.parseVariablesInString(actionEvent.options.timer_increment_value as string)
@@ -790,7 +811,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						const startTimeNumber: number = (startTimeString.includes(":")) ? timestampToSeconds(startTimeString) : Number(startTimeString)
 						const endTimeString: string = await instance.parseVariablesInString(actionEvent.options.timer_end_time as string)
 						const endTimeNumber: number = (endTimeString.includes(":")) ? timestampToSeconds(endTimeString) : Number(endTimeString)
-						const optionalOperation: ProPresenterTimerOperation | undefined = (actionEvent.options.timer_optional_operation  == 'none') ? undefined : actionEvent.options.timer_optional_operation as ProPresenterTimerOperation
+						const optionalOperation: ProPresenterTimerOperation | undefined = (actionEvent.options.timer_optional_operation  == 'none') ? undefined : (actionEvent.options.timer_optional_operation  == 'toggle') ? timerToggleOperation : actionEvent.options.timer_optional_operation as ProPresenterTimerOperation
 
 						switch (timerType) {
 							case 'countdown':

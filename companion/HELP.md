@@ -29,6 +29,7 @@ Introduce the quick lists - many have option to manually specifying (and using v
 Concept of UUID vs indexes and names (indexes - counting starts at 0, UUID are globally unique Id's for many objects in ProPresenter.  Several of the module variables show the UUIDs for your use if you like.  TODO: Add Learn function for focused UUID) - Be careful with UUID - (TODO: explain how UUID of playlist item and UUID of presenation are not the same)
 For the action: "Specific Presentation: Command", you can use "Active Presentation UUID" variable to get uuid of active presentation - this is a globally unique identifier of that presentation that should not change.
 hh:mm:ss or mm:ss or ss (any # of digits, etc)
+Note that setting a timer will change it;s name if you do nto perform an operation...and will set it's "allows Overrun"
 
 
 #### Variables:

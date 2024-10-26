@@ -11,6 +11,11 @@ import { GetFeedbacks } from './feedbacks'
 
 // propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
 const  emptyPropresenterStateStore:ProPresenterStateStore = {
+	proTransportLayersStatus: {
+		presentation: false,
+		announcement: false,
+		audio: false
+	},
 	proLayersStatus: {
 		video_input: false,
 		media: false,
@@ -373,6 +378,23 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// timers_current_json is the complete JSON response (so advanced users can use jsonpath() to extract/process what they want) 
 			timers_current_json: JSON.stringify(statusJSONObject.data), ...newTimerValues
 		})
+
+		// Update the .state for each of the defined timers.
+		this.propresenterStateStore.proTimers = this.propresenterStateStore.proTimers.map(proTimer => {
+			const newTimer = statusJSONObject.data.find((newTimer: {id: { uuid: string }}) => newTimer.id.uuid == proTimer.uuid)
+			if (this.config.exta_debug_logs) {
+				this.log('debug', 'newTimer: ' + JSON.stringify(newTimer))
+			}
+			return newTimer
+			? { ...proTimer, state: newTimer.state } // Update only the 'state' property
+			: proTimer	// No match - Keep original (This probably should not happen - let the list be updated in timersUpdate())
+		})
+
+		this.checkFeedbacks()
+
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'propresenterStateStore.proTimers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
+		}
 	}
 
 	screenStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
@@ -396,7 +418,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
 
 		// Update localState with new timer definitions
-		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'', index:timer.id.index}))
+		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'stopped', index:timer.id.index}))
 
 		// Update list of Timers in the dropdown choices format { id: string, label: string}
 		this.propresenterStateStore.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
@@ -652,6 +674,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					transport_presentation_layer_media_name: statusJSONObject.data.name,
 					transport_presentation_layer_media_duration: statusJSONObject.data.duration,
 				})
+				this.propresenterStateStore.proTransportLayersStatus.presentation = statusJSONObject.data.is_playing
 				break
 			case 'transport/announcement/current':
 				SetVariableValues(this, {
@@ -659,6 +682,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					transport_announcement_layer_media_name: statusJSONObject.data.name,
 					transport_announcement_layer_media_duration: statusJSONObject.data.duration,
 				})
+				this.propresenterStateStore.proTransportLayersStatus.announcement = statusJSONObject.data.is_playing
 				break
 			case 'transport/audio/current':
 				SetVariableValues(this, {
@@ -666,8 +690,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					transport_audio_layer_media_name: statusJSONObject.data.name,
 					transport_audio_layer_media_duration: statusJSONObject.data.duration,
 				})
+				this.propresenterStateStore.proTransportLayersStatus.audio = statusJSONObject.data.is_playing
 				break
 		}
+		this.checkFeedbacks()
 	}
 
 	// Return config fields for web config
