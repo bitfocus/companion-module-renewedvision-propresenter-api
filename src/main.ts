@@ -102,6 +102,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"presentation/slide_index":this.presentationSlideIndexUpdate,
 				"announcement/slide_index":this.announcementSlideIndexUpdated,
 				"playlist/active":this.activePlaylistUpdated,
+				"presentation/focused":this.focusedPresentationUpdated,
 				"look/current":this.activeLookUpdated,
 				"looks":this.looksUpdated,
 				"macros":this.macrosUpdated,
@@ -448,6 +449,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_uuid: ''
 			})
 		}
+	}
+
+	focusedPresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'focusedPresentationUpdated: ' + JSON.stringify(statusJSONObject))
+		SetVariableValues(this, {
+			focused_presentation_index: statusJSONObject.data.index,
+			focused_presentation_name: statusJSONObject.data.name,
+			focused_presentation_uuid: statusJSONObject.data.uuid,
+		})
 	}
 
 	activePlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {

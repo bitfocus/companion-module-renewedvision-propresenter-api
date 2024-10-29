@@ -283,7 +283,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				}
 				
 				if (instance.config.exta_debug_logs)
-					instance.log('debug', 'Timer State Feedback timer_id selected = ' + timer_id)
+					instance.log('debug', 'Timer State Feedback timer_id selected = ' + timer_id + ' Feedback: ' + JSON.stringify(feedback))
 
 				return instance.propresenterStateStore.proTimers.find(proTimer => proTimer.uuid == timer_id || proTimer.name == timer_id || proTimer.index == parseInt(timer_id))?.state == feedback.options.timer_state
 			},

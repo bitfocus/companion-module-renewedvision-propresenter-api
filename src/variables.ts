@@ -108,6 +108,18 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_look_name',
 	})
 	variables.push({
+		name: 'Focused Presentation Index',
+		variableId: 'focused_presentation_index',
+	})
+	variables.push({
+		name: 'Focused Presentation Name',
+		variableId: 'focused_presentation_name',
+	})
+	variables.push({
+		name: 'Focused Presentation UUID',
+		variableId: 'focused_presentation_uuid',
+	})
+	variables.push({
 		name: 'Active Look UUID',
 		variableId: 'active_look_uuid',
 	})
