@@ -205,9 +205,49 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				}
 
 				if (instance.config.exta_debug_logs)
-					instance.log('debug', 'Active Look Feedback look_id selected = ' + look_id + ' instance.propresenterStateStore.activeLookID.id.uuid = ' + instance.propresenterStateStore.activeLookID.id.uuid)
+					instance.log('debug', 'Active Look Feedback look_id selected = ' + look_id + ' instance.propresenterStateStore.activeLookID.uuid = ' + instance.propresenterStateStore.activeLookID.uuid)
 
-				return instance.propresenterStateStore.activeLookID.id.index == parseInt(look_id) || instance.propresenterStateStore.activeLookID.id.uuid == look_id || instance.propresenterStateStore.activeLookID.id.name == look_id
+				return instance.propresenterStateStore.activeLookID.index == parseInt(look_id) || instance.propresenterStateStore.activeLookID.uuid == look_id || instance.propresenterStateStore.activeLookID.name == look_id
+			},
+		},
+		PropActive: {
+			name: 'Prop Active',
+			type: 'boolean',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 165, 225),
+				color: combineRgb(100, 190, 205),
+			},
+			options: [
+				{
+					id: 'prop_id_dropdown',
+					type: 'dropdown',
+					label: 'Prop',
+					choices: [
+						{ id: 'manually_specify_propid', label: 'Manually Specify Prop ID Below' },
+					],
+					default: '',
+				},
+				{
+					id: 'prop_id_text',
+					type: 'textinput',
+					label: 'Prop ID',
+					isVisible: ((options) => options.prop_id_dropdown == 'manually_specify_propid'),
+					default: '',
+					useVariables: true,
+				},
+			],
+			callback: async (feedback, context) => {
+				let prop_id:string =''
+				if (feedback.options.prop_id_dropdown == 'manually_specify_propid') {
+					prop_id = await context.parseVariablesInString(feedback.options.prop_id_text as string)
+				} else {
+					prop_id = feedback.options.prop_id_dropdown as string
+				}
+				
+				if (instance.config.exta_debug_logs)
+					instance.log('debug', 'Prop Active Feedback prop_id selected = ' + prop_id + ' Feedback: ' + JSON.stringify(feedback))
+				
+				return instance.propresenterStateStore.proProps.find(proProp => proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id))?.is_active == true
 			},
 		},
 		TransportPlaying: {
@@ -285,7 +325,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				if (instance.config.exta_debug_logs)
 					instance.log('debug', 'Timer State Feedback timer_id selected = ' + timer_id + ' Feedback: ' + JSON.stringify(feedback))
 
-				return instance.propresenterStateStore.proTimers.find(proTimer => proTimer.uuid == timer_id || proTimer.name == timer_id || proTimer.index == parseInt(timer_id))?.state == feedback.options.timer_state
+				return instance.propresenterStateStore.proTimers.find(proTimer => proTimer.id.uuid == timer_id || proTimer.id.name == timer_id || proTimer.id.index == parseInt(timer_id))?.state == feedback.options.timer_state
 			},
 		},
 	}

@@ -8,6 +8,7 @@ import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'ren
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues} from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
 import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp} from './utils'
 import { GetFeedbacks } from './feedbacks'
+import {Input} from '@julusian/midi'
 
 // propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
 const  emptyPropresenterStateStore:ProPresenterStateStore = {
@@ -26,6 +27,7 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 		audio: false
 	},
 	proTimers: [],
+	proProps: [],
 	stageScreensWithLayout: [],
 	messageTokenInputs: [],
 	looksChoices: [],
@@ -39,15 +41,15 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 	messageChoices: [],
 	clearGroupChoices: [],
 	activeLookID: {
-		id: {
-			uuid: '',
-			name: '',
-			index: -1
-		}
+		uuid: '',
+		name: '',
+		index: -1
 	},
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
+	public midi_input: Input = new Input() // Set up a new Midi input.
+
 	constructor(internal: unknown) {
 		super(internal)
 	}
@@ -59,6 +61,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		timeout: 1000,
 		custom_timer_format_string: 'mm:ss',
 		exta_debug_logs: false,
+		virtual_midi_port_name: '',
+		midi_port_dropdown: 'virtual',
+		companion_port: 8000,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -89,6 +94,63 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	public async configUpdated(config: DeviceConfig) {
 		this.log('info', 'Module Config: ' + JSON.stringify(config))
 		this.config = config
+
+		// Configure a callback for MIDI input messages
+		this.midi_input.on('message', async (deltaTime, message) => {
+			const midiMessageChannel:number = message[0] & 0x0f
+			const midiMessageIsNoteon:boolean = (message[0] & 0x90) == 0x90
+			const midiMessageNote:number = message[1]
+			const midiMessageVelocity:number = message[2]
+
+			this.log('debug', `MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`)
+			
+			// api/location/<page>/<row>/<column>/press
+			// page = channel
+			// row = note
+			// column = velocity
+			const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${midiMessageChannel}/${midiMessageNote}/${midiMessageVelocity}/press`
+			this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
+			
+			fetch(buttonPressURL, {
+				signal: AbortSignal.timeout(2000),
+				method: 'POST',
+				headers: {
+				  'Content-Type': 'application/json',
+				},
+			}).then((response) => {
+				this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
+			}).catch((error) => {
+				this.log('debug', 'Error fetching ' + buttonPressURL + '. ' + error)
+			})
+			
+			
+		});
+
+		// Close midi port (if open)
+		if (this.midi_input.isPortOpen()) {
+			this.log('debug', 'Closing Midi port')
+			this.midi_input.closePort()
+		}
+			
+
+		// Get MIDI port configs
+		const virtual_midi_port_name: string = this.config.virtual_midi_port_name
+		const midi_port_name: string = this.config.midi_port_dropdown
+		// Connect to configured MIDI (virtual) port.
+		try {
+			if (midi_port_name == 'virtual') {
+				this.log('debug', 'Connecting virtual_midi_port_name: ' + virtual_midi_port_name)
+				this.midi_input.openVirtualPort(virtual_midi_port_name)
+			} else {
+				this.log('debug', 'Connecting midi_port_name: ' + midi_port_name)
+				this.midi_input.openPortByName(midi_port_name)
+			}
+		} catch (error) {
+			let message = 'Unknown Error'
+			if (error instanceof Error) message = error.message
+			this.log('debug', 'Error connecting midi port: ' + message)
+		}
+
 		if (this.config.host === '' || this.config.host === undefined) {
 			this.log('info', 'Please fill in IP address and hit save')
 		} else {
@@ -382,7 +444,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		// Update the .state for each of the defined timers.
 		this.propresenterStateStore.proTimers = this.propresenterStateStore.proTimers.map(proTimer => {
-			const newTimer = statusJSONObject.data.find((newTimer: {id: { uuid: string }}) => newTimer.id.uuid == proTimer.uuid)
+			const newTimer = statusJSONObject.data.find((newTimer: {id: { uuid: string }}) => newTimer.id.uuid == proTimer.id.uuid)
 			if (this.config.exta_debug_logs) {
 				this.log('debug', 'newTimer: ' + JSON.stringify(newTimer))
 			}
@@ -419,7 +481,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
 
 		// Update localState with new timer definitions
-		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({uuid:timer.id.uuid, time:'', name:timer.id.name, varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'stopped', index:timer.id.index}))
+		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({id:{uuid:timer.id.uuid, name:timer.id.name, index:timer.id.index}, time:'',  varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'stopped'}))
 
 		// Update list of Timers in the dropdown choices format { id: string, label: string}
 		this.propresenterStateStore.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
@@ -549,9 +611,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 
 		// Update active look in state store
-		this.propresenterStateStore.activeLookID.id.uuid = statusJSONObject.data.id.uuid
-		this.propresenterStateStore.activeLookID.id.name = statusJSONObject.data.id.name
-		this.propresenterStateStore.activeLookID.id.index = statusJSONObject.data.id.index
+		this.propresenterStateStore.activeLookID.uuid = statusJSONObject.data.id.uuid
+		this.propresenterStateStore.activeLookID.name = statusJSONObject.data.id.name
+		this.propresenterStateStore.activeLookID.index = statusJSONObject.data.id.index
 
 		this.checkFeedbacks()
 	}
@@ -583,6 +645,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of props in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.propChoices = statusJSONObject.data.map((prop: {id: {uuid: string, name:string}}) => ({id:prop.id.uuid, label:prop.id.name}))
+		// Update propresenterStateStore.proProps
+		this.propresenterStateStore.proProps = statusJSONObject.data.map((prop: {id: {uuid: string, name:string, index:number} , is_active:boolean}) => ({id:{uuid:prop.id.uuid, name:prop.id.name, index:prop.id.index}, is_active:prop.is_active}))
+		this.checkFeedbacks()
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -606,9 +671,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	stageScreensUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'stageScreensUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update localState with new stageScreensWithLayout definitions
-		// StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number} (varid is a clean form of the variable ID with - remvoed from UUID)
+		// (varid is a clean form of the variable ID with - remvoed from UUID)
 		this.propresenterStateStore.stageScreensWithLayout = statusJSONObject.data.map((stageScreenWithLayout: { screen: { uuid: string, name: string, index: number }, layout: {uuid: string, name: string, index: number} }) => 
-			({uuid:stageScreenWithLayout.screen.uuid, name:stageScreenWithLayout.screen.name, varid:'stagescreen_'+stageScreenWithLayout.screen.uuid.replace(/-/g,'')+'_layout', index:stageScreenWithLayout.screen.index, layout_uuid:stageScreenWithLayout.layout.uuid, layout_name:stageScreenWithLayout.layout.name, layout_index:stageScreenWithLayout.layout.index}))
+			({id:{uuid:stageScreenWithLayout.screen.uuid, name:stageScreenWithLayout.screen.name, index:stageScreenWithLayout.screen.index}, varid:'stagescreen_'+stageScreenWithLayout.screen.uuid.replace(/-/g,'')+'_layout', layout_uuid:stageScreenWithLayout.layout.uuid, layout_name:stageScreenWithLayout.layout.name, layout_index:stageScreenWithLayout.layout.index}))
 
 		// Create a list of stage screens in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.stageScreenChoices = statusJSONObject.data.map((stageScreenWithLayout: {screen :{uuid: string, name:string}}) => ({id:stageScreenWithLayout.screen.uuid, label:stageScreenWithLayout.screen.name}))
@@ -708,7 +773,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	// Return config fields for web config
 	getConfigFields() {
-		return GetConfigFields()
+		return GetConfigFields(this.midi_input)
 	}
 
 	initActions() {

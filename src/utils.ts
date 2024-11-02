@@ -448,6 +448,7 @@ export const options: Options = {
 		choices: [
 			{ id: 'show', label: 'Show' },
 			{ id: 'hide', label: 'Hide' },
+			{ id: 'toggle', label: 'Toggle' },
 		],
 		default: 'show',
 	},
@@ -910,18 +911,20 @@ export const options: Options = {
 
 // Used for module local cache of state
 // varid is a clean form of the variable ID with - removed from UUID
-export type ProTimer = {uuid: string, time: string, name: string, varid: string, state: string, index: number}
-export type StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
-export type ProMessageToken = {name:string,text?:{text:string},timer?:{allows_overrun:boolean, id:{uuid: string, name: string, index: number}}} //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
-export type ProMessage = {id:{uuid: string, name: string, index: number},tokens:ProMessageToken[]}
+export type ProID = {uuid: string, name: string, index: number}
+export type ProTimer = {id:ProID, time: string, varid: string, state: string}
+export type StageScreenWithLayout = {id:ProID, varid: string, layout_uuid: string, layout_name: string, layout_index: number}
+export type ProMessageToken = {name:string,text?:{text:string},timer?:{id:ProID, allows_overrun:boolean}} //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
+export type ProMessage = {id:ProID,tokens:ProMessageToken[]}
 export type ProLayersStatus = {'video_input': boolean, 'media': boolean, 'slide': boolean, 'announcements': boolean, 'props': boolean, 'messages': boolean, 'audio': boolean}
 export type ProTransportLayersStatus = {'presentation': boolean, 'announcement': boolean, 'audio': boolean}
-export type ProId = {id:{uuid: string, name: string, index: number}}
+export type ProProp = {id:ProID, is_active:boolean}
 
 export type ProPresenterStateStore = {
 	proTransportLayersStatus: ProTransportLayersStatus,
 	proLayersStatus: ProLayersStatus,
 	proTimers: ProTimer[],
+	proProps: ProProp[],
 	stageScreensWithLayout: StageScreenWithLayout[],
 	messageTokenInputs: CompanionInputFieldTextInput[], // Dynamically created text inputs for ALL message tokens across ALL messages.  Where the ID of each input is in form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName' and it's visbility is based on the uuid of the selected message.
 	looksChoices: DropdownChoice[],
@@ -934,7 +937,7 @@ export type ProPresenterStateStore = {
 	groupChoices: DropdownChoice[],
 	messageChoices: DropdownChoice[],
 	clearGroupChoices: DropdownChoice[],
-	activeLookID: ProId,
+	activeLookID: ProID,
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps

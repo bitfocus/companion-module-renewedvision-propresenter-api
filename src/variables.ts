@@ -183,15 +183,15 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	for (const proTimer of propresenterStateStore.proTimers) {
 		variables.push(
 		{
-			name: proTimer.name,
+			name: proTimer.id.name,
 			variableId: proTimer.varid,
 		},
 		{
-			name: proTimer.name + ' (Seconds)',
+			name: proTimer.id.name + ' (Seconds)',
 			variableId: proTimer.varid + '_seconds',
 		},
 		{
-			name: proTimer.name + ' (Custom Format)',
+			name: proTimer.id.name + ' (Custom Format)',
 			variableId: proTimer.varid + '_custom',
 		},
 	)
@@ -200,7 +200,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
 	for (const stageScreenWithLayout of propresenterStateStore.stageScreensWithLayout) {
 		variables.push({
-			name: stageScreenWithLayout.name,
+			name: stageScreenWithLayout.id.name,
 			variableId: stageScreenWithLayout.varid
 		})
 	}

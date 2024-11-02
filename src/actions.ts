@@ -685,6 +685,13 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'hide':
 						instance.ProPresenter.propIdClear(prop_id)
 						break
+					case 'toggle':
+						if (instance.propresenterStateStore.proProps.find(proProp => proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id))?.is_active == true) {
+							instance.ProPresenter.propIdClear(prop_id)
+						} else {
+							instance.ProPresenter.propIdTrigger(prop_id)
+						}
+						break
 					default:
 						instance.log('debug', 'Invalid prop_operation: ' + actionEvent.options.prop_operation)
 				}
@@ -776,7 +783,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				}
 
 				// Capture the current state of selected timer (based on current state data in propresenterStateStore)
-				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.uuid == timerID)
+				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.id.uuid == timerID)
 
 				// Determine action to "toggle" current timer state
 				let timerToggleOperation: ProPresenterTimerOperation = 'stop'
