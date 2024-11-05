@@ -108,6 +108,18 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_look_name',
 	})
 	variables.push({
+		name: 'Focused Presentation Index',
+		variableId: 'focused_presentation_index',
+	})
+	variables.push({
+		name: 'Focused Presentation Name',
+		variableId: 'focused_presentation_name',
+	})
+	variables.push({
+		name: 'Focused Presentation UUID',
+		variableId: 'focused_presentation_uuid',
+	})
+	variables.push({
 		name: 'Active Look UUID',
 		variableId: 'active_look_uuid',
 	})
@@ -118,6 +130,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	variables.push({
 		name: 'Stage Screen Active',
 		variableId: 'stage_screen_active',
+	})
+	variables.push({
+		name: 'Stage Message',
+		variableId: 'stage_message',
 	})
 	variables.push({
 		name: 'Video Countdown Timer',
@@ -171,15 +187,15 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	for (const proTimer of propresenterStateStore.proTimers) {
 		variables.push(
 		{
-			name: proTimer.name,
+			name: proTimer.id.name,
 			variableId: proTimer.varid,
 		},
 		{
-			name: proTimer.name + ' (Seconds)',
+			name: proTimer.id.name + ' (Seconds)',
 			variableId: proTimer.varid + '_seconds',
 		},
 		{
-			name: proTimer.name + ' (Custom Format)',
+			name: proTimer.id.name + ' (Custom Format)',
 			variableId: proTimer.varid + '_custom',
 		},
 	)
@@ -188,7 +204,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
 	for (const stageScreenWithLayout of propresenterStateStore.stageScreensWithLayout) {
 		variables.push({
-			name: stageScreenWithLayout.name,
+			name: stageScreenWithLayout.id.name,
 			variableId: stageScreenWithLayout.varid
 		})
 	}

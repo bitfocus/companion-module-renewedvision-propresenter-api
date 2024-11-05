@@ -685,6 +685,13 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'hide':
 						instance.ProPresenter.propIdClear(prop_id)
 						break
+					case 'toggle':
+						if (instance.propresenterStateStore.proProps.find(proProp => proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id))?.is_active == true) {
+							instance.ProPresenter.propIdClear(prop_id)
+						} else {
+							instance.ProPresenter.propIdTrigger(prop_id)
+						}
+						break
 					default:
 						instance.log('debug', 'Invalid prop_operation: ' + actionEvent.options.prop_operation)
 				}
@@ -696,17 +703,21 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Perform an operation on the stage display',
 			options: [options.stagedisplay_operation, options.stage_message_text, options.stagescreen_id_dropdown, options.stagescreen_id_text, options.stagescreenlayout_id_dropdown, options.stagescreenlayout_id_text],
 			callback: async (actionEvent) => {
+				const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
 				switch (actionEvent.options.stagedisplay_operation) {
 					case 'show_stage_message':
-						const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
-						instance.ProPresenter.stageMessage(stage_message_text).then((requestAndResponseJSON: RequestAndResponseJSONValue) => { // Leaving this here as an example to process an error from a ProPresenter request locally (instead of the catch-all emitter)
-								if (!requestAndResponseJSON.ok){
-									instance.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with body: ' + stage_message_text)
-								}
-						})
+						instance.ProPresenter.stageMessage(stage_message_text)
 						break
 					case 'hide_stage_message':
 						instance.ProPresenter.stageMessageHide()
+						break
+					case 'toggle_stage_message':
+						if (stage_message_text == instance.getVariableValue('stage_message') as string){
+							instance.ProPresenter.stageMessageHide()
+						} else {
+							instance.ProPresenter.stageMessage(stage_message_text)
+						}
+
 						break
 					case 'set_layout':
 						let stagescreen_id: string = ''
@@ -763,17 +774,38 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Performs an operation on the specified timer.',
 			options: [options.timer_id_dropdown, options.timer_id_text, options.timer_operation, options.timer_increment_value, options.timer_type, options.timer_duration, options.timer_time_of_day, options.timer_timeperiod, options.timer_start_time, options.timer_end_time, options.timer_allows_overrun, options.timer_optional_operation, options.timer_new_name],
 			callback: async (actionEvent) => {
+				// Determine the uuid of selected timer
 				let timerID: string = ''
-				if (actionEvent.options.video_input_id_dropdown == 'manually_specify_videoinputsid')
+				if (actionEvent.options.timer_id_dropdown == 'manually_specify_timerid') {
 					timerID = await instance.parseVariablesInString(actionEvent.options.timer_id_text as string)
-				else
+				} else {
 					timerID = actionEvent.options.timer_id_dropdown as string
+				}
+
+				if (instance.config.exta_debug_logs) {
+					instance.log('debug', 'timerID: ' +  timerID)
+				}
+
+				// Capture the current state of selected timer (based on current state data in propresenterStateStore)
+				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.id.uuid == timerID || proTimerState.id.name == timerID || proTimerState.id.index == parseInt(timerID))
+
+				// Determine action to "toggle" current timer state
+				let timerToggleOperation: ProPresenterTimerOperation = 'stop'
+				if (thisProTimerState && instance.config.exta_debug_logs) {
+					instance.log('debug', 'Checking thisProTimerState.state: ' +  thisProTimerState.state)
+				}
+				if (thisProTimerState && (thisProTimerState.state == 'stopped' || thisProTimerState.state == 'overran')) {
+					timerToggleOperation = 'start'
+				}
 
 				switch (actionEvent.options.timer_operation) {
 					case 'start':
 					case 'stop':
 					case 'reset':
 						instance.ProPresenter.timerIdOperation(timerID, actionEvent.options.timer_operation as ProPresenterTimerOperation)
+						break
+					case 'toggle':
+						instance.ProPresenter.timerIdOperation(timerID, timerToggleOperation)
 						break
 					case 'increment':
 						const timer_increment_value = await instance.parseVariablesInString(actionEvent.options.timer_increment_value as string)
@@ -790,7 +822,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						const startTimeNumber: number = (startTimeString.includes(":")) ? timestampToSeconds(startTimeString) : Number(startTimeString)
 						const endTimeString: string = await instance.parseVariablesInString(actionEvent.options.timer_end_time as string)
 						const endTimeNumber: number = (endTimeString.includes(":")) ? timestampToSeconds(endTimeString) : Number(endTimeString)
-						const optionalOperation: ProPresenterTimerOperation | undefined = (actionEvent.options.timer_optional_operation  == 'none') ? undefined : actionEvent.options.timer_optional_operation as ProPresenterTimerOperation
+						const optionalOperation: ProPresenterTimerOperation | undefined = (actionEvent.options.timer_optional_operation  == 'none') ? undefined : (actionEvent.options.timer_optional_operation  == 'toggle') ? timerToggleOperation : actionEvent.options.timer_optional_operation as ProPresenterTimerOperation
 
 						switch (timerType) {
 							case 'countdown':
@@ -954,7 +986,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	// Update group choices with data from propresenterStateStore
 	const groupChoicesDropDown = actions[ActionId.activePresentationOperation]?.options[2] as CompanionInputFieldDropdown  // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
 	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
-	groupChoicesDropDown.choices = instance.propresenterStateStore.groupChoices.concat(manual_group_choice as DropdownChoice) 
+	const groupChoices:DropdownChoice[] = instance.propresenterStateStore.proGroups.map((group: {id: {uuid: string, name:string}}) => ({id:group.id.name, label:group.id.name})) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid is currently working in the API, so using name as a workaround - at the risk of clashing id user had two groups with same name!
+	groupChoicesDropDown.choices = groupChoices.concat(manual_group_choice as DropdownChoice) 
 	groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
 
 	// Update clearGroup choices with data from propresenterStateStore
