@@ -173,7 +173,10 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'group'}, // TODO: update to first group after initial state is retrieved
+							options: {
+								clear_layer_or_group_dropdown: 'group',
+								clear_group_id_dropdown: instance.propresenterStateStore.clearGroupChoices[0].id,
+							},
 						},
 					],
 					up: [],
@@ -2894,7 +2897,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			feedbacks: [],
 		},
 		// **** TIMER *****
-		// TODO: These are dynamically added in code below.
+		// These are dynamically added in code below.
 		// **** VIDEO INPUT *****
 		// TODO: These are dynamically added in code below.
 
@@ -3873,7 +3876,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			category: 'Timers',
 			type: 'button',
 			style: {
-				text: '1 Min\\n\\n\\n' + timer_label,
+				text: '+1 Min\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
 				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
@@ -3918,7 +3921,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			category: 'Timers',
 			type: 'button',
 			style: {
-				text: '1 Min\\n\\n\\n' + timer_label,
+				text: '-1 Min\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
 				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer

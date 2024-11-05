@@ -188,7 +188,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"timer/system_time":this.systemTimeUpdated,
 			} ,2000)
 			
-			// TODO: consider moving this to after all intiial state is gathered.
+			// TODO: consider moving this to after all intial state is gathered??
 			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
 			
 			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options:any) => {
