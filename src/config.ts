@@ -29,7 +29,8 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 	const midi_port_dropdown: CompanionInputFieldDropdown = {
 		type: 'dropdown',
 		id: 'midi_port_dropdown',
-		label: 'Midi Port',
+		tooltip: 'The MIDI port that this module will listen to and push Companion buttons when a MIDI Note-On msg is recieved. Channel/Note/Intensity => page/row/column)',
+		label: 'Midi-Port Name',
 		choices: [],
 		default: 'virtual'
 	}
@@ -97,10 +98,18 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 			default: 'CompanionProPresenterMIDI'
 		},
 		{
+			type: 'static-text',
+			label: '',
+			id: 'advanced',
+			width: 12,
+			value: '<b>🎹 Are you wanting "push" Companion buttons via MIDI?...</b><br>This feature uses a "hack" to push buttons by calling the Companion HTTP API.  To do this, it needs to know the network port that your instance of Companion is listening to. Unfortunately, there is no way for this module to lookup your Companion network port - so you will need to manually update it here.\
+			<br>The default port is typically 8000. You can check the Companion network port in the Companion Window (or look up at the address bar now).'
+		},
+		{
 			type: 'number',
 			id: 'companion_port',
-			label: 'Companion Port (For MIDI Button Pushing)',
-			tooltip: 'There is no way for this module to KNOW your Companion port - you will need to update it here as well if it\'s not 8000!',
+			label: 'Companion Network Port',
+			tooltip: 'There is no way for this module to KNOW your Companion network port - you will need to update it here, if it\'s not the default of 8000!',
 			width: 4,
 			default: 8000,
 			min: 1,

@@ -703,17 +703,21 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Perform an operation on the stage display',
 			options: [options.stagedisplay_operation, options.stage_message_text, options.stagescreen_id_dropdown, options.stagescreen_id_text, options.stagescreenlayout_id_dropdown, options.stagescreenlayout_id_text],
 			callback: async (actionEvent) => {
+				const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
 				switch (actionEvent.options.stagedisplay_operation) {
 					case 'show_stage_message':
-						const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
-						instance.ProPresenter.stageMessage(stage_message_text).then((requestAndResponseJSON: RequestAndResponseJSONValue) => { // Leaving this here as an example to process an error from a ProPresenter request locally (instead of the catch-all emitter)
-								if (!requestAndResponseJSON.ok){
-									instance.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with body: ' + stage_message_text)
-								}
-						})
+						instance.ProPresenter.stageMessage(stage_message_text)
 						break
 					case 'hide_stage_message':
 						instance.ProPresenter.stageMessageHide()
+						break
+					case 'toggle_stage_message':
+						if (stage_message_text == instance.getVariableValue('stage_message') as string){
+							instance.ProPresenter.stageMessageHide()
+						} else {
+							instance.ProPresenter.stageMessage(stage_message_text)
+						}
+
 						break
 					case 'set_layout':
 						let stagescreen_id: string = ''
@@ -772,7 +776,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				// Determine the uuid of selected timer
 				let timerID: string = ''
-				if (actionEvent.options.video_input_id_dropdown == 'manually_specify_videoinputsid') {
+				if (actionEvent.options.timer_id_dropdown == 'manually_specify_timerid') {
 					timerID = await instance.parseVariablesInString(actionEvent.options.timer_id_text as string)
 				} else {
 					timerID = actionEvent.options.timer_id_dropdown as string
@@ -783,7 +787,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				}
 
 				// Capture the current state of selected timer (based on current state data in propresenterStateStore)
-				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.id.uuid == timerID)
+				const thisProTimerState = instance.propresenterStateStore.proTimers.find(proTimerState => proTimerState.id.uuid == timerID || proTimerState.id.name == timerID || proTimerState.id.index == parseInt(timerID))
 
 				// Determine action to "toggle" current timer state
 				let timerToggleOperation: ProPresenterTimerOperation = 'stop'
@@ -982,7 +986,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	// Update group choices with data from propresenterStateStore
 	const groupChoicesDropDown = actions[ActionId.activePresentationOperation]?.options[2] as CompanionInputFieldDropdown  // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
 	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
-	groupChoicesDropDown.choices = instance.propresenterStateStore.groupChoices.concat(manual_group_choice as DropdownChoice) 
+	const groupChoices:DropdownChoice[] = instance.propresenterStateStore.proGroups.map((group: {id: {uuid: string, name:string}}) => ({id:group.id.name, label:group.id.name})) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid is currently working in the API, so using name as a workaround - at the risk of clashing id user had two groups with same name!
+	groupChoicesDropDown.choices = groupChoices.concat(manual_group_choice as DropdownChoice) 
 	groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
 
 	// Update clearGroup choices with data from propresenterStateStore

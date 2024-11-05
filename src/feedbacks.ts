@@ -1,5 +1,5 @@
 import { combineRgb, CompanionFeedbackDefinitions, CompanionInputFieldDropdown, DropdownChoice } from '@companion-module/base'
-import { ProLayersStatus } from './utils'
+import { ProLayersStatus, ProScreensStatus, StageScreenWithLayout } from './utils'
 import { DeviceConfig, InstanceBaseExt } from './config'
 
 export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): CompanionFeedbackDefinitions {
@@ -16,7 +16,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 					id: 'layer',
 					type: 'dropdown',
 					label: 'Layer',
-					tooltip: 'Any layer will trigger this feedback if any layer is active',
+					tooltip: '"Any Layer" will trigger this feedback if any layer is active',
 					choices: [
 						{id: 'audio', label:'Audio'},
 						{id: 'messages', label:'Messages'},
@@ -34,7 +34,152 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				if (feedback.options.layer == 'any') {
 					return Object.values(instance.propresenterStateStore.proLayersStatus).some(status => status) // If ANY layer is on then return true!
 				} else {
-					return instance.propresenterStateStore.proLayersStatus[feedback.options.layer as keyof ProLayersStatus] // If select layer is on then return true
+					return instance.propresenterStateStore.proLayersStatus[feedback.options.layer as keyof ProLayersStatus] // If selected layer is on then return true
+				}
+			},
+		},
+		Screens: {
+			name: 'Screens',
+			type: 'boolean',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 0, 0),
+				color: combineRgb(255, 192, 192),
+			},
+			options: [
+				{
+					id: 'screens',
+					type: 'dropdown',
+					label: 'Screens',
+					choices: [
+						{id: 'audience', label:'Audience'},
+						{id: 'stage', label:'Stage'},
+					],
+					default: 'audience',
+				},
+			],
+			callback: (feedback) => {
+				return instance.propresenterStateStore.proScreensStatus[feedback.options.screens as keyof ProScreensStatus]
+			},
+		},
+		StageMessage: {
+			name: 'Stage Message',
+			type: 'boolean',
+			defaultStyle: {
+				bgcolor: combineRgb(255, 0, 0),
+				color: combineRgb(255, 192, 192),
+			},
+			options: [
+				{
+					id: 'check_option',
+					type: 'dropdown',
+					label: 'Check',
+					choices: [
+						{id: 'any_stage_message_active', label:'Any Stage Message Is Active'},
+						{id: 'specific_stage_message_active', label:'Specific Stage Message Is Active'},
+					],
+					default: 'any_stage_message_active',
+				},
+				{
+					id: 'stage_message_text',
+					type: 'textinput',
+					label: 'Specific Stage Message Text To Check For',
+					tooltip: 'Stage message text that this feedback will return true when it matches and is live',
+					isVisible: ((options) => options.check_option == 'specific_stage_message_active'),
+					useVariables: true
+				},
+			],
+			callback: async (feedback, context) => {
+				if (instance.config.exta_debug_logs) {
+					instance.log('debug', 'Feedback checking stage message: ' + instance.propresenterStateStore.stageMessage)
+				}
+				const stage_message_text = await context.parseVariablesInString(feedback.options.stage_message_text as string)
+				return feedback.options.check_option == 'any_stage_message_active' ? instance.propresenterStateStore.stageMessage.length > 0 : instance.propresenterStateStore.stageMessage == stage_message_text
+			},
+		},
+		StageLayouts: {
+			name: 'Stage Layouts',
+			type: 'boolean',
+			defaultStyle: {
+				color: combineRgb(0, 255, 0),
+				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+						nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
+						4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
+						CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
+						uWRylcHIsYAqVEiOH/wPfndrFiZjblIwDnS/2PbHCNCzCzTrtv19bNvNE8D/DFxpbX+1Acx8kl5va5EjoG8buLhua/IecLkDDDzp\
+						kiE5kp+mUCgA72f0TTmg/xYIrLm9tfZx+gBkqKvkDXBwCIwWKXvd4929nb39e6bV3w/egHLSR+MrVwAAAAZiS0dEAPoA+gD6Hvwe\
+						hwAAAAlwSFlzAAAN1wAADdcBQiibeAAAAAd0SU1FB+gLBBc2C8nWaAEAAAD+SURBVEjH7dQ9SkNBGIXhZ26sxNLGUsEmInZpdB1J\
+						4woEl2DlEgQLa0uLgBuw0EIJASGpLW1sBLG4RcbCG5A4mZjLLRQ8MM135rzzDfMT5BSt4wj7VeUO54KXeZGQga3hEhszzjMOBW+p\
+						WJHpr5uAqWrdeaEccKuOlwO+1vFywGtMEvVJ5S0BjLbRxjjhjtGu5iw45WgVpzjwM93iRPA+D3iGjuX0IDj+vuVotwYMOlUWrHwx\
+						Wuirp5Y/oyC6wF5DvMcCowYbHBUYNAgcTIFlA7DyExiUGDYAHArK6T28IvkLb2In8ZafEnNvFq8Z9UT3M6OXixRN38N/4C8EfgC9\
+						vzhvXS3LwgAAAABJRU5ErkJggg==',
+			},
+			options: [
+				{
+					id: 'stagescreen_id_dropdown',
+					type: 'dropdown',
+					label: 'Stage Screen',
+					choices: [
+						{ id: 'manually_specify_stagescreenid', label: 'Manually Specify Stage Screen ID Below' },
+					],
+					default: '',
+				},
+				{
+					id: 'stagescreen_id_text',
+					type: 'textinput',
+					label: 'Stage Screen Id',
+					tooltip: 'Enter Stage Screen Name or Index or UUID',
+					isVisible: ((options) => 
+						options.stagescreen_id_dropdown == 'manually_specify_stagescreenid'
+				),
+					default: '',
+					useVariables: true,
+				},
+				{
+					type: 'dropdown',
+					label: 'Stage Layout',
+					tooltip: 'Choose an existing Stage Screen Layout\nOr manually specify via text/variable',
+					id: 'stagescreenlayout_id_dropdown',
+					choices: [
+						{ id: 'manually_specify_stagescreenlayoutid', label: 'Manually Specify Stage Screen Layout ID Below' },
+					],
+					default: '',
+				},
+				{
+					type: 'textinput',
+					label: 'Stage Layout Id',
+					tooltip: 'Enter Stage Screen Layout Name or Index or UUID',
+					id: 'stagescreenlayout_id_text',
+					isVisible: ((options) => 
+						options.stagescreenlayout_id_dropdown == 'manually_specify_stagescreenlayoutid'
+					),
+					default: '',
+					useVariables: true,
+				},
+			],
+			callback: async (feedback, context) => {
+				let stage_screen_id:string =''
+				if (feedback.options.stagescreen_id_dropdown == 'manually_specify_stagescreenid') {
+					stage_screen_id = await context.parseVariablesInString(feedback.options.stagescreen_id_text as string)
+				} else {
+					stage_screen_id = feedback.options.stagescreen_id_dropdown as string
+				}
+
+				let stage_layout_id:string =''
+				if (feedback.options.stagescreenlayout_id_dropdown == 'manually_specify_stagescreenlayoutid') {
+					stage_layout_id = await context.parseVariablesInString(feedback.options.stagescreenlayout_id_text as string)
+				} else {
+					stage_layout_id = feedback.options.stagescreenlayout_id_dropdown as string
+				}
+
+				if (instance.config.exta_debug_logs) {
+					instance.log('debug', 'Feedback checking stage screen: ' + stage_screen_id + ' for layout: ' + stage_layout_id + '. propresenterStateStore' + JSON.stringify(instance.propresenterStateStore.stageScreensWithLayout))
+				}
+
+				const selected_stage_screen: StageScreenWithLayout | undefined = instance.propresenterStateStore.stageScreensWithLayout.find(stageScreenWithLayout => stageScreenWithLayout.id.uuid == stage_screen_id || stageScreenWithLayout.id.name == stage_screen_id || stageScreenWithLayout.id.index == parseInt(stage_screen_id))
+				if (selected_stage_screen == undefined) {
+					return false // Can't find specified stage screen
+				} else {
+					return selected_stage_screen.layout_uuid == stage_layout_id || selected_stage_screen.layout_name == stage_layout_id || selected_stage_screen.layout_index == parseInt(stage_layout_id)
 				}
 			},
 		},
@@ -246,7 +391,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				
 				if (instance.config.exta_debug_logs)
 					instance.log('debug', 'Prop Active Feedback prop_id selected = ' + prop_id + ' Feedback: ' + JSON.stringify(feedback))
-				
+
 				return instance.propresenterStateStore.proProps.find(proProp => proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id))?.is_active == true
 			},
 		},
@@ -335,6 +480,24 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	const manual_look_choice = active_look_dropdown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is ALWAYS a placeholder, that when selected, allows for manually specifing the Look (in another text input)
 	active_look_dropdown.choices = instance.propresenterStateStore.looksChoices.concat(manual_look_choice as DropdownChoice)
 	active_look_dropdown.default = active_look_dropdown.choices[0].id
+
+	// Update stagescreen choices with data from propresenterStateStore
+	const stageScreenChoicesDropDown = feedbackDefinitions.StageLayouts?.options[0] as CompanionInputFieldDropdown
+	const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
+	stageScreenChoicesDropDown.choices = instance.propresenterStateStore.stageScreenChoices.concat(manual_stagescreen_choice as DropdownChoice) 
+	stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
+	
+	// Update stagescreen layout choices with data from propresenterStateStore
+	const stageScreenLayoutChoicesDropDown = feedbackDefinitions.StageLayouts?.options[2] as CompanionInputFieldDropdown
+	const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
+	stageScreenLayoutChoicesDropDown.choices = instance.propresenterStateStore.stageScreenLayoutChoices.concat(manual_stagescreenlayout_choice as DropdownChoice) 
+	stageScreenLayoutChoicesDropDown.default = stageScreenLayoutChoicesDropDown.choices[0].id
+
+	// Update timer choices with data from propresenterStateStore
+	const timerChoicesDropDown = feedbackDefinitions.TimerState?.options[0] as CompanionInputFieldDropdown
+	const manual_timer_choice = timerChoicesDropDown.choices.pop() // The last item in the timer choices list (after all the current timers list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Timer (in another text input)
+	timerChoicesDropDown.choices = instance.propresenterStateStore.timerChoices.concat(manual_timer_choice as DropdownChoice) 
+	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
 
 	return feedbackDefinitions
 }

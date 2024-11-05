@@ -287,10 +287,10 @@ export const options: Options = {
 		label: 'Group ID',
 		tooltip: 'Enter Group Name or Index or UUID',
 		id: 'group_id_text',
-		isVisible: ((options) => options.group_id_dropdown == 'manually_specify_groupid' ||
-			options.active_presentation_operation == 'group' ||
+		isVisible: ((options) => options.group_id_dropdown == 'manually_specify_groupid' &&
+			(options.active_presentation_operation == 'group' ||
 			options.focused_presentation_operation == 'group' ||
-			options.specific_presentation_operation == 'group'
+			options.specific_presentation_operation == 'group')
 		),
 		default: '',
 		useVariables: true,
@@ -479,6 +479,7 @@ export const options: Options = {
 		choices: [
 			{ id: 'show_stage_message', label: 'Show Stage Message' },
 			{ id: 'hide_stage_message', label: 'Hide Stage Message' },
+			{ id: 'toggle_stage_message', label: 'Toggle Stage Message' },
 			{ id: 'set_layout', label: 'Set Stage Dipslay Layout' },
 		],
 		default: 'show_stage_message',
@@ -488,7 +489,7 @@ export const options: Options = {
 		label: 'Stage Message Text',
 		tooltip: 'Enter text to display on stage message.\nEscape \" and \\ with a leading \\',
 		id: 'stage_message_text',
-		isVisible: ((options) => options.stagedisplay_operation == 'show_stage_message'),
+		isVisible: ((options) => options.stagedisplay_operation == 'show_stage_message' || options.stagedisplay_operation == 'toggle_stage_message'),
 		default: '',
 		useVariables: true,
 	},
@@ -517,7 +518,7 @@ export const options: Options = {
 	},
 	stagescreenlayout_id_text: {
 		type: 'textinput',
-		label: 'Stage Screen Id',
+		label: 'Stage Layout Id',
 		tooltip: 'Enter Stage Screen Layout Name or Index or UUID',
 		id: 'stagescreenlayout_id_text',
 		isVisible: ((options) => 
@@ -529,7 +530,7 @@ export const options: Options = {
 	},
 	stagescreenlayout_id_dropdown: {
 		type: 'dropdown',
-		label: 'Stage Screen',
+		label: 'Stage Layout',
 		tooltip: 'Choose an existing Stage Screen Layout\nOr manually specify via text/variable',
 		id: 'stagescreenlayout_id_dropdown',
 		isVisible: ((options) =>
@@ -758,7 +759,7 @@ export const options: Options = {
 		label: 'Allows Overrun',
 		id: 'timer_allows_overrun',
 		isVisible: ((options) => options.timer_operation == 'set'),
-		default: false,
+		default: true,
 	},
 	timer_start_time: {
 		type: 'textinput',
@@ -916,13 +917,17 @@ export type ProTimer = {id:ProID, time: string, varid: string, state: string}
 export type StageScreenWithLayout = {id:ProID, varid: string, layout_uuid: string, layout_name: string, layout_index: number}
 export type ProMessageToken = {name:string,text?:{text:string},timer?:{id:ProID, allows_overrun:boolean}} //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
 export type ProMessage = {id:ProID,tokens:ProMessageToken[]}
-export type ProLayersStatus = {'video_input': boolean, 'media': boolean, 'slide': boolean, 'announcements': boolean, 'props': boolean, 'messages': boolean, 'audio': boolean}
+export type ProLayersStatus = {video_input: boolean, media: boolean, slide: boolean, announcements: boolean, props: boolean, messages: boolean, audio: boolean}
+export type ProScreensStatus = {'audience': boolean, 'stage': boolean,} 
 export type ProTransportLayersStatus = {'presentation': boolean, 'announcement': boolean, 'audio': boolean}
 export type ProProp = {id:ProID, is_active:boolean}
+export type ProGroup = {id:ProID, color:{red:number, green: number, blue: number, alpha: number} }
 
 export type ProPresenterStateStore = {
 	proTransportLayersStatus: ProTransportLayersStatus,
 	proLayersStatus: ProLayersStatus,
+	proScreensStatus: ProScreensStatus,
+	proGroups: ProGroup[],
 	proTimers: ProTimer[],
 	proProps: ProProp[],
 	stageScreensWithLayout: StageScreenWithLayout[],
@@ -931,13 +936,13 @@ export type ProPresenterStateStore = {
 	macroChoices: DropdownChoice[],
 	propChoices: DropdownChoice[],
 	videoInputChoices: DropdownChoice[],
-	timerChoices: DropdownChoice[],
+	timerChoices: DropdownChoice[], // TODO: Consider re-fafactoring code to use the proTimers array instead of this array (not important - not even sure it makes the code any "better")
 	stageScreenChoices: DropdownChoice[],
 	stageScreenLayoutChoices: DropdownChoice[],
-	groupChoices: DropdownChoice[],
 	messageChoices: DropdownChoice[],
 	clearGroupChoices: DropdownChoice[],
 	activeLookID: ProID,
+	stageMessage: string,
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps

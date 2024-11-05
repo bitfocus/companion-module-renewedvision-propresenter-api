@@ -24,8 +24,13 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 		announcements: false,
 		props: false,
 		messages: false,
-		audio: false
+		audio: false,
 	},
+	proScreensStatus: {
+		audience: false,
+		stage: false,
+	},
+	proGroups: [],
 	proTimers: [],
 	proProps: [],
 	stageScreensWithLayout: [],
@@ -37,7 +42,6 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 	timerChoices: [],
 	stageScreenChoices: [],
 	stageScreenLayoutChoices: [],
-	groupChoices: [],
 	messageChoices: [],
 	clearGroupChoices: [],
 	activeLookID: {
@@ -45,6 +49,7 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 		name: '',
 		index: -1
 	},
+	stageMessage: ''
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
@@ -171,6 +176,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"props":this.propsUpdated,
 				"stage/layout_map":this.stageScreensUpdated,
 				"stage/layouts":this.stageScreenLayoutsUpdated,
+				"stage/message":this.stageMessageUpdated,
 				"messages":this.messagesUpdated,
 				"status/audience_screens":this.screenStatusUpdated,
 				"status/stage_screens":this.screenStatusUpdated,
@@ -355,6 +361,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				// We have gathered initial state required to set these up:
 				this.initPresets()
 				this.initFeedbacks()
+				this.checkFeedbacks()
 
 				// Watchdog function - makes checks and updates every second.
 				setInterval(() => {
@@ -422,6 +429,26 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 	}
 
+	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
+		// The definition of one or more timers has been updated/added - refresh variable definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
+		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
+
+		// Update localState with new timer definitions
+		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({id:{uuid:timer.id.uuid, name:timer.id.name, index:timer.id.index}, time:'',  varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'stopped'}))
+
+		// Update list of Timers in the dropdown choices format { id: string, label: string}
+		this.propresenterStateStore.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
+		// Update Actions (this is rate limited)
+		this.initActions()
+
+		// Reset variable definitions (rate-limited)
+		this.initVariables()
+
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'localstate.timers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
+		}
+	}
+
 	timersCurrentUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		// We have new values for one or more of the timers.
 		if (this.config.exta_debug_logs) {
@@ -442,14 +469,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			timers_current_json: JSON.stringify(statusJSONObject.data), ...newTimerValues
 		})
 
-		// Update the .state for each of the defined timers.
+		// Update the .state and .time for each of the defined timers. // TODO: let's build a feedback based on time values - have to perform comparisons etc with hh:mm:ss format - for now, you can manually create this feedback with internal variable checks against timer (seconds) vars
 		this.propresenterStateStore.proTimers = this.propresenterStateStore.proTimers.map(proTimer => {
 			const newTimer = statusJSONObject.data.find((newTimer: {id: { uuid: string }}) => newTimer.id.uuid == proTimer.id.uuid)
 			if (this.config.exta_debug_logs) {
 				this.log('debug', 'newTimer: ' + JSON.stringify(newTimer))
 			}
 			return newTimer
-			? { ...proTimer, state: newTimer.state } // Update only the 'state' property
+			? { ...proTimer, state: newTimer.state, time: newTimer.time} // Update the 'state' and 'time' properties
 			: proTimer	// No match - Keep original (This probably should not happen - let the list be updated in timersUpdate())
 		})
 
@@ -461,10 +488,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	screenStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
-		if (statusJSONObject.url.includes('audience'))
+		if (statusJSONObject.url.includes('audience')) {
 			SetVariableValues(this, {audience_screen_active: statusJSONObject.data})
-		if (statusJSONObject.url.includes('stage'))
+			this.propresenterStateStore.proScreensStatus.audience = statusJSONObject.data
+		}
+		if (statusJSONObject.url.includes('stage')) {
 			SetVariableValues(this, {stage_screen_active: statusJSONObject.data})
+			this.propresenterStateStore.proScreensStatus.stage = statusJSONObject.data
+		}
+		this.checkFeedbacks()
 	}
 
 	layersStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
@@ -474,26 +506,6 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	videoCountdownTimerUpdated = (videoCountdownTimerJSONObject: StatusUpdateJSON) => {
 		SetVariableValues(this, {video_countdown_timer: videoCountdownTimerJSONObject.data})
-	}
-
-	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
-		// The definition of one or more timers has been updated/added - refresh variable definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
-		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
-
-		// Update localState with new timer definitions
-		this.propresenterStateStore.proTimers = statusJSONObject.data.map((timer: { id: { uuid: string, name: string, index: number } }) => ({id:{uuid:timer.id.uuid, name:timer.id.name, index:timer.id.index}, time:'',  varid:'timer_'+timer.id.uuid.replace(/-/g,''), state:'stopped'}))
-
-		// Update list of Timers in the dropdown choices format { id: string, label: string}
-		this.propresenterStateStore.timerChoices = statusJSONObject.data.map((timer: {id: {uuid: string, name:string}}) => ({id:timer.id.uuid, label:timer.id.name}))
-		// Update Actions (this is rate limited)
-		this.initActions()
-
-		// Reset variable definitions (rate-limited)
-		this.initVariables()
-
-		if (this.config.exta_debug_logs) {
-			this.log('debug', 'localstate.timers: ' + JSON.stringify(this.propresenterStateStore.proTimers))
-		}
 	}
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
@@ -654,8 +666,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	globalGroupsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
-		// Create a list of global groups in the dropdown choices format  { id: string, label: string}
-		this.propresenterStateStore.groupChoices = statusJSONObject.data.map((group: {id: {uuid: string, name:string}}) => ({id:group.id.name, label:group.id.name})) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid fails, so using name as a workaround - at the risk of clashing id user had two groups with same name!
+		// Store global groups in propresenterStateStore
+		this.propresenterStateStore.proGroups = statusJSONObject.data
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'Got Groups: ' + JSON.stringify(this.propresenterStateStore.proGroups))
+		}
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
@@ -689,6 +704,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			...newStageScreensWithLayout
 		})
 
+		this.checkFeedbacks()
+
 		// Reset variable definitions (rate-limited)
 		this.initVariables()
 	}
@@ -697,8 +714,20 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'stageScreenLayoutsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of stage screen layouts in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.stageScreenLayoutChoices = statusJSONObject.data.map((stageScreenLayout: {id:{uuid: string, name:string}}) => ({id:stageScreenLayout.id.uuid, label:stageScreenLayout.id.name}))
+		
+		this.checkFeedbacks()
+
 		// Update Actions (this is rate limited)
 		this.initActions()
+	}
+
+	stageMessageUpdated  = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'stageMessageUpdated: ' + JSON.stringify(statusJSONObject.data))
+		this.propresenterStateStore.stageMessage = statusJSONObject.data
+		SetVariableValues(this, {
+			stage_message: statusJSONObject.data,
+		})
+		this.checkFeedbacks()
 	}
 
 	messagesUpdated = (statusJSONObject: StatusUpdateJSON) => {

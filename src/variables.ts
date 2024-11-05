@@ -132,6 +132,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'stage_screen_active',
 	})
 	variables.push({
+		name: 'Stage Message',
+		variableId: 'stage_message',
+	})
+	variables.push({
 		name: 'Video Countdown Timer',
 		variableId: 'video_countdown_timer',
 	})
