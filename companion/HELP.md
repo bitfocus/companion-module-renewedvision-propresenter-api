@@ -18,7 +18,7 @@ The module is still a work in progress - you will find it's missing some things 
 But it is complete "enough" to be tested by "early adopters" and you might even find it useful!  
 Over time, more features will be added.  
 Please also note that this documentation is also a work in progress. (I will keep working it - but if you want to contribue to this doco after exploring the module - then please do!)
-If you have any issues, please check the <a href="https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest/issues" target="_blank">known issues list</a> - and add your issue if it's not already there.
+If you have any issues, please check the <a href="https://github.com/bitfocus/companion-module-renewedvision-propresenter-api/issues" target="_blank">known issues list</a> - and add your issue if it's not already there.
 
 ### Configure ProPresenter To Be Controlled By Companion:
 To setup this module you will need the to do the following as a minimum:  
