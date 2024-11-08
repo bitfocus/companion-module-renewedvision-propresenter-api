@@ -1,5 +1,5 @@
 {
-	"name": "renewedvision-propresenter-rest",
+	"name": "renewedvision-propresenter-api",
 	"version": "0.6.0",
 	"main": "dist/index.js",
 	"scripts": {
@@ -13,7 +13,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest.git"
+		"url": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-api.git"
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.10.0",
