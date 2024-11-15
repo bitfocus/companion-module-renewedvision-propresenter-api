@@ -1,7 +1,7 @@
 {
 	"name": "renewedvision-propresenter-api",
-	"version": "0.6.1",
-	"main": "dist/index.js",
+	"version": "1.0.0",
+	"main": "dist/main.js",
 	"scripts": {
 		"prepare": "husky install",
 		"build": "rimraf dist && yarn build:main",
