@@ -1,6 +1,6 @@
 {
 	"name": "renewedvision-propresenter-api",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"main": "dist/main.js",
 	"scripts": {
 		"prepare": "husky install",
@@ -21,13 +21,13 @@
 		"renewedvision-propresenter": "^7.7.2"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^0.5.1",
+		"@companion-module/tools": "^1.5.1",
 		"@types/node": "^18.12",
 		"@types/ws": "^8.5.4",
 		"husky": "^8.0.1",
 		"lint-staged": "^13.0.3",
 		"rimraf": "^3.0.2",
-		"typescript": "~4.9"
+		"typescript": "^5.3.3"
 	},
 	"prettier": "@companion-module/tools/.prettierrc.json",
 	"lint-staged": {
