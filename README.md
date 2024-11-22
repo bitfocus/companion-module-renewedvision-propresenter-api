@@ -1,4 +1,4 @@
-# companion-module-renewedvision-propresenter-rest
+# companion-module-renewedvision-propresenter-api
 
 This is the "ProPresenter API" module that uses the open ProPresenter API made availabe in ProPresenter version 7.9 and later.
 This module is still in beta.
