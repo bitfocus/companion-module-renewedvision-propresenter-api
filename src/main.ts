@@ -66,6 +66,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		timeout: 1000,
 		custom_timer_format_string: 'mm:ss',
 		exta_debug_logs: false,
+		enable_midi_button_pusher: false,
 		virtual_midi_port_name: '',
 		midi_port_dropdown: 'virtual',
 		companion_port: 8000,
@@ -113,7 +114,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// page = channel
 			// row = note
 			// column = velocity
-			const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${midiMessageChannel}/${midiMessageNote}/${midiMessageVelocity}/press`
+			const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${midiMessageChannel+1}/${midiMessageNote}/${midiMessageVelocity}/press`
 			this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
 			
 			fetch(buttonPressURL, {
@@ -142,18 +143,22 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		const virtual_midi_port_name: string = this.config.virtual_midi_port_name
 		const midi_port_name: string = this.config.midi_port_dropdown
 		// Connect to configured MIDI (virtual) port.
-		try {
-			if (midi_port_name == 'virtual') {
-				this.log('debug', 'Connecting virtual_midi_port_name: ' + virtual_midi_port_name)
-				this.midi_input.openVirtualPort(virtual_midi_port_name)
-			} else {
-				this.log('debug', 'Connecting midi_port_name: ' + midi_port_name)
-				this.midi_input.openPortByName(midi_port_name)
+		if (this.config.enable_midi_button_pusher) {
+			try {
+				if (midi_port_name == 'virtual') {
+					this.log('debug', 'Connecting virtual_midi_port_name: ' + virtual_midi_port_name)
+					this.midi_input.openVirtualPort(virtual_midi_port_name)
+				} else {
+					this.log('debug', 'Connecting midi_port_name: ' + midi_port_name)
+					this.midi_input.openPortByName(midi_port_name)
+				}
+			} catch (error) {
+				let message = 'Unknown Error'
+				if (error instanceof Error) message = error.message
+				this.log('debug', 'Error connecting midi port: ' + message)
 			}
-		} catch (error) {
-			let message = 'Unknown Error'
-			if (error instanceof Error) message = error.message
-			this.log('debug', 'Error connecting midi port: ' + message)
+		} else {
+			this.log('debug', 'MIDI button pusher disabled')
 		}
 
 		if (this.config.host === '' || this.config.host === undefined) {

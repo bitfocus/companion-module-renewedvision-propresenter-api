@@ -10,6 +10,7 @@ export interface DeviceConfig {
 	timeout: number
 	custom_timer_format_string: string
 	exta_debug_logs: boolean
+	enable_midi_button_pusher: boolean
 	virtual_midi_port_name: string
 	midi_port_dropdown: string
 	companion_port: number
@@ -87,6 +88,13 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 			tooltip: 'h/hh = hours. m/mm = minutes. s/ss=seconds.',
 			width: 4,
 			default: 'mm:ss',
+		},
+		{
+			id: 'enable_midi_button_pusher',
+			type: 'checkbox',
+			label: 'Enable MIDI Button Pushing',
+			default: false,
+			width: 4,
 		},
 		midi_port_dropdown as SomeCompanionConfigField,
 		{
