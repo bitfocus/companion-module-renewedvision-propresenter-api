@@ -1,18 +1,25 @@
 # ProPresenter API
 
-This "ProPresenter API" module ia NEW module that allows you to remotely control ProPresenter via it's <a href="https://openapi.propresenter.com" target="_blank">public API</a>  
+This "ProPresenter **API**" module allows you to remotely control ProPresenter via it's <a href="https://openapi.propresenter.com" target="_blank">public API</a>  
   
-Please note that this NEW module does not work with older versions of ProPresenter that do not have this new public API. Instead, the OLD ProPresenter module used a *reverse-engineered* remote control protocol to control _older versions of ProPresenter_.  
+Please note that this NEW module does not work with older versions of ProPresenter that do not have the ProPresenter API.  
+For older versions of ProPresenter, you have to continue to use the old module - *which uses an **unsupported** reverse-engineered remote protocol*.  
   
-### There are now TWO ProPresenter modules - OLD and NEW ###  
-This NEW module works with ProPresenter versions 7.9 and later...  
-The OLD module works with ProPresenter versions 7.8 and earlier (including version 6).  
+While it would have been ideal to simply update the old module to support both the old reverse-engineered remote protocol and the supported public API, I decided to make a completely new seperate module that only uses the supported API. The main reason is that it will make ongoing support much more manageable, **ensuring users receive better and more reliable support.**
 
-Of course, it would have been ideal to simply update the old module to support both the old reverse engineered remote control protocol and the new API. But, for a bunch of boring technical reasons, it was much cleaner/easier to develop as seperate modules.
+
+
+| TWO ProPresenter Modules:|New "API" Module|Old Module |
+|--:|:-----------------------------|:-----------------|
+|Module Name:|ProPresenter **API**|ProPresenter |
+|Module Support:|✅ Actively Supported|Minimal|
+|Works With Pro Versions:|"New Versions" - From 7.9 to Current |✅ "All Versions" - From 6.0 to Current |
+|Connection Method:|✅ Vendor Supported API|❗️Unsupported Reversed-Engineered Remote Protocol|
+
   
 ### 😱 Existing/OLD module users - DON'T PANIC!! 😱
-**NO! - You don't have to move all your buttons/triggers over to this new module now!  
-YES! - You can run both the old and new modules side-by-side, connected to the SAME ProPresenter!**  
+**It's perfectly fine to run BOTH the old and new modules side-by-side, connected to the SAME ProPresenter!**  
+There is no pressure to re-create your whole setup in this new module now.
   
 **Relax** and take your time to explore the new actions and features that the new module offers.  See if there is any new functionality that you want to add to your setup and over time, when you are ready, slowly replace your old buttons with new ones from the new module.  
   
