@@ -590,6 +590,7 @@ export const options: Options = {
 		choices: [
 			{ label: 'Start', id: 'start' },
 			{ label: 'Stop', id: 'stop' },
+			{ label: 'Toggle', id: 'toggle' },
 		],
 		default: 'start',
 	},

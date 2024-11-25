@@ -139,10 +139,18 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		// **** CAPTURE *****
 		[ActionId.captureOperation]: {
 			name: 'Capture: Operation',
-			description: 'Performs the requested capture operation (start, stop).',
+			description: 'Performs the requested capture operation (start, stop, toggle).',
 			options: [options.capture_operation],
 			callback: async (actionEvent) => {
-				instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
+				if(actionEvent.options.capture_operation == 'toggle'){
+					if(instance.getVariableValue('capture_status') == 'active'){
+						instance.ProPresenter.captureOperation('stop')
+					}else{
+						instance.ProPresenter.captureOperation('start')
+					}
+				}else{
+					instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
+				}
 			},
 		},
 		// **** CLEAR *****
