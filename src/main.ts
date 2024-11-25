@@ -814,6 +814,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			capture_status: statusJSONObject.data.status,
 			capture_time: statusJSONObject.data.capture_time,
 		})
+
+		this.checkFeedbacks()
 	}
 
 	// Return config fields for web config
