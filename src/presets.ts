@@ -44,6 +44,42 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 		},
 		// **** AUDIO *****
 		// **** CAPTURE *****
+		['Capture']: {
+			name: 'Toggle Capture',
+			category: 'Capture',
+			type: 'button',
+			style: {
+				text: 'Start\\n\\n\\nCapture',
+				size: 14,
+				bgcolor: combineRgb(120, 0, 0),
+				color: combineRgb(255, 192, 192),
+				// TODO: Add a png64 with the ProPresenter capture image
+			},
+			steps: [
+				{
+					down: [
+						{
+							actionId: ActionId.captureOperation,
+							options: {
+								capture_operation: 'toggle',
+							},
+						},
+					],
+					up: [],
+				},
+			],
+			feedbacks: [
+				{
+					feedbackId: 'Capture',
+					options: {},
+					style: {
+						bgcolor: combineRgb(0, 160, 0),
+						color: combineRgb(192, 255, 192),
+						text: 'Stop\\n\\n\\n$(Propresenter-API:capture_time)',
+					},
+				},
+			]
+		},
 		// **** CLEAR *****
 		['Clear Group']: {
 			name: 'Clear Group',
