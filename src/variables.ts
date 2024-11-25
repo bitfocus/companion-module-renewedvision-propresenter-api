@@ -187,10 +187,20 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		name: 'Capture Status',
 		variableId: 'capture_status',
 	})
-	variables.push({
-		name: 'Capture Time',
-		variableId: 'capture_time',
-	})
+	variables.push(
+		{
+			name: 'Capture Time',
+			variableId: 'capture_time',
+		},
+		{
+			name: 'Capture Time (Seconds)',
+			variableId: 'capture_time_seconds',
+		},
+		{
+			name: 'Capture Time (Custom Format)',
+			variableId: 'capture_time_custom',
+		},
+	)
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {
 		variables.push(

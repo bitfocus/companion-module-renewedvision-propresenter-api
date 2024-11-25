@@ -813,6 +813,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		SetVariableValues(this, {
 			capture_status: statusJSONObject.data.status,
 			capture_time: statusJSONObject.data.capture_time,
+			capture_time_seconds: timestampToSeconds(statusJSONObject.data.capture_time),
+			capture_time_custom: secondsToTimestamp(timestampToSeconds(statusJSONObject.data.capture_time),this.config.custom_timer_format_string)
 		})
 
 		this.checkFeedbacks()
