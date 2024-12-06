@@ -590,6 +590,7 @@ export const options: Options = {
 		choices: [
 			{ label: 'Start', id: 'start' },
 			{ label: 'Stop', id: 'stop' },
+			{ label: 'Toggle', id: 'toggle' },
 		],
 		default: 'start',
 	},
@@ -751,6 +752,7 @@ export const options: Options = {
 		choices: [
 			{ label: 'AM', id: 'am' },
 			{ label: 'PM', id: 'pm' },
+			{ label: '24H', id: '24h' },
 		],
 		default: 'am',
 	},

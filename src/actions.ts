@@ -139,10 +139,18 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		// **** CAPTURE *****
 		[ActionId.captureOperation]: {
 			name: 'Capture: Operation',
-			description: 'Performs the requested capture operation (start, stop).',
+			description: 'Performs the requested capture operation (start, stop, toggle).',
 			options: [options.capture_operation],
 			callback: async (actionEvent) => {
-				instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
+				if(actionEvent.options.capture_operation == 'toggle'){
+					if(instance.getVariableValue('capture_status') == 'active'){
+						instance.ProPresenter.captureOperation('stop')
+					}else{
+						instance.ProPresenter.captureOperation('start')
+					}
+				}else{
+					instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
+				}
 			},
 		},
 		// **** CLEAR *****
@@ -829,7 +837,17 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 								instance.ProPresenter.timerIdSetToCountdown(timerID, timerDurationNumber, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
 								break
 							case 'countdownto':
-								instance.ProPresenter.timerIdSetToCountdownToTime(timerID, timeOfDayNumber, actionEvent.options.timer_timeperiod as ProPresenterTimePeriod, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
+								let timerPeriodString: string = actionEvent.options.timer_timeperiod as string;
+								let adjustedTimeOfDayNumber: number = timeOfDayNumber;
+								if(actionEvent.options.timer_timeperiod == '24h'){
+									if(timeOfDayNumber >= 43200){
+										timerPeriodString = 'pm'
+										adjustedTimeOfDayNumber -= 43200
+									}else{
+										timerPeriodString = 'am'
+									}
+								}
+								instance.ProPresenter.timerIdSetToCountdownToTime(timerID, adjustedTimeOfDayNumber, timerPeriodString as ProPresenterTimePeriod, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
 								break
 							case 'elapsed':
 								instance.ProPresenter.timerIdSetToElapsed(timerID, startTimeNumber, actionEvent.options.timer_allows_overrun as boolean, (endTimeNumber > 0) ? endTimeNumber : undefined, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only pass endTime if it was > 0 and only rename if new name is not blank

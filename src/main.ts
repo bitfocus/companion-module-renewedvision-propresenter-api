@@ -191,6 +191,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"transport/announcement/current":this.transportLayerUpdated,
 				"transport/audio/current":this.transportLayerUpdated,
 				"timer/system_time":this.systemTimeUpdated,
+				"capture/status": this.captureStatusUpdated,
 			} ,2000)
 			
 			// TODO: consider moving this to after all intial state is gathered??
@@ -802,6 +803,20 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.propresenterStateStore.proTransportLayersStatus.audio = statusJSONObject.data.is_playing
 				break
 		}
+		this.checkFeedbacks()
+	}
+
+	captureStatusUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (this.config.exta_debug_logs) {
+			this.log('debug', 'captureStatusUpdated: ' + JSON.stringify(statusJSONObject))
+		}
+		SetVariableValues(this, {
+			capture_status: statusJSONObject.data.status,
+			capture_time: statusJSONObject.data.capture_time,
+			capture_time_seconds: timestampToSeconds(statusJSONObject.data.capture_time),
+			capture_time_custom: secondsToTimestamp(timestampToSeconds(statusJSONObject.data.capture_time),this.config.custom_timer_format_string)
+		})
+
 		this.checkFeedbacks()
 	}
 

@@ -473,6 +473,18 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				return instance.propresenterStateStore.proTimers.find(proTimer => proTimer.id.uuid == timer_id || proTimer.id.name == timer_id || proTimer.id.index == parseInt(timer_id))?.state == feedback.options.timer_state
 			},
 		},
+		Capture: {
+			name: 'Active Capture',
+			type: 'boolean',
+			defaultStyle: {
+				bgcolor: combineRgb(0, 160, 0),
+				color: combineRgb(192, 255, 192),
+			},
+			options: [],
+			callback: () => {
+				return instance.getVariableValue('capture_status') == 'active'
+			},
+		},
 	}
 
 	// Update look choices with data from propresenterStateStore
