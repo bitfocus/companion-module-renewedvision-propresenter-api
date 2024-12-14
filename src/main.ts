@@ -200,6 +200,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			
 			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options:any) => {
 				this.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with options: ' + JSON.stringify(options))
+
+				//Don't show a warning when next/previous slide in a presentation is triggered but there aren't available
+				if(requestAndResponseJSON.path == '/v1/presentation/active/next/trigger') return
+				if(requestAndResponseJSON.path == '/v1/presentation/active/previous/trigger') return
+
 				this.updateStatus(InstanceStatus.UnknownWarning)
 			})
 
