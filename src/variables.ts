@@ -168,6 +168,14 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'transport_audio_layer_media_name',
 	})
 	variables.push({
+		name: 'Transport Audio Time',
+		variableId: 'transport_audio_time',
+	})
+	variables.push({
+		name: 'Audio Countdown Timer',
+		variableId: 'audio_countdown_timer',
+	})
+	variables.push({
 		name: 'Transport Audio Layer Media Duration',
 		variableId: 'transport_audio_layer_media_duration',
 	})
@@ -178,10 +186,6 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	variables.push({
 		name: 'Transport Announcement Layer Media Name',
 		variableId: 'transport_announcement_layer_media_name',
-	})
-	variables.push({
-		name: 'Transport Announcement Layer Media Duration',
-		variableId: 'transport_announcement_layer_media_duration',
 	})
 	variables.push({
 		name: 'Capture Status',
