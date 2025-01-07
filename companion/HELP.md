@@ -59,6 +59,7 @@ There are more optional and advanced settings that you may come back and configu
 * **Custom Time format:** hh:mm:ss or mm:ss or ss (any # of digits, etc) is used to specify how you would like the time of timers to be formatted for the variables timer_ID_custom.  
 * **MIDI Setup** See more details about that at the end of this help file!  
 * **Extra Debug:** Keep this off - unless you are troubleshooting/submitting an issue where the extra info can help devs to figure out your issue!
+* **Suppress Warnings for ActivePresentation Next/Previous:** When this option is enabled, warnings are suppressed if you try to go to the next slide at the end of a presentation or the previous slide at the beginning but there is none available. (This applies only to the "Active Presentation: Operation -> Trigger previous/next Slide")
   
 ## Getting Started:
 ### Button Presets:

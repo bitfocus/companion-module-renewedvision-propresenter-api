@@ -14,6 +14,7 @@ export interface DeviceConfig {
 	virtual_midi_port_name: string
 	midi_port_dropdown: string
 	companion_port: number
+	suppress_active_presentation_change_warning: boolean
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -147,6 +148,14 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 			default: 1000,
 			min: 500,
 			max: 10000,
+		},
+		{
+			type: 'checkbox',
+			id: 'suppress_active_presentation_change_warning',
+			label: 'Suppress Warnings for ActivePresentation Next/Previous',
+			tooltip: 'Suppresses warnings when on first/last slide and trying to go to previous/next with active presentation operations',
+			width: 4,
+			default: false,
 		},
 		// {
 		// 	type: 'textinput',

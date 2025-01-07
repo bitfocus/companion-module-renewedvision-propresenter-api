@@ -70,6 +70,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		virtual_midi_port_name: '',
 		midi_port_dropdown: 'virtual',
 		companion_port: 8000,
+		suppress_active_presentation_change_warning: false,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -201,10 +202,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options:any) => {
 				this.log('debug', 'Request Error: ' + requestAndResponseJSON.status + '. ' + requestAndResponseJSON.data + '. Called: ' + requestAndResponseJSON.path + ' with options: ' + JSON.stringify(options))
 
-				//Don't show a warning when next/previous slide in a presentation is triggered but there aren't available
-				if(requestAndResponseJSON.path == '/v1/presentation/active/next/trigger') return
-				if(requestAndResponseJSON.path == '/v1/presentation/active/previous/trigger') return
-
+				if(this.config.suppress_active_presentation_change_warning){
+					//Don't show a warning when next/previous slide in a presentation is triggered but there is none
+					if(requestAndResponseJSON.path == '/v1/presentation/active/next/trigger') return
+					if(requestAndResponseJSON.path == '/v1/presentation/active/previous/trigger') return
+				}
 				this.updateStatus(InstanceStatus.UnknownWarning)
 			})
 
