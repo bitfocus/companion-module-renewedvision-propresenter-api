@@ -188,6 +188,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'transport_announcement_layer_media_name',
 	})
 	variables.push({
+		name: 'Transport Announcement Layer Media Duration',
+		variableId: 'transport_announcement_layer_media_duration',
+	})
+	variables.push({
 		name: 'Capture Status',
 		variableId: 'capture_status',
 	})
