@@ -814,7 +814,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	transportAudioTime = (statusJSONObject: StatusUpdateJSON) => {
 		SetVariableValues(this, {
-			transport_audio_time: statusJSONObject.data,
+			transport_audio_layer_time: statusJSONObject.data,
 			audio_countdown_timer: secondsToTimestamp(Math.floor(this.getVariableValue('transport_audio_layer_media_duration') as number - statusJSONObject.data), 'HH:mm:ss')
 		})
 	}

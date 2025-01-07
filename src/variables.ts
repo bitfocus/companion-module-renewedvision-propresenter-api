@@ -168,8 +168,8 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'transport_audio_layer_media_name',
 	})
 	variables.push({
-		name: 'Transport Audio Time',
-		variableId: 'transport_audio_time',
+		name: 'Transport Audio Layer Time',
+		variableId: 'transport_audio_layer_time',
 	})
 	variables.push({
 		name: 'Audio Countdown Timer',
