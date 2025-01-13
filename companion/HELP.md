@@ -125,6 +125,7 @@ Can be used on button labels - can be used in many action inputs.
 Some variables are dynamically created so that there are variables for each thing - eg timers, stage display layouts.  
 When looking at the Variable ID's you will notice that the uuid is sometimes included -  which makes for a bit of a confusing/long ID, but this long ID is globally unique and allows these variables to always work even if the names have duplicates.  
 Note that, the Variable description has a nice friendly name.  
+Note also that the variable "Active Presentation Index" seems to mostly return invalid indexes but I am keeping it available for the future, in case it becomes useful in a future version of ProPresenter  For now, you probably want to use "Active Presentation PlaylistItem Index" instead.
 One special variable is Time Since Last Status Update - for debugging purposes. (You can even Trigger the module to automatically restart when the "Time Since Last Status Update" gets over some appropiate limit - Although hopefully you never need to!)  
   
 ### Feedbacks:

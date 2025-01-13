@@ -505,6 +505,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
 				switch (actionEvent.options.specific_playlist_operation) {
+					case 'focus':
+						instance.ProPresenter.playlistByPlaylistIdFocus(playlist_id)
+						break
 					case 'trigger_next':
 						instance.ProPresenter.playlistByPlaylistIdNextTrigger(playlist_id)
 						break

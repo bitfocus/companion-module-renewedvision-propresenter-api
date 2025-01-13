@@ -175,6 +175,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"announcement/slide_index":this.announcementSlideIndexUpdated,
 				"playlist/active":this.activePlaylistUpdated,
 				"presentation/focused":this.focusedPresentationUpdated,
+				"presentation/active":this.activePresentationUpdated, // The doco for /v1/status/updates mentions presentation/current as a permitted streaming endpoint - but it's a hyperlink that actually links to presentation/active (I tested and either works - but I'm using the one that is linked to).
 				"look/current":this.activeLookUpdated,
 				"looks":this.looksUpdated,
 				"macros":this.macrosUpdated,
@@ -369,7 +370,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.initFeedbacks()
 				this.checkFeedbacks()
 
-				// Watchdog function - makes checks and updates every second.
+				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter)
 				setInterval(() => {
 					SetVariableValues(this, {time_since_last_status_update: (Date.now()-this.timeOfLastStatusUpdate)/1000})
 				},1000)
@@ -519,11 +520,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (statusJSONObject.data.presentation_index) { // ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
 				active_presentation_slide_index: statusJSONObject.data.presentation_index.index,
+				// This status update includes the name and uuid of the presentation - so we can update these variables too
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
+				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 			})
 		} else {
 			SetVariableValues(this, {
+				// For the times when no presentation is active:
 				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: ''
@@ -537,6 +541,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			focused_presentation_index: statusJSONObject.data.index,
 			focused_presentation_name: statusJSONObject.data.name,
 			focused_presentation_uuid: statusJSONObject.data.uuid,
+		})
+	}
+
+	activePresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
+		SetVariableValues(this, {
+			active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+			active_presentation_name: statusJSONObject.data.presentation.id.name,
+			active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
 		})
 	}
 

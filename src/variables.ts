@@ -44,6 +44,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_presentation_uuid',
 	})
 	variables.push({
+		name: 'Active Presentation Index',
+		variableId: 'active_presentation_index', /// Note that this seems to be mostly invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+	})
+	variables.push({
 		name: 'Active Announcement Slide Index',
 		variableId: 'active_announcement_slide_index',
 	})
