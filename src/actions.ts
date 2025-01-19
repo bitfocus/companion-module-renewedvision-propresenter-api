@@ -13,24 +13,24 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_announcement_operation) {
 					case 'focus':
-						instance.ProPresenter.announcementActiveFocus()
+						await instance.ProPresenter.announcementActiveFocus()
 						break
 					case 'trigger_next':
-						instance.ProPresenter.announcementNextTrigger()
+						await instance.ProPresenter.announcementNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.announcementPreviousTrigger()
+						await instance.ProPresenter.announcementPreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.announcementTrigger()
+						await instance.ProPresenter.announcementTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.announcementActiveIndexTrigger(index)
+						await instance.ProPresenter.announcementActiveIndexTrigger(index)
 						break
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
-						instance.ProPresenter.announcementActiveTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
+						await instance.ProPresenter.announcementActiveTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
 						break
 					default:
 						instance.log('debug', 'Invalid active_announcement_operation: ' + options.active_announcement_operation)
@@ -47,20 +47,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_audioplaylist_operation) {
 					case 'focus':
-						instance.ProPresenter.audioPlaylistActiveFocus()
+						await instance.ProPresenter.audioPlaylistActiveFocus()
 						break
 					case 'trigger_next':
-						instance.ProPresenter.audioPlaylistActiveNextTrigger()
+						await instance.ProPresenter.audioPlaylistActiveNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.audioPlaylistActivePreviousTrigger()
+						await instance.ProPresenter.audioPlaylistActivePreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.audioPlaylistActiveTrigger()
+						await instance.ProPresenter.audioPlaylistActiveTrigger()
 						break
 					case 'trigger_id':
 						const id: string = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
-						instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
+						await instance.ProPresenter.audioPlaylistActiveIdTrigger(id)
 						break
 					default:
 						instance.log('debug', 'Invalid active_audioplaylist_operation: ' + options.active_audioplaylist_operation)
@@ -74,23 +74,23 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_audioplaylist_operation) {
 					case 'trigger_next':
-						instance.ProPresenter.audioPlaylistFocusedNextTrigger()
+						await instance.ProPresenter.audioPlaylistFocusedNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.audioPlaylistFocusedPreviousTrigger()
+						await instance.ProPresenter.audioPlaylistFocusedPreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.audioPlaylistFocusedTrigger()
+						await instance.ProPresenter.audioPlaylistFocusedTrigger()
 						break
 					case 'trigger_id':
 						const id: string = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
-						instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
+						await instance.ProPresenter.audioPlaylistFocusedIdTrigger(id)
 						break
 					case 'focus_next':
-						instance.ProPresenter.audioPlaylistNextFocus()
+						await instance.ProPresenter.audioPlaylistNextFocus()
 						break
 					case 'focus_previous':
-						instance.ProPresenter.audioPlaylistPreviousFocus()
+						await instance.ProPresenter.audioPlaylistPreviousFocus()
 						break
 					default:
 						instance.log('debug', 'Invalid focused_audioplaylist_operation: ' + options.focused_audioplaylist_operation)
@@ -105,20 +105,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const audio_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.audio_playlist_id as string)
 				switch (actionEvent.options.specific_audioplaylist_operation) {
 					case 'focus':
-						instance.ProPresenter.audioFocusPlaylistByPlaylistId(audio_playlist_id)
+						await instance.ProPresenter.audioFocusPlaylistByPlaylistId(audio_playlist_id)
 						break
 					case 'trigger_next':
-						instance.ProPresenter.audioPlaylistByPlaylistIdNextTrigger(audio_playlist_id)
+						await instance.ProPresenter.audioPlaylistByPlaylistIdNextTrigger(audio_playlist_id)
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.audioPlaylistByPlaylistIdPreviousTrigger(audio_playlist_id)
+						await instance.ProPresenter.audioPlaylistByPlaylistIdPreviousTrigger(audio_playlist_id)
 						break
 					case 'trigger_first':
-						instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(audio_playlist_id)
+						await instance.ProPresenter.audioPlaylistByPlaylistIdTrigger(audio_playlist_id)
 						break
 					case 'trigger_id':
 						const audio_item_id = await instance.parseVariablesInString(actionEvent.options.audio_item_id as string)
-						instance.ProPresenter.triggerAudioPlaylistIDAudioID(audio_playlist_id, audio_item_id)
+						await instance.ProPresenter.triggerAudioPlaylistIDAudioID(audio_playlist_id, audio_item_id)
 						break
 					default:
 						instance.log('debug', 'Invalid specific_audioplaylist_operation: ' + options.specific_audioplaylist_operation)
@@ -144,12 +144,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				if(actionEvent.options.capture_operation == 'toggle'){
 					if(instance.getVariableValue('capture_status') == 'active'){
-						instance.ProPresenter.captureOperation('stop')
+						await instance.ProPresenter.captureOperation('stop')
 					}else{
-						instance.ProPresenter.captureOperation('start')
+						await instance.ProPresenter.captureOperation('start')
 					}
 				}else{
-					instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
+					await instance.ProPresenter.captureOperation(actionEvent.options.capture_operation as ProPresenterCaptureOperation)
 				}
 			},
 		},
@@ -160,7 +160,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			options: [options.clear_layer_or_group_dropdown, options.clear_layer_dropdown, options.clear_group_id_dropdown, options.clear_group_id_text],
 			callback: async (actionEvent) => {
 				if (actionEvent.options.clear_layer_or_group_dropdown == 'layer') {
-					instance.ProPresenter.clearLayer(actionEvent.options.clear_layer_dropdown as ProPresenterLayerName)
+					await instance.ProPresenter.clearLayer(actionEvent.options.clear_layer_dropdown as ProPresenterLayerName)
 				} else {
 					// Assume clearing a group if not a layer...
 
@@ -170,7 +170,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					else
 						clear_group = actionEvent.options.clear_group_id_dropdown as string
 					
-					instance.ProPresenter.clearGroupIdTrigger(clear_group)
+					await instance.ProPresenter.clearGroupIdTrigger(clear_group)
 				}
 			},
 		},
@@ -183,7 +183,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const library_id = await instance.parseVariablesInString(actionEvent.options.library_id as string)
 				const presentation_id = await instance.parseVariablesInString(actionEvent.options.presentation_id as string)
 				const cue_index = await instance.parseVariablesInString(actionEvent.options.index as string)
-				instance.ProPresenter.libraryByIdPresentationIdCueTrigger(library_id, presentation_id, cue_index)
+				await instance.ProPresenter.libraryByIdPresentationIdCueTrigger(library_id, presentation_id, cue_index)
 			},
 			learn: async (actionEvent) => {
 				const focusedPresentation: RequestAndResponseJSONValue = await instance.ProPresenter.presentationFocusedGet()
@@ -210,7 +210,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				else
 					look_id = actionEvent.options.look_id_dropdown as string
 
-				instance.ProPresenter.lookIdTrigger(look_id)
+				await instance.ProPresenter.lookIdTrigger(look_id)
 			},
 			learn: (actionEvent) => {
 				// Warning: The current look is not contained in the looks returned by GET /v1/looks as the current look gets special treatment in ProPresenter and cannot be deleted. It is separate and has it's own UUID.
@@ -244,7 +244,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				else
 					macro_id = actionEvent.options.macro_id_dropdown as string
 
-				instance.ProPresenter.marcoIdTrigger(macro_id)
+				await instance.ProPresenter.marcoIdTrigger(macro_id)
 			},
 		},
 		// **** MEDIA ****
@@ -255,20 +255,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_mediaplaylist_operation) {
 					case 'focus':
-						instance.ProPresenter.mediaPlaylistActiveFocus()
+						await instance.ProPresenter.mediaPlaylistActiveFocus()
 						break
 					case 'trigger_next':
-						instance.ProPresenter.mediaPlaylistActiveNextTrigger()
+						await instance.ProPresenter.mediaPlaylistActiveNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.mediaPlaylistActivePreviousTrigger()
+						await instance.ProPresenter.mediaPlaylistActivePreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.mediaPlaylistActiveTrigger()
+						await instance.ProPresenter.mediaPlaylistActiveTrigger()
 						break
 					case 'trigger_id':
 						const media_item_id: string = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
-						instance.ProPresenter.mediaPlaylistActiveMediaIdTrigger(media_item_id)
+						await instance.ProPresenter.mediaPlaylistActiveMediaIdTrigger(media_item_id)
 						break
 					default:
 						instance.log('debug', 'Invalid active_mediaplaylist_operation: ' + options.active_mediaplaylist_operation)
@@ -282,23 +282,23 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_mediaplaylist_operation) {
 					case 'trigger_next':
-						instance.ProPresenter.mediaPlaylistFocusedNextTrigger()
+						await instance.ProPresenter.mediaPlaylistFocusedNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.mediaPlaylistFocusedPreviousTrigger()
+						await instance.ProPresenter.mediaPlaylistFocusedPreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.mediaPlaylistFocusedTrigger()
+						await instance.ProPresenter.mediaPlaylistFocusedTrigger()
 						break
 					case 'trigger_id':
 						const media_item_id: string = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
-						instance.ProPresenter.mediaPlaylistFocusedMediaIdTrigger(media_item_id)
+						await instance.ProPresenter.mediaPlaylistFocusedMediaIdTrigger(media_item_id)
 						break
 					case 'focus_next':
-						instance.ProPresenter.mediaPlaylistNextFocus()
+						await instance.ProPresenter.mediaPlaylistNextFocus()
 						break
 					case 'focus_previous':
-						instance.ProPresenter.mediaPlaylistPreviousFocus()
+						await instance.ProPresenter.mediaPlaylistPreviousFocus()
 						break
 					default:
 						instance.log('debug', 'Invalid focused_mediaplaylist_operation: ' + options.focused_mediaplaylist_operation)
@@ -313,20 +313,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const media_playlist_id: string = await instance.parseVariablesInString(actionEvent.options.media_playlist_id as string)
 				switch (actionEvent.options.specific_mediaplaylist_operation) {
 					case 'focus':
-						instance.ProPresenter.mediaPlaylistByPlaylistIdFocus(media_playlist_id)
+						await instance.ProPresenter.mediaPlaylistByPlaylistIdFocus(media_playlist_id)
 						break
 					case 'trigger_next':
-						instance.ProPresenter.mediaPlaylistByPlaylistIdNextTrigger(media_playlist_id)
+						await instance.ProPresenter.mediaPlaylistByPlaylistIdNextTrigger(media_playlist_id)
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.mediaPlaylistByPlaylistIdPreviousTrigger(media_playlist_id)
+						await instance.ProPresenter.mediaPlaylistByPlaylistIdPreviousTrigger(media_playlist_id)
 						break
 					case 'trigger_first':
-						instance.ProPresenter.mediaPlaylistByPlaylistIdTrigger(media_playlist_id)
+						await instance.ProPresenter.mediaPlaylistByPlaylistIdTrigger(media_playlist_id)
 						break
 					case 'trigger_id':
 						const media_item_id = await instance.parseVariablesInString(actionEvent.options.media_item_id as string)
-						instance.ProPresenter.mediaPlaylistByPlaylistIdMediaIdTrigger(media_playlist_id, media_item_id)
+						await instance.ProPresenter.mediaPlaylistByPlaylistIdMediaIdTrigger(media_playlist_id, media_item_id)
 						break
 					default:
 						instance.log('debug', 'Invalid specific_mediaplaylist_operation: ' + options.specific_mediaplaylist_operation)
@@ -384,10 +384,10 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 							}
 						}
 						
-						instance.ProPresenter.messageIdTrigger(message_id, JSON.stringify(tokenNamesAndTextArray))
+						await instance.ProPresenter.messageIdTrigger(message_id, JSON.stringify(tokenNamesAndTextArray))
 						break
 					case 'hide':
-						instance.ProPresenter.messageIdClear(message_id)
+						await instance.ProPresenter.messageIdClear(message_id)
 						break
 					default:
 						instance.log('debug', 'Invalid message_operation ' + actionEvent.options.message_operation)
@@ -400,7 +400,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			description: 'Moves mouse cursor to center of ProPresenter UI',
 			options: [],
 			callback: async () => {
-				instance.ProPresenter.findMyMouse()
+				await instance.ProPresenter.findMyMouse()
 			},
 		},
 		// **** PLAYLIST ****
@@ -411,14 +411,14 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_announcement_playlist_operation) {
 					case 'focus':
-						instance.ProPresenter.playlistActiveAnnouncementFocus()
+						await instance.ProPresenter.playlistActiveAnnouncementFocus()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.playlistActiveAnnouncementTrigger()
+						await instance.ProPresenter.playlistActiveAnnouncementTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.playlistActiveAnnouncementIndexTrigger(index)
+						await instance.ProPresenter.playlistActiveAnnouncementIndexTrigger(index)
 						break
 					default:
 						console.log('debug', 'Invalid active_announcement_playlist_operation: ' + actionEvent.options.active_announcement_playlist_operation)
@@ -432,14 +432,14 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_presentation_playlist_operation) {
 					case 'focus':
-						instance.ProPresenter.playlistActivePresentationFocus()
+						await instance.ProPresenter.playlistActivePresentationFocus()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.playlistActivePresentationTrigger()
+						await instance.ProPresenter.playlistActivePresentationTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.playlistActivePresentationIndexTrigger(index)
+						await instance.ProPresenter.playlistActivePresentationIndexTrigger(index)
 						break
 					default:
 						console.log('debug', 'Invalid active_presentation_playlist_operation: ' + actionEvent.options.active_presentation_playlist_operation)
@@ -464,23 +464,23 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_playlist_operation) {
 					case 'trigger_next':
-						instance.ProPresenter.playlistFocusedNextTrigger()
+						await instance.ProPresenter.playlistFocusedNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.playlistFocusedPreviousTrigger()
+						await instance.ProPresenter.playlistFocusedPreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.playlistFocusedTrigger()
+						await instance.ProPresenter.playlistFocusedTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.playlistFocusedIndexTrigger(index)
+						await instance.ProPresenter.playlistFocusedIndexTrigger(index)
 						break
 					case 'focus_next':
-						instance.ProPresenter.playlistNextFocus()
+						await instance.ProPresenter.playlistNextFocus()
 						break
 					case 'focus_previous':
-						instance.ProPresenter.playlistPreviousFocus()
+						await instance.ProPresenter.playlistPreviousFocus()
 						break
 					default:
 						console.log('debug', 'Invalid focused_playlist_operation: ' + actionEvent.options.focused_playlist_operation)
@@ -506,20 +506,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
 				switch (actionEvent.options.specific_playlist_operation) {
 					case 'focus':
-						instance.ProPresenter.playlistByPlaylistIdFocus(playlist_id)
+						await instance.ProPresenter.playlistByPlaylistIdFocus(playlist_id)
 						break
 					case 'trigger_next':
-						instance.ProPresenter.playlistByPlaylistIdNextTrigger(playlist_id)
+						await instance.ProPresenter.playlistByPlaylistIdNextTrigger(playlist_id)
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.playlistByPlaylistIdPreviousTrigger(playlist_id)
+						await instance.ProPresenter.playlistByPlaylistIdPreviousTrigger(playlist_id)
 						break
 					case 'trigger_first':
-						instance.ProPresenter.playlistByPlaylistIdTrigger(playlist_id)
+						await instance.ProPresenter.playlistByPlaylistIdTrigger(playlist_id)
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.playlistByPlaylistIdIndexTrigger(playlist_id, index)
+						await instance.ProPresenter.playlistByPlaylistIdIndexTrigger(playlist_id, index)
 						break
 					default:
 						console.log('debug', 'Invalid specific_playlist_operation: ' + actionEvent.options.specific_playlist_operation)
@@ -546,20 +546,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_presentation_operation) {
 					case 'focus':
-						instance.ProPresenter.presentationActiveFocus()
+						await instance.ProPresenter.presentationActiveFocus()
 						break
 					case 'trigger_next':
-						instance.ProPresenter.presentationActiveNextTrigger()
+						await instance.ProPresenter.presentationActiveNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.presentationActivePreviousTrigger()
+						await instance.ProPresenter.presentationActivePreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.presentationActiveTrigger()
+						await instance.ProPresenter.presentationActiveTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.presentationActiveIndexTrigger(index)
+						await instance.ProPresenter.presentationActiveIndexTrigger(index)
 						break
 					case 'group':
 						// user can either choose a Group from the dropdown, or choose to manually enter a Group ID as text (in a separate input that supports variables)
@@ -569,11 +569,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						else
 							group_id = actionEvent.options.group_id_dropdown as string
 
-						instance.ProPresenter.presentationActiveGroupGroup_IdTrigger(group_id)
+						await instance.ProPresenter.presentationActiveGroupGroup_IdTrigger(group_id)
 						break
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
-						instance.ProPresenter.presentationActiveTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
+						await instance.ProPresenter.presentationActiveTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
 						break
 					default:
 						console.log('debug', 'Invalid active_presentation_operation: ' + actionEvent.options.active_presentation_operation)
@@ -587,17 +587,17 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.focused_presentation_operation) {
 					case 'trigger_next':
-						instance.ProPresenter.presentationFocusedNextTrigger()
+						await instance.ProPresenter.presentationFocusedNextTrigger()
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.presentationFocusedPreviousTrigger()
+						await instance.ProPresenter.presentationFocusedPreviousTrigger()
 						break
 					case 'trigger_first':
-						instance.ProPresenter.presentationFocusedTrigger()
+						await instance.ProPresenter.presentationFocusedTrigger()
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.presentationFocusedIndexTrigger(index)
+						await instance.ProPresenter.presentationFocusedIndexTrigger(index)
 						break
 					case 'group':
 						// user can either choose a Group from the dropdown, or choose to manually enter a Group ID as text (in a separate input that supports variables)
@@ -607,17 +607,17 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						else
 							group_id = actionEvent.options.group_id_dropdown as string
 
-						instance.ProPresenter.presentationFocusedGroupGroup_IdTrigger(group_id)
+						await instance.ProPresenter.presentationFocusedGroupGroup_IdTrigger(group_id)
 						break
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
-						instance.ProPresenter.presentationFocusedTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
+						await instance.ProPresenter.presentationFocusedTimelineOperation(actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
 						break
 					case 'focus_next':
-						instance.ProPresenter.presentationNextFocus()
+						await instance.ProPresenter.presentationNextFocus()
 						break
 					case 'focus_previous':
-						instance.ProPresenter.presentationPreviousFocus()
+						await instance.ProPresenter.presentationPreviousFocus()
 						break
 					default:
 						console.log('debug', 'Invalid focused_presentation_operation: ' + actionEvent.options.focused_presentation_operation)
@@ -632,20 +632,20 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const presentation_uuid: string = await instance.parseVariablesInString(actionEvent.options.presentation_uuid as string)
 				switch (actionEvent.options.specific_presentation_operation) {
 					case 'focus':
-						instance.ProPresenter.presentationUUIDFocus(presentation_uuid)
+						await instance.ProPresenter.presentationUUIDFocus(presentation_uuid)
 						break
 					case 'trigger_next':
-						instance.ProPresenter.presentationUUIDNextTrigger(presentation_uuid)
+						await instance.ProPresenter.presentationUUIDNextTrigger(presentation_uuid)
 						break
 					case 'trigger_previous':
-						instance.ProPresenter.presentationUUIDPreviousTrigger(presentation_uuid)
+						await instance.ProPresenter.presentationUUIDPreviousTrigger(presentation_uuid)
 						break
 					case 'trigger_first':
-						instance.ProPresenter.presentationUUIDTrigger(presentation_uuid)
+						await instance.ProPresenter.presentationUUIDTrigger(presentation_uuid)
 						break
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
-						instance.ProPresenter.presentationUUIDIndexTrigger(presentation_uuid, index)
+						await instance.ProPresenter.presentationUUIDIndexTrigger(presentation_uuid, index)
 						break
 					case 'group':
 						// user can either choose a Group from the dropdown, or choose to manually enter a Group ID as text (in a separate input that supports variables)
@@ -655,10 +655,10 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						else
 							group_id = actionEvent.options.group_id_dropdown as string
 
-						instance.ProPresenter.presentationUUIDGroupGroup_IdTrigger(presentation_uuid, group_id)
+						await instance.ProPresenter.presentationUUIDGroupGroup_IdTrigger(presentation_uuid, group_id)
 						break
 					case 'timeline_operation':
-						instance.ProPresenter.presentationUUIDTimelineOperation(presentation_uuid, actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
+						await instance.ProPresenter.presentationUUIDTimelineOperation(presentation_uuid, actionEvent.options.timeline_operation as ProPresenterTimelineOperation)
 						break
 					default:
 						console.log('debug', 'Invalid specific_presentation_operation: ' + actionEvent.options.specific_presentation_operation)
@@ -691,16 +691,16 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 
 				switch (actionEvent.options.prop_operation) {
 					case 'show':
-						instance.ProPresenter.propIdTrigger(prop_id)
+						await instance.ProPresenter.propIdTrigger(prop_id)
 						break
 					case 'hide':
-						instance.ProPresenter.propIdClear(prop_id)
+						await instance.ProPresenter.propIdClear(prop_id)
 						break
 					case 'toggle':
 						if (instance.propresenterStateStore.proProps.find(proProp => proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id))?.is_active == true) {
-							instance.ProPresenter.propIdClear(prop_id)
+							await instance.ProPresenter.propIdClear(prop_id)
 						} else {
-							instance.ProPresenter.propIdTrigger(prop_id)
+							await instance.ProPresenter.propIdTrigger(prop_id)
 						}
 						break
 					default:
@@ -717,16 +717,16 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const stage_message_text: string = await instance.parseVariablesInString(actionEvent.options.stage_message_text as string)
 				switch (actionEvent.options.stagedisplay_operation) {
 					case 'show_stage_message':
-						instance.ProPresenter.stageMessage(stage_message_text)
+						await instance.ProPresenter.stageMessage(stage_message_text)
 						break
 					case 'hide_stage_message':
-						instance.ProPresenter.stageMessageHide()
+						await instance.ProPresenter.stageMessageHide()
 						break
 					case 'toggle_stage_message':
 						if (stage_message_text == instance.getVariableValue('stage_message') as string){
-							instance.ProPresenter.stageMessageHide()
+							await instance.ProPresenter.stageMessageHide()
 						} else {
-							instance.ProPresenter.stageMessage(stage_message_text)
+							await instance.ProPresenter.stageMessage(stage_message_text)
 						}
 
 						break
@@ -743,7 +743,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						else
 							stagescreenlayout_id = actionEvent.options.stagescreenlayout_id_dropdown as string
 
-						instance.ProPresenter.stageScreenIdSetLayoutId(stagescreen_id, stagescreenlayout_id)
+						await instance.ProPresenter.stageScreenIdSetLayoutId(stagescreen_id, stagescreenlayout_id)
 						break
 					default:
 						instance.log('debug', 'Invalid stagedisplay_operation: ' + actionEvent.options.stagedisplay_operation)
@@ -760,17 +760,17 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'audience':
 						if (actionEvent.options.screens_operation == 'toggle') {
 							const currentStatus: RequestAndResponseJSONValue = await instance.ProPresenter.statusAudienceScreensGet()
-							instance.ProPresenter.statusAudienceScreensSet(!currentStatus.data)
+							await instance.ProPresenter.statusAudienceScreensSet(!currentStatus.data)
 						} else {
-							instance.ProPresenter.statusAudienceScreensSet(actionEvent.options.screens_operation == 'show')
+							await instance.ProPresenter.statusAudienceScreensSet(actionEvent.options.screens_operation == 'show')
 						}
 						break
 					case 'stage':
 						if (actionEvent.options.screens_operation == 'toggle') {
 							const currentStatus: RequestAndResponseJSONValue = await instance.ProPresenter.statusStageScreensGet()
-							instance.ProPresenter.statusStageScreensSet(!currentStatus.data)
+							await instance.ProPresenter.statusStageScreensSet(!currentStatus.data)
 						} else {
-							instance.ProPresenter.statusStageScreensSet(actionEvent.options.screens_operation == 'show')
+							await instance.ProPresenter.statusStageScreensSet(actionEvent.options.screens_operation == 'show')
 						}
 						break
 					default:
@@ -813,14 +813,14 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'start':
 					case 'stop':
 					case 'reset':
-						instance.ProPresenter.timerIdOperation(timerID, actionEvent.options.timer_operation as ProPresenterTimerOperation)
+						await instance.ProPresenter.timerIdOperation(timerID, actionEvent.options.timer_operation as ProPresenterTimerOperation)
 						break
 					case 'toggle':
-						instance.ProPresenter.timerIdOperation(timerID, timerToggleOperation)
+						await instance.ProPresenter.timerIdOperation(timerID, timerToggleOperation)
 						break
 					case 'increment':
 						const timer_increment_value = await instance.parseVariablesInString(actionEvent.options.timer_increment_value as string)
-						instance.ProPresenter.timerIdIncrement(timerID, parseInt(timer_increment_value))
+						await instance.ProPresenter.timerIdIncrement(timerID, parseInt(timer_increment_value))
 						break
 					case 'set':
 						const newTimerName: string = await instance.parseVariablesInString(actionEvent.options.timer_new_name as string)
@@ -837,7 +837,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 
 						switch (timerType) {
 							case 'countdown':
-								instance.ProPresenter.timerIdSetToCountdown(timerID, timerDurationNumber, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
+								await instance.ProPresenter.timerIdSetToCountdown(timerID, timerDurationNumber, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
 								break
 							case 'countdownto':
 								let timerPeriodString: string = actionEvent.options.timer_timeperiod as string;
@@ -850,10 +850,10 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 										timerPeriodString = 'am'
 									}
 								}
-								instance.ProPresenter.timerIdSetToCountdownToTime(timerID, adjustedTimeOfDayNumber, timerPeriodString as ProPresenterTimePeriod, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
+								await instance.ProPresenter.timerIdSetToCountdownToTime(timerID, adjustedTimeOfDayNumber, timerPeriodString as ProPresenterTimePeriod, actionEvent.options.timer_allows_overrun as boolean, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only rename if new name is not blank
 								break
 							case 'elapsed':
-								instance.ProPresenter.timerIdSetToElapsed(timerID, startTimeNumber, actionEvent.options.timer_allows_overrun as boolean, (endTimeNumber > 0) ? endTimeNumber : undefined, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only pass endTime if it was > 0 and only rename if new name is not blank
+								await instance.ProPresenter.timerIdSetToElapsed(timerID, startTimeNumber, actionEvent.options.timer_allows_overrun as boolean, (endTimeNumber > 0) ? endTimeNumber : undefined, optionalOperation, (newTimerName != '') ? newTimerName : undefined) // Only pass endTime if it was > 0 and only rename if new name is not blank
 								break
 							default:
 								instance.log('debug', 'Invalid timer type: ' + timerType)
@@ -872,36 +872,36 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.transport_operation) {
 					case 'play':
-						instance.ProPresenter.transportLayerPlay(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
+						await instance.ProPresenter.transportLayerPlay(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
 						break
 					case 'pause':
-						instance.ProPresenter.transportLayerPause(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
+						await instance.ProPresenter.transportLayerPause(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl)
 						break
 					case 'toggle_play_pause':
 						const transport_layer = actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl
 						const layer_transport_status = await instance.ProPresenter.transportLayerCurrent(transport_layer)
 						if (layer_transport_status.ok) {
 							if (layer_transport_status.data.is_playing)
-								instance.ProPresenter.transportLayerPause(transport_layer)
+								await instance.ProPresenter.transportLayerPause(transport_layer)
 							else
-								instance.ProPresenter.transportLayerPlay(transport_layer)
+								await instance.ProPresenter.transportLayerPlay(transport_layer)
 						}
 						break
 					case 'skip_forward':
 						const transport_skip_forward_time_string = await instance.parseVariablesInString(actionEvent.options.transport_skip_time as string)
-						instance.ProPresenter.transportLayerSkipForwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_forward_time_string))
+						await instance.ProPresenter.transportLayerSkipForwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_forward_time_string))
 						break
 					case 'skip_backward':
 						const transport_skip_backward_time_string = await instance.parseVariablesInString(actionEvent.options.transport_skip_time as string)
-						instance.ProPresenter.transportLayerSkipBackwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_backward_time_string))
+						await instance.ProPresenter.transportLayerSkipBackwardTime(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_skip_backward_time_string))
 						break
 					case 'go_to_time':
 						const transport_goto_time_string = await instance.parseVariablesInString(actionEvent.options.transport_goto_time as string)
-						instance.ProPresenter.transportLayerTimeSet(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_goto_time_string))
+						await instance.ProPresenter.transportLayerTimeSet(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_goto_time_string))
 						break
 					case 'go_to_end':
 						const transport_goto_end_time = await instance.parseVariablesInString(actionEvent.options.transport_goto_end_time as string)
-						instance.ProPresenter.transportLayerGoToEnd(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_goto_end_time))
+						await instance.ProPresenter.transportLayerGoToEnd(actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl, parseInt(transport_goto_end_time))
 						break
 					default:
 						instance.log('debug', 'Invalid Transport Operation: ' + actionEvent.options.transport_operation)
@@ -917,21 +917,21 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				switch (actionEvent.options.trigger_target) {
 					case 'presentation':
 						if (actionEvent.options.trigger_next_previous == 'next')
-							instance.ProPresenter.triggerNext()
+							await instance.ProPresenter.triggerNext()
 						else
-							instance.ProPresenter.triggerPrevious()
+							await instance.ProPresenter.triggerPrevious()
 						break
 					case 'media':
 						if (actionEvent.options.trigger_next_previous == 'next')
-							instance.ProPresenter.triggerMediaNext()
+							await instance.ProPresenter.triggerMediaNext()
 						else
-							instance.ProPresenter.triggerMediaPrevious()
+							await instance.ProPresenter.triggerMediaPrevious()
 						break
 					case 'audio':
 						if (actionEvent.options.trigger_next_previous == 'next')
-							instance.ProPresenter.triggerAudioNext()
+							await instance.ProPresenter.triggerAudioNext()
 						else
-							instance.ProPresenter.triggerAudioPrevious()
+							await instance.ProPresenter.triggerAudioPrevious()
 						break
 					default:
 						instance.log('debug', 'Invalid Trigger Type: ' + actionEvent.options.trigger_target)
@@ -951,7 +951,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				else
 					video_input_id = actionEvent.options.video_input_id_dropdown as string
 
-				instance.ProPresenter.videoInputsIdTrigger(video_input_id)
+				await instance.ProPresenter.videoInputsIdTrigger(video_input_id)
 			},
 		},
 	}
