@@ -3598,7 +3598,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 		})
 	})
 
-	// Dynamically create Stage Layout presets for each stage-screen and stage-layout...
+	// Dynamically create Timer presets for each configured Timer...
 	instance.propresenterStateStore.proTimers.forEach((proTimer, index) => {
 
 		const timer_id:string = proTimer.id.uuid as string
