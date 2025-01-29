@@ -71,14 +71,14 @@ For example, the "Groups" presets are dynamically created for all of the groups 
  
 Even if you prefer manually building button actions and feedbacks yourself, the presets have some nice starting points (and icons) you might like to start (and learn from) when making your own custom built buttons.
 
-❗️IMPORTANT NOTE ABOUT PRESETS❗️  
-Please note that all the presets are built to suit FULL BUTTON display with the "TopBar" turned off in Companion settings.  
-If you like to show the topbar on your buttons, you will have to manually re-format the text and images on the preset buttons.  
+If you want to use any of the PNGs from the module presets - here is a link to the <a href="https://raw.githubusercontent.com/bitfocus/companion-module-renewedvision-propresenter-api/main/IconPack.zip">IconPack</a>.
 
-Tip: One way to reformat for buttons with topbars is to put 1-2 lines of small text at top/bottom and image at opposite bottom/top:
+**❗️IMPORTANT NOTE ABOUT PRESETS❗️**  
+Please note that all the presets are built to suit FULL BUTTON display with the "TopBar" turned off in Companion settings. If, however, you prefer to show the topbar on your buttons, you will have to manually re-format the layout of the text and images on the preset buttons.  
+
+Reformatting Tip: One way to reformat for buttons with topbars is to put 1-2 lines of small text at top/bottom and image at opposite bottom/top:
 ![Button-With-Topbar.png](help-images/Button-With-Topbar.png)
 
-If you want to use any of the PNGs from the module presets here is a link to the <a href="https://raw.githubusercontent.com/bitfocus/companion-module-renewedvision-propresenter-api/main/IconPack.zip">IconPack</a> with all the PNG images used in the Presets.
   
 ---  
 ### Actions:

@@ -1428,8 +1428,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 		},
 		// **** LOOKS ***** These are dynamically added in code below.
 		// **** MACRO ***** These are dynamically added in code below.
-		// **** MEDIA *****
-		// **** MESSAGE *****
+		// **** MEDIA ***** TODO: Consider how these might work (Be careful to avoid overloading Companion or ProPresenter by asking for 100s or 1000s of thumbnails - if a user has that many media files).
+		// **** MESSAGE ***** These are dynamically added in code below.
 		// **** PLAYLIST *****
 		// **** PRESENTATION *****
 		['Focus Previous Presentation']: {
@@ -2988,6 +2988,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 
 	}
 
+	// *** DYNAMICALLY GENERATED PRESETS ***
+
 	// Dynamically create LookTrigger presets for each lookChoice in propresenterStateStore...
 	instance.propresenterStateStore.looksChoices.forEach(lookChoice => {
 		const lookID: string = lookChoice.label as string
@@ -3324,6 +3326,53 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.marcoIdTrigger,
 							options: {macro_id_dropdown:macroID},
+						},
+					],
+					up: [],
+				},
+			],
+			feedbacks: [
+			],
+		}
+	})
+
+	// Dynamically create Message presets for each messageChoice in propresenterStateStore...
+	instance.propresenterStateStore.messageChoices.forEach(message => {
+		const messageID: string = message.id as string
+		const messageLabel: string = message.label as string
+		presets[messageID] = {
+			name: messageLabel + ' Message',
+			category: 'Messages',
+			type: 'button',
+			style: {
+				text: 'Message\\n\\n\\n' + messageLabel,
+				size: 14,
+				color: combineRgb(255, 223, 192),
+				bgcolor: combineRgb(204, 101, 0),
+				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
+						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
+						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
+						SyZXBYwcC6hBheT4wf/gd7dmcWrSTQongd4X2/4YB4K7QKth29/Htt06AQLPwJXW8deawOwn6Y2OFj0CBreBi+uOJu8BlzvAyJMu\
+						GZIjBWj6i0Xg/Yy+KQ8M3QKhNbe39j5OH4AsdZW+AQ4OgViJstc93t3X3du/Z9r9/QBx9HKmOgUxlwAAAAd0SU1FB+gKDQsLHQK+\
+						qcAAAAHOSURBVEjHtZY/SFZRGMZ/T17/YMOHiIKBTgYJlS7VoH1LhoQtVltTg4urg1C4OYkuoWvU/ik2iQ0GpkJOugiSg5uGDUok\
+						/iFelxMdLud+370f93vhwOE5z3mec973nHOvqGGY2S2g50YNhGVmRTN7DywB9VGO4q3AiGttDj4FVqMcxB8BL4AiUBcb/izpMqpS\
+						uAA8d6vuKkNdAIgyit93wk+BhgDlD3DT9TclHaYyMbNmYAh4BdxOoP0FVoAnHlb614nKiHcDL4FnQHOZdfwGZoExoNFhR5LWgyZm\
+						1gAMOvF7KTJ4AEwAk0C7hy/6pMiJdzrhYaCQskTrwDvgLXDXw6/c/fhvYma9wDhwJ8MZ+CRp3szeuHr5sSrpxAfkpaoNGHDtoZdf\
+						P86BKUlfzKwIzAQ4o5J2giaB2jxwho9dvn8CE5J23aH4ADTFpv6Q9Dqup5T3oxs4lXRsZi3AR6AjQJ2WVKrKJLbDOaAv4SIOSzqL\
+						D2R9hQsJBgDLIYPMJpKOgb2E4cWkedV8T9YC2Lak/TxNNgJYqdyEzCaSdoFfHnQCfM3VJLCbJUlXtTD5lqbgFZ/6CvEduAS2JB1V\
+						Ile1E0kXwFalgufxd9KflnsNA+2IcoyInwIAAAAASUVORK5CYII=',
+				pngalignment: 'center:center',
+			},
+			steps: [
+				{
+					down: [
+						{
+							actionId: ActionId.messageOperation,
+							options: {
+								message_operation: 'show',
+								message_id_dropdown:messageID,
+							},
 						},
 					],
 					up: [],
@@ -4045,6 +4094,112 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			feedbacks: [],
 		}
 	})
-	
+
+	// Dynamically create Video Input presets for each videoInputChoice in propresenterStateStore...
+	instance.propresenterStateStore.videoInputChoices.forEach(videoInput => {
+		const videoInputID: string = videoInput.id as string
+		const videoInputLabel: string = videoInput.label as string
+		presets[videoInputID] = {
+			name: videoInputLabel + ' Video Input',
+			category: 'Video Inputs',
+			type: 'button',
+			style: {
+				text: 'Video In\\n\\n\\n' + videoInputLabel,
+				size: 14,
+				color: combineRgb(255, 230, 255),
+				bgcolor: combineRgb(223, 40, 133),
+				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB4AAAARCAYAAADKZhx3AAAEpnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7VdLkiQnDN1z\
+						Ch8BSQiJ4/CN8A18fD/IrJru6rbdPbPxYpJIoECp3xMSFeZff67wBx7yEkNS81xyjnhSSYUrJh6vp56eYjr99WPee/R+PdA9iYwl\
+						wSjXT883/WOdngyuoWKmbxh5vzfa+42Sbv7+woivQbZGez5uRuVmJHxt0M2gXmbFXNzemtBu0+7vLzfgDbtL/l7tD78N3hsKOcI8\
+						hSSiF7kVkP1qkIoJoWcpmxBtr2T0SR6awCGf+en5FGi0tqrpU6J3qDxnL2iVh7Nf0Up8k8iLk/Nz/HQ9kL5syFM+v5Wc/J7x+3WA\
+						ky+NXry/37WGr2MzrKgpw9X5Nuph4pmBrkHEFu0B/HI0vAoWdlpBc0R1h7QRe2xonQox4FqUaFClRfOMnTpUTDwDGybMneUsuhgX\
+						7gfJtBstNikyxIFnP7An4acudMSW2MOR5pA8CKRMYEYnCL7Zwnc/WGsfBZxQP9DThS/zdjbU2MjtHmRAhNbtVD0OfrTXZ+MqQFC3\
+						l/cRKXBsu1g0pR+ZQA7QAkLFeJ1BsnEzgIsgWqEMCRAAaiRKmaIxGxEc6QCoQnWWxA0IkCoPKMlJJAMb5y0anxgdUlbGcsA6khmQ\
+						UJwvAzZFKsBKSRE/lhwxVFU0qWpWU9eiNUtOWXPOlndSrCaWgqllM3MrVl08uXp2c/fitXARJE0tuVjxUkqtkFnBueLrCoJaGzdp\
+						qWlouVnzVlrtCJ+euvbcrXsvvQ4eMpA/Rh42fJRRJ02E0kxTZ542fZZZF0JtSVhp6crLlq+y6hO1G9YP7Ruo0Y0aH6Q2oT1Rw6rZ\
+						gwXtdKIbMwDGIREQtw0BApo3ZtEpJd7IbcxiYZwKZSipG7NBGzEgmCaxLnpgF/hCdCP3S7gFS+9w459FLmzovoncR9w+Q23sMtQP\
+						Ytcp3E6NgtO3tEAR9rqL3Ycx/NPGl0alpIwOhRyJbTVkL0jsvZU95iULa7X1NNtsGUlxwn02K1RPq8Hfo+mAS9vKVlasbY4e8E7k\
+						GZ8ui2ufg1pnm9QLOAx8GNcsaUpvbHFkozKnjOoRKzYRV6v7Umvh6BBHgRYpd9WVlCZAkrxqzD5qSp6npDE4A4qaM8KrJuCTkw+v\
+						SzvhBkOh5xQhwlWbj+EdVQfhZiN75MFrTErAosGygmyDGGADiHA/wqccRx0AOCBjnsmvjp8wIpznZAiW3h0JjQYKC8K0WsLhEmoI\
+						UaTF0rMwriy6tSKWUHEnkomuwix4tzKOMMHCqOINFEXSvittpOlfxvBfBF8dfzP6zej/xQinq5MMlC4uqJljrr7Pm+OqMRLyRS07\
+						mbXlAxVl/7PYX+476HNEktB9q/2481PjW0bX4RdCrtrpruSdgXntRDTdFvSt6xSBfvaFdOp4JOrwWaYGtzm8rDnjqgOS1qqddFP0\
+						mI4QQhGyNTshA6+JVBmQub3K2H6B/VJsIptbszFkpbr/t0HPgnxJXL6Z2L46Xk45tQiXgHBMvOw71uFGctt3HDbSelMqQHPVCWTq\
+						H5XicMO1pi1zldHmRKm9PI87RLuELdTeEv4G0upmZYCuTK8AAABmelRYdFJhdyBwcm9maWxlIHR5cGUgaXB0YwAAeNo9SjESgDAM\
+						2vMKn5BCjPY5vdbBzcH/n1wG4RIIxO7nnbYVIo1nIHosD/EH0KaDh+wg6JodS9q0wV7tVHvpAgfdmJJg1ENFTPsA9swXZnSiNUcA\
+						AAGFaUNDUElDQyBwcm9maWxlAAB4nH2RPUjDUBSFT1OlohUHC4o4BKlOFkRFHLUKRagQaoVWHUxe+iM0aUhSXBwF14KDP4tVBxdn\
+						XR1cBUHwB8RdcFJ0kRLvSwotYrzweB/n3XN47z5AqJWYZrWNAZpum6lEXMxkV8TQKwLoQxeGEJGZZcxKUhK+9XVP3VR3MZ7l3/dn\
+						das5iwEBkXiGGaZNvE48tWkbnPeJI6woq8TnxKMmXZD4keuKx2+cCy4LPDNiplNzxBFisdDCSguzoqkRTxJHVU2nfCHjscp5i7NW\
+						qrDGPfkLwzl9eYnrtAaRwAIWIUGEggo2UIKNGO06KRZSdB738Q+4folcCrk2wMgxjzI0yK4f/A9+z9bKT4x7SeE40P7iOB/DQGgX\
+						qFcd5/vYceonQPAZuNKb/nINmP4kvdrUokdAzzZwcd3UlD3gcgfofzJkU3alIC0hnwfez+ibskDvLdC56s2tcY7TByBNs0reAAeH\
+						wEiBstd83t3ROrd/exrz+wFVOXKbIzfHTgAADRxpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/\
+						IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+Cjx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1w\
+						dGs9IlhNUCBDb3JlIDQuNC4wLUV4aXYyIj4KIDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8y\
+						Mi1yZGYtc3ludGF4LW5zIyI+CiAgPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIKICAgIHhtbG5zOnhtcE1NPSJodHRwOi8v\
+						bnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIgogICAgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlw\
+						ZS9SZXNvdXJjZUV2ZW50IyIKICAgIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIKICAgIHhtbG5z\
+						OkdJTVA9Imh0dHA6Ly93d3cuZ2ltcC5vcmcveG1wLyIKICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8x\
+						LjAvIgogICAgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIgogICB4bXBNTTpEb2N1bWVudElEPSJnaW1w\
+						OmRvY2lkOmdpbXA6MjdiOTI5N2YtMjMyMy00YjlmLTk5Y2ItNGQwNDY5MWFkMzBkIgogICB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAu\
+						aWlkOjViNDNjMjAxLTk0NjktNDM0Ni05YzZiLTExMTc3NWYzNWY0MiIKICAgeG1wTU06T3JpZ2luYWxEb2N1bWVudElEPSJ4bXAu\
+						ZGlkOmU2NjQ1OTViLTRjNmYtNDM4Ni04NGJkLTJmZDgxZWQ2NTY1NiIKICAgZGM6Rm9ybWF0PSJpbWFnZS9wbmciCiAgIEdJTVA6\
+						QVBJPSIyLjAiCiAgIEdJTVA6UGxhdGZvcm09Ik1hYyBPUyIKICAgR0lNUDpUaW1lU3RhbXA9IjE3MzgxNDg4MDY4NDYwMzQiCiAg\
+						IEdJTVA6VmVyc2lvbj0iMi4xMC4zMCIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIu\
+						MTAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZl\
+						ZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpmZjJjMGIzYy01YzQ3LTRl\
+						MDktOGE5YS1iNTRhZDM4ZmNhMjIiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTWFjIE9TKSIKICAgICAg\
+						c3RFdnQ6d2hlbj0iMjAyNS0wMS0yOVQyMjowNjo0NisxMTowMCIvPgogICAgPC9yZGY6U2VxPgogICA8L3htcE1NOkhpc3Rvcnk+\
+						CiAgPC9yZGY6RGVzY3JpcHRpb24+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgogICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg\
+						ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgCjw/eHBh\
+						Y2tldCBlbmQ9InciPz4MjSFdAAAABmJLR0QAUgCzACvQNJ7dAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH6QEdCwYu5FUD\
+						sAAAAPtJREFUSMftlaFKBFEUhr9/XMZpigbrBpn7AoLNIAabuE0wbBRBsPsYBjUbbIJNEOziE9xJUw0rxjuDzrG4MAwjlrlB2C9d\
+						zh8+fricI+/9rZkdAUsMw0zShXPuphuUZZlUVbUiaSsZWAqwbmb73WFRFKt1Xe8Cl2b2MBpYOidptVwOIew0TXMITIANgBER8d5v\
+						hxCmwB6w2c6iis3sBDju8yTEZe23crHFf3+ChXgh/m/id+CzL4i6QCRdm1no21xRGzvnXrIsO5d0ClwBb+3GXxEORTN/jMfjCngq\
+						iuIVuDezKTBJJN39yIdiJumxO8zz/CNN02fgTNLBN2FTUC8UYmxbAAAAAElFTkSuQmCC',
+				pngalignment: 'center:center',
+			},
+			steps: [
+				{
+					down: [
+						{
+							actionId: ActionId.videoInputsIdTrigger,
+							options: {
+								video_input_id_dropdown:videoInputID,
+							},
+						},
+					],
+					up: [],
+				},
+			],
+			feedbacks: [
+			],
+		}
+	})
+
 	return presets
 }
