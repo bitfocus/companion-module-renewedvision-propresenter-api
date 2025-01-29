@@ -38,6 +38,8 @@ ___
 
 ### 🐛 Reporting bugs 🐛  
 If you have any issues, please check the <a href="https://github.com/bitfocus/companion-module-renewedvision-propresenter-api/issues" target="_blank">known issues list</a> - and add your issue if it's not already there.
+  
+---  
 
 ## How to Configure the Connection: ##  
 This Companion module connects via a network connection to ProPresenter.  
@@ -57,6 +59,7 @@ There are optional and/or advanced settings that you may configure if you decide
 * **Extra Debug:** Keep this off - unless you are troubleshooting/submitting an issue where the extra info can help devs to figure out your issue!
 * **Suppress Warnings for ActivePresentation Next/Previous:** When this option is enabled, warnings are suppressed if you try to go to the next slide at the end of a presentation or the previous slide at the beginning but there is none available. (This applies only to the "Active Presentation: Operation -> Trigger previous/next Slide")
   
+---  
 ## Getting Started:
 ### Button Presets:
 The fastest and easiest way to define buttons is to use presets.
@@ -75,8 +78,9 @@ If you like to show the topbar on your buttons, you will have to manually re-for
 Tip: One way to reformat for buttons with topbars is to put 1-2 lines of small text at top/bottom and image at opposite bottom/top:
 ![Button-With-Topbar.png](help-images/Button-With-Topbar.png)
 
-TODO: Github link to "IconPack"
+If you want to use any of the PNGs from the module presets here is a link to the <a href="https://raw.githubusercontent.com/bitfocus/companion-module-renewedvision-propresenter-api/main/IconPack.zip">IconPack</a> with all the PNG images used in the Presets.
   
+---  
 ### Actions:
 For those that want to build their own buttons (and triggers) - you will want to explore and get familiar with all the available actions that you can add to your buttons and triggers.
   
@@ -121,8 +125,8 @@ Finally, you can also use Index to indentify things (esp slides). Please note th
 * Use ? on Action inputs for useful tips/instructions.  
 * Explore the button presets as great starting points/inspiration for the kinds of things you can do.  
 * The Trigger Next/Previous operation, targeting Presentation focuses the active slide - It scrolls to ensure the active slide is visible.  It might be the only way to focus the active slide - as all other trigger operations on Active or Focuses presenation don't seem to do this.  They trigger slides without ensuring the triggered slide is visible.
-
-
+  
+---  
 ### Variables:
 Can be used on button labels - can be used in many action inputs.
 Some variables are dynamically created so that there are variables for each thing - eg timers, stage display layouts.  
@@ -131,13 +135,16 @@ Note that, the Variable description has a nice friendly name.
 Note also that the variable "Active Presentation Index" seems to mostly return invalid indexes but I am keeping it available for the future, in case it becomes useful in a future version of ProPresenter  For now, you probably want to use "Active Presentation PlaylistItem Index" instead.
 One special variable is Time Since Last Status Update - for debugging purposes. (You can even Trigger the module to automatically restart when the "Time Since Last Status Update" gets over some appropiate limit - Although hopefully you never need to!)  
   
+---  
 ### Feedbacks:
 Feedbacks are typically used to update a button to show the state of something - Take a look at some of the presets to get an idea of how some feedbacks can be used.
-
+  
+---  
 ### Triggers:
 TODO:  A couple of useful examples of triggers with ProPresenter..
 Calendar - trigger a specific presentation at a time.
-
+  
+---  
 ### Other Notes:
 Note that a few API functions were introduced in later versions of ProPresenter so there might be one or two actions that don't work if you are running an older version of ProPresenter.  
   
@@ -164,7 +171,7 @@ A momentary flash of warning symbol will appear on all buttons with ProPresenter
 Looks are identified by name or index.... UUID of live look does not match any UUID of the list of configured looks. So we can't use UUID for identifying a look to trigger.  TODO: Does this need any more explanation.  
   
   
-## 🎹 Simple MIDI Button Pusher:  
+## 🎹 Simple MIDI Button Pusher: ##  
 There is an optional feature added to this module which enables remote pushing of Companion buttons via MIDI.  
 If you enable it, you can send a **Note-On** message to this module through a shared MIDI-Port and cause a button press.  
 This feature uses a very simple mapping of Note-On MIDI messages to buttons in Companion:
