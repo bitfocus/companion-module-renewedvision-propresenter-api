@@ -1,6 +1,10 @@
 # ProPresenter API
 
 This "**ProPresenter API**" module allows you to remotely control ProPresenter via it's <a href="https://openapi.propresenter.com" target="_blank">public API</a>  
+
+If you like learning from videos I am building a <a href="https://youtube.com/playlist?list=PLfD8xdMvz-lhwcoJOOJ7G8qTEb_XXp6v4&si=2jViRELfYAFOUwYy" target="_blank">Youtube Playlist</a> of videos where you can learn more - including some walkthroughs of pretty advanced setups.  
+*But DON'T skip reading this help file! 😀*  
+
 ![StreamDeck1.png](help-images/ProModule-StreamDeck1.png)  
   
 Starting with Companion 3.5 *and later*...
