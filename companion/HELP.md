@@ -122,7 +122,8 @@ Once you figure out what you want to target and choose an Action that targets wh
 Explore the operations within each action to get familiar with what is possible.  
 
 ### Variables
-Variables are supported throughout the module in many actions inputs - It might not be obvious at first - but when you see a DropDown to pick something, check the last item on the list - there is usually a manual option you can pick which will allow you to enter text or variables (See below for more on variabbles)  
+This module provides a number of variables that reflect the current status of things in ProPresenter. Take a look and explore these variables - you might like to use some of them for live button text.  
+Also, variables are supported throughout the module in many actions inputs - It might not be obvious at first - but when you see a DropDown to pick something, check the last item on the list - there is usually a manual option you can pick which will allow you to enter text or variables (See below for more on variabbles)  
 
 ### Specific Identifiers - UUID
 Many things in ProPresenter can be indentified by using ANY one of three identifiers: UUID or Name or Index.  
