@@ -1,7 +1,6 @@
 import { InstanceBase, SomeCompanionConfigField, CompanionInputFieldDropdown } from '@companion-module/base'
 import { ProPresenter } from 'renewedvision-propresenter'
 import { ProPresenterStateStore } from './utils'
-import { Input } from '@julusian/midi'
 
 export interface DeviceConfig {
 	ProPresenter: ProPresenter | null
@@ -26,8 +25,7 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 	propresenterStateStore: ProPresenterStateStore
 }
 
-export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
-	const port_count = midi_input.getPortCount()
+export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCompanionConfigField[] {
 	const midi_port_dropdown: CompanionInputFieldDropdown = {
 		type: 'dropdown',
 		id: 'midi_port_dropdown',
@@ -37,10 +35,18 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 		default: 'virtual'
 	}
 
-	for (let portIndex = 0; portIndex < port_count; portIndex++) {
-		const port_name = midi_input.getPortName(portIndex)
-		midi_port_dropdown.choices.push({ id: port_name, label: port_name})
+	// Add all the MIDI ports to the dropdown
+	try {
+		const port_count = instance.midi_input.getPortCount()
+		for (let portIndex = 0; portIndex < port_count; portIndex++) {
+			const port_name = instance.midi_input.getPortName(portIndex)
+			midi_port_dropdown.choices.push({ id: port_name, label: port_name})
+		}
+	} catch (error) {
+		instance.log('debug', 'Error getting MIDI ports: ' + error)
 	}
+
+	// Add the virtual port option to the dropdown
 	midi_port_dropdown.choices.push({ id: 'virtual', label: 'Custom Virtual Port'})
 
 	return [
@@ -157,12 +163,5 @@ export function GetConfigFields(midi_input: Input): SomeCompanionConfigField[] {
 			width: 4,
 			default: false,
 		},
-		// {
-		// 	type: 'textinput',
-		// 	id: 'password',
-		// 	label: 'ProPresenter remote password',
-		// 	width: 8,
-		// 	default: '',
-		// },
 	]
 }

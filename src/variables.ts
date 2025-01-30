@@ -28,6 +28,30 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'time_since_last_status_update',
 	})
 	variables.push({
+		name: 'Active Presentation Current Slide Text',
+		variableId: 'active_presentation_current_slide_text',
+	})
+	variables.push({
+		name: 'Active Presentation Next Slide Text',
+		variableId: 'active_presentation_next_slide_text',
+	})
+	variables.push({
+		name: 'Active Presentation Current Slide Notes',
+		variableId: 'active_presentation_current_slide_notes',
+	})
+	variables.push({
+		name: 'Active Presentation Next Slide Notes',
+		variableId: 'active_presentation_next_slide_notes',
+	})
+	variables.push({
+		name: 'Active Presentation Current Slide ImageUUID',
+		variableId: 'active_presentation_current_slide_imageuuid',
+	})
+	variables.push({
+		name: 'Active Presentation Next Slide ImageUUID',
+		variableId: 'active_presentation_next_slide_imageuuid',
+	})
+	variables.push({
 		name: 'Active Presentation Slide Index',
 		variableId: 'active_presentation_slide_index',
 	})

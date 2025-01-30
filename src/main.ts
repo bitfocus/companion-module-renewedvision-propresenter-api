@@ -53,7 +53,7 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
-	public midi_input: Input = new Input() // Set up a new Midi input.
+	public midi_input: Input = new Input() // Set up a new Midi input. This will be used to listen for MIDI messages (Note-On messages) that will be used to trigger Companion buttons.
 
 	constructor(internal: unknown) {
 		super(internal)
@@ -89,13 +89,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	public lastGlobalGroupsJSON: string = '' // Used for checking if global groups have changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/groups and "everyone" is running versions that support it)
 
 	public async init(config: DeviceConfig): Promise<void> {
-		this.updateStatus(InstanceStatus.Connecting) // The ProPresenter object will be used to establish a persistant status feedback connection later - within configUpdated() below
+		this.log('debug', 'Midi input: ' + JSON.stringify(this.midi_input)) // This will show the Midi input object in the debug log (Logged in case some computers fail to create one)
+		this.updateStatus(InstanceStatus.Connecting) // The ProPresenter object will be used to establish a persistant status feedback connection later and update the InstanceStatus within configUpdated() below
 		await this.configUpdated(config) 
 	}
 	// When module gets deleted
 	public async destroy() {
 		this.log('debug', 'Module destroy()')
-		
 	}
 
 	public async configUpdated(config: DeviceConfig) {
@@ -103,47 +103,48 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.config = config
 
 		// Configure a callback for MIDI input messages
-		this.midi_input.on('message', async (deltaTime, message) => {
-			const midiMessageChannel:number = message[0] & 0x0f
-			const midiMessageIsNoteon:boolean = (message[0] & 0x90) == 0x90
-			const midiMessageNote:number = message[1]
-			const midiMessageVelocity:number = message[2]
+		if (this.midi_input) {
+			this.midi_input.on('message', async (deltaTime, message) => {
+				const midiMessageChannel:number = message[0] & 0x0f
+				const midiMessageIsNoteon:boolean = (message[0] & 0x90) == 0x90
+				const midiMessageNote:number = message[1]
+				const midiMessageVelocity:number = message[2]
 
-			this.log('debug', `MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`)
-			
-			// api/location/<page>/<row>/<column>/press
-			// page = channel
-			// row = note
-			// column = velocity
-			const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${midiMessageChannel+1}/${midiMessageNote}/${midiMessageVelocity}/press`
-			this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
-			
-			fetch(buttonPressURL, {
-				signal: AbortSignal.timeout(2000),
-				method: 'POST',
-				headers: {
-				  'Content-Type': 'application/json',
-				},
-			}).then((response) => {
-				this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
-			}).catch((error) => {
-				this.log('debug', 'Error fetching ' + buttonPressURL + '. ' + error)
+				this.log('debug', `MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`)
+				
+				// api/location/<page>/<row>/<column>/press
+				// page = channel
+				// row = note
+				// column = velocity
+				const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${midiMessageChannel+1}/${midiMessageNote}/${midiMessageVelocity}/press`
+				this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
+				
+				fetch(buttonPressURL, {
+					signal: AbortSignal.timeout(2000),
+					method: 'POST',
+					headers: {
+					'Content-Type': 'application/json',
+					},
+				}).then((response) => {
+					this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
+				}).catch((error) => {
+					this.log('debug', 'Error fetching ' + buttonPressURL + '. ' + error)
+				})
+				
 			})
-			
-			
-		});
+		}
 
 		// Close midi port (if open)
 		if (this.midi_input.isPortOpen()) {
 			this.log('debug', 'Closing Midi port')
 			this.midi_input.closePort()
 		}
-			
 
 		// Get MIDI port configs
 		const virtual_midi_port_name: string = this.config.virtual_midi_port_name
 		const midi_port_name: string = this.config.midi_port_dropdown
-		// Connect to configured MIDI (virtual) port.
+
+		// Connect to configured MIDI (virtual) port (if enabled in config)
 		if (this.config.enable_midi_button_pusher) {
 			try {
 				if (midi_port_name == 'virtual') {
@@ -197,7 +198,6 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"capture/status": this.captureStatusUpdated,
 			} ,2000)
 			
-			// TODO: consider moving this to after all intial state is gathered??
 			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
 			
 			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options:any) => {
@@ -224,7 +224,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
 				this.updateStatus(InstanceStatus.Ok)
 
-				// Before calling initVariables(), calls setVariableDefinitions(), first make some requests to ProPresenter to get state that will be used for dynamic actions and variables
+				// Before calling initVariables(), calls setVariableDefinitions(), first make some requests to ProPresenter to get initial state that will be used for dynamic actions and variables
+				this.log('debug', 'Query ProPresenter Initial State')
+
+				// Get the timer definitions
 				const timersResult: RequestAndResponseJSONValue = await this.ProPresenter.timersGet()
 				// If we got an ok response, construct a statusJSONObject and call the callback for timersUpdate()
 				if (timersResult.ok) {
@@ -232,7 +235,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						url: 'looks',
 						data: timersResult.data
 					}
-					this.timersUpdate(timersJSONObject) // This will update the local cache state for the timer definitions & call initVariables() and initActions(). Both are rate limited and coalesced.
+					this.timersUpdate(timersJSONObject) // This will update the local cache state for the timer definitions & call initVariables() and initActions() - which are both rate limited and coalesced.
 				}
 
 				// Get version info (and update version based variables)
@@ -378,7 +381,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.initFeedbacks()
 				this.checkFeedbacks()
 
-				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter)
+				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter - it should be updated every second)
 				setInterval(() => {
 					SetVariableValues(this, {time_since_last_status_update: (Date.now()-this.timeOfLastStatusUpdate)/1000})
 				},1000)
@@ -442,6 +445,16 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (this.config.exta_debug_logs) {
 			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
 		}
+
+		SetVariableValues(this, 
+			{
+				active_presentation_current_slide_text: statusJSONObject.data.current.text,
+				active_presentation_next_slide_text: statusJSONObject.data.next.text,
+				active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
+				active_presentation_next_slide_notes: statusJSONObject.data.next.notes,
+				active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
+				active_presentation_next_slide_imageuuid: statusJSONObject.data.next.uuid,
+			})
 	}
 
 	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
@@ -554,11 +567,22 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	activePresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
-		SetVariableValues(this, {
-			active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
-			active_presentation_name: statusJSONObject.data.presentation.id.name,
-			active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
-		})
+		if (statusJSONObject.data.presentation) { // ProPresenter can return a null presentation when no presentation is active
+			SetVariableValues(this, {
+				active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_name: statusJSONObject.data.presentation.id.name,
+				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
+			})
+		} else {
+			SetVariableValues(this, {
+				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_name: '',
+				active_presentation_uuid: '',
+			})
+		}
+
+
+		
 	}
 
 	activePlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
@@ -850,7 +874,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	// Return config fields for web config
 	getConfigFields() {
-		return GetConfigFields(this.midi_input)
+		return GetConfigFields(this)
 	}
 
 	initActions() {
@@ -919,7 +943,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	initFeedbacks() {
-		// TODO: add rate-limit (and coalesce) logic
+		// TODO: Consider adding rate-limit (and coalesce) logic
 		this.setFeedbackDefinitions(GetFeedbacks(this))
 	}
 
