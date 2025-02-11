@@ -176,6 +176,18 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_presentation_playlist_json',
 	})
 	variables.push({
+		name: 'Focused Playlist Items JSON',
+		variableId: 'focused_playlist_items_json',
+	})
+	variables.push({
+		name: 'Focused Playlist Name',
+		variableId: 'focused_playlist_name',
+	})
+	variables.push({
+		name: 'Focused Playlist Item Names',
+		variableId: 'focused_playlist_item_names',
+	})
+	variables.push({
 		name: 'Transport Presentation Layer IsPlaying',
 		variableId: 'transport_presentation_layer_isplaying',
 	})
@@ -240,19 +252,19 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {
 		variables.push(
-		{
-			name: proTimer.id.name,
-			variableId: proTimer.varid,
-		},
-		{
-			name: proTimer.id.name + ' (Seconds)',
-			variableId: proTimer.varid + '_seconds',
-		},
-		{
-			name: proTimer.id.name + ' (Custom Format)',
-			variableId: proTimer.varid + '_custom',
-		},
-	)
+			{
+				name: proTimer.id.name,
+				variableId: proTimer.varid,
+			},
+			{
+				name: proTimer.id.name + ' (Seconds)',
+				variableId: proTimer.varid + '_seconds',
+			},
+			{
+				name: proTimer.id.name + ' (Custom Format)',
+				variableId: proTimer.varid + '_custom',
+			},
+		)
 	}
 
 	//StageScreenWithLayout = {uuid: string, name: string, varid: string, index: number, layout_uuid: string, layout_name: string, layout_index: number}
@@ -268,8 +280,8 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 
 /**
  * This is an override function for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
- * @param instance 
- * @param values 
+ * @param instance
+ * @param values
  */
 export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>, values: CompanionVariableValues) {
 	// Cache values that were set so they can be used as an easy method to reset values after setting definitions again later
@@ -281,7 +293,7 @@ export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>, value
 
 /**
  * Reset old value for all variables using last known values in local cache
- * @param instance 
+ * @param instance
  */
 export function ResetVariablesFromLocalCache(instance: InstanceBaseExt<DeviceConfig>) {
 	// Ensure we don't ever pass empty list of variable values - as this function can be called before any values are added to the cache during startup
