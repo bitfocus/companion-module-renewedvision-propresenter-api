@@ -183,6 +183,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				"presentation/slide_index":this.presentationSlideIndexUpdate,
 				"announcement/slide_index":this.announcementSlideIndexUpdated,
 				"playlist/active":this.activePlaylistUpdated,
+				"playlist/focused":this.focusedPlaylistUpdated,
 				"presentation/focused":this.focusedPresentationUpdated,
 				"presentation/active":this.activePresentationUpdated, // The doco for /v1/status/updates mentions presentation/current as a permitted streaming endpoint - but it's a hyperlink that actually links to presentation/active (I tested and either works - but I'm using the one that is linked to).
 				"look/current":this.activeLookUpdated,
@@ -650,6 +651,33 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_announcement_playlist_item_name: '',
 				active_announcement_playlist_item_index: '',
 				active_announcement_playlist_item_uuid: '',
+			})
+		}
+	}
+
+	focusedPlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
+		this.log('debug', 'focusedPlaylistUpdated: ' + JSON.stringify(statusJSONObject))
+
+		if (statusJSONObject.data.playlist) {
+			SetVariableValues(this, {
+				focused_playlist_name: statusJSONObject.data.playlist.name,
+			})
+			const focusedPlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
+				statusJSONObject.data.playlist.uuid
+			)
+			this.log('debug', 'focusedPlaylistItems: ' + JSON.stringify(focusedPlaylistItemsResponse))
+			if (focusedPlaylistItemsResponse.ok)
+				SetVariableValues(this, {
+					focused_playlist_items_json: JSON.stringify(focusedPlaylistItemsResponse.data.items),
+				})
+			SetVariableValues(this, {
+				focused_playlist_item_names: focusedPlaylistItemsResponse.data.items.map(
+					(a: { id: { name: string } }) => a.id.name
+				),
+			})
+		} else {
+			SetVariableValues(this, {
+				focused_playlist_name: '',
 			})
 		}
 	}
