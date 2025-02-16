@@ -36,14 +36,16 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 	}
 
 	// Add all the MIDI ports to the dropdown
-	try {
-		const port_count = instance.midi_input.getPortCount()
-		for (let portIndex = 0; portIndex < port_count; portIndex++) {
-			const port_name = instance.midi_input.getPortName(portIndex)
-			midi_port_dropdown.choices.push({ id: port_name, label: port_name})
+	if (instance.midi_available) {
+		try {
+			const port_count = instance.midi_input.getPortCount()
+			for (let portIndex = 0; portIndex < port_count; portIndex++) {
+				const port_name = instance.midi_input.getPortName(portIndex)
+				midi_port_dropdown.choices.push({ id: port_name, label: port_name})
+			}
+		} catch (error) {
+			instance.log('debug', 'Error getting MIDI ports: ' + error)
 		}
-	} catch (error) {
-		instance.log('debug', 'Error getting MIDI ports: ' + error)
 	}
 
 	// Add the virtual port option to the dropdown
@@ -117,8 +119,9 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: '',
 			id: 'advanced',
 			width: 12,
-			value: '<b>🎹 Are you wanting "push" Companion buttons via MIDI?...</b><br>This feature uses a "hack" to push buttons by calling the Companion HTTP API.  To do this, it needs to know the network port that your instance of Companion is listening to. Unfortunately, there is no way for this module to lookup your Companion network port - so you will need to manually update it here.\
-			<br>The default port is typically 8000. You can check the Companion network port in the Companion Window (or look up at the address bar now).'
+			value: '<b>🎹 Are you wanting "push" Companion buttons via MIDI?...</b><br>This feature uses a "hack" to push buttons by calling the Companion HTTP API.\
+			<br>To do this, it needs to know the network port that your instance of Companion is listening to. Unfortunately, there is no way for this module to lookup your Companion network port - so you will need to manually update it here. The default port is typically 8000. You can check the Companion network port in the Companion Window (or look up at the address bar now).\
+			<br>Make sure that Companion is listening to the localhost 127.0.0.1 (or All Interfaces 0.0.0.0)'
 		},
 		{
 			type: 'number',

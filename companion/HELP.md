@@ -187,6 +187,7 @@ Midi Channel = Button Page.
 The numerical value of the Note-On = Row of button.  
 Note-On Intensity = Column of button.  
 
+You need to make sure the Companion is listening on 127.0.0.1 (or All Interface 0.0.0.0).
 In the module config, enable the MIDI Button Pushing and then choose an existing MIDI port in the "Midi Port" dropdown.
 If you like, pick the last option in the Midi-Port Name dropdown called "Custom Virtual Port" to create a local (non-networked) custom virtual port with any name you choose.  
 

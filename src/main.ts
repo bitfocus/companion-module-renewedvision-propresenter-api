@@ -53,10 +53,17 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
-	public midi_input: Input = new Input() // Set up a new Midi input. This will be used to listen for MIDI messages (Note-On messages) that will be used to trigger Companion buttons.
+	public midi_input?: Input // Set up a new Midi input. This will be used to listen for MIDI messages (Note-On messages) that will be used to trigger Companion buttons.
+	public midi_available: boolean = true // This will be set to false if the Midi input fails to initialise (e.g. on some computers that don't have MIDI drivers installed)
 
 	constructor(internal: unknown) {
 		super(internal)
+		try {
+			this.midi_input = new Input()
+		} catch (error) {
+			this.midi_available = false
+			console.log('Error creating Midi input: ' + error)
+		}
 	}
 
 	public config: DeviceConfig = {
@@ -103,7 +110,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.config = config
 
 		// Configure a callback for MIDI input messages
-		if (this.midi_input) {
+		if (this.midi_available && this.midi_input) {
 			this.midi_input.on('message', async (deltaTime, message) => {
 				const midiMessageChannel:number = message[0] & 0x0f
 				const midiMessageIsNoteon:boolean = (message[0] & 0x90) == 0x90
@@ -135,7 +142,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 
 		// Close midi port (if open)
-		if (this.midi_input.isPortOpen()) {
+		if (this.midi_available && this.midi_input?.isPortOpen()) {
 			this.log('debug', 'Closing Midi port')
 			this.midi_input.closePort()
 		}
@@ -145,14 +152,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		const midi_port_name: string = this.config.midi_port_dropdown
 
 		// Connect to configured MIDI (virtual) port (if enabled in config)
-		if (this.config.enable_midi_button_pusher) {
+		if (this.midi_available && this.config.enable_midi_button_pusher) {
 			try {
 				if (midi_port_name == 'virtual') {
 					this.log('debug', 'Connecting virtual_midi_port_name: ' + virtual_midi_port_name)
-					this.midi_input.openVirtualPort(virtual_midi_port_name)
+					this.midi_input?.openVirtualPort(virtual_midi_port_name)
 				} else {
 					this.log('debug', 'Connecting midi_port_name: ' + midi_port_name)
-					this.midi_input.openPortByName(midi_port_name)
+					this.midi_input?.openPortByName(midi_port_name)
 				}
 			} catch (error) {
 				let message = 'Unknown Error'
