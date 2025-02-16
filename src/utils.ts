@@ -924,6 +924,7 @@ export type ProScreensStatus = {'audience': boolean, 'stage': boolean,}
 export type ProTransportLayersStatus = {'presentation': boolean, 'announcement': boolean, 'audio': boolean}
 export type ProProp = {id:ProID, is_active:boolean}
 export type ProGroup = {id:ProID, color:{red:number, green: number, blue: number, alpha: number} }
+export type ProMacro = {id:ProID, color:{red:number, green: number, blue: number, alpha: number}, image_type:string }
 
 export type ProPresenterStateStore = {
 	proTransportLayersStatus: ProTransportLayersStatus,
@@ -932,6 +933,7 @@ export type ProPresenterStateStore = {
 	proGroups: ProGroup[],
 	proTimers: ProTimer[],
 	proProps: ProProp[],
+	proMacros: ProMacro[],
 	stageScreensWithLayout: StageScreenWithLayout[],
 	messageTokenInputs: CompanionInputFieldTextInput[], // Dynamically created text inputs for ALL message tokens across ALL messages.  Where the ID of each input is in form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName' and it's visbility is based on the uuid of the selected message.
 	looksChoices: DropdownChoice[],

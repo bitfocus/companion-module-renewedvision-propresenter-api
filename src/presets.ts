@@ -3294,9 +3294,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 	})
 
 	// Dynamically create MacroTrigger presets for each macroChoice in propresenterStateStore...
-	instance.propresenterStateStore.macroChoices.forEach(macroChoice => {
-		const macroID: string = macroChoice.id as string
-		const macroLabel: string = macroChoice.label as string
+	instance.propresenterStateStore.proMacros.forEach(proMacro => {
+		const macroID: string = proMacro.id.uuid as string
+		const macroLabel: string = proMacro.id.name as string
 		presets[macroID] = {
 			name: macroLabel + ' Macro',
 			category: 'Macros',
@@ -3304,8 +3304,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			style: {
 				text: 'Macro\\n\\n\\n' + macroLabel, // macroLabel.slice(0,7)
 				size: 14,
-				color: combineRgb(255, 255, 128),
-				bgcolor: combineRgb(153, 153, 0),
+				color: combineRgb(255, 255, 255),
+				bgcolor: combineRgb(proMacro.color.red * 255, proMacro.color.green * 255, proMacro.color.blue * 255, proMacro.color.alpha * 255), //combineRgb(153, 153, 0),
 				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\

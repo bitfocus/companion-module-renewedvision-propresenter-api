@@ -33,6 +33,7 @@ const  emptyPropresenterStateStore:ProPresenterStateStore = {
 	proGroups: [],
 	proTimers: [],
 	proProps: [],
+	proMacros: [],
 	stageScreensWithLayout: [],
 	messageTokenInputs: [],
 	looksChoices: [],
@@ -735,6 +736,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'macrosUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of macros in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.macroChoices = statusJSONObject.data.map((macro: {id: {uuid: string, name:string}}) => ({id:macro.id.uuid, label:macro.id.name}))
+		// Update propresenterStateStore.proMacros
+		this.propresenterStateStore.proMacros = statusJSONObject.data // TODO: Consider how this might break/fail if the strutucture of the JSON (list of macros) changes (also for other status updates where we store the whole JSON without mapping into an aray of presummed types)
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
