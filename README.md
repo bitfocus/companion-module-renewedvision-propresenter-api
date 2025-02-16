@@ -1,7 +1,7 @@
 # companion-module-renewedvision-propresenter-api
 
-This is the "ProPresenter API" module that uses the open ProPresenter API made availabe in ProPresenter version 7.9 and later.
-This module is still in beta.
+This is the "ProPresenter API" module that uses the open ProPresenter API made availabe in ProPresenter version 7.9 and later. (Works best with later versions >=17)
+
 
 TODO: Dev Notes:
 Uses ProPresenter npm module (esp for RegisterStatusCallbacks)
