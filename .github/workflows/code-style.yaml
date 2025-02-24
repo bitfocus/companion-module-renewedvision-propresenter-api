@@ -1,0 +1,25 @@
+name: Check code style with prettier
+
+on:
+  pull_request:
+
+jobs:
+  prettier:
+    name: Check Prettier Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Prepare environment
+        run: |
+          corepack enable
+          yarn install
+      - name: Check code style
+        run: yarn run prettier --check src/
