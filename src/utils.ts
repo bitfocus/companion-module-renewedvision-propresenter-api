@@ -1,4 +1,9 @@
-import { CompanionInputFieldCheckbox, CompanionInputFieldDropdown, CompanionInputFieldTextInput, DropdownChoice } from "@companion-module/base"
+import {
+	CompanionInputFieldCheckbox,
+	CompanionInputFieldDropdown,
+	CompanionInputFieldTextInput,
+	DropdownChoice,
+} from '@companion-module/base'
 
 // Force options to have a default to prevent sending undefined values
 type EnforceDefault<T, U> = Omit<T, 'default'> & { default: U }
@@ -66,8 +71,8 @@ export interface Options {
 	timer_end_time: EnforceDefault<CompanionInputFieldTextInput, string>
 	timer_new_name: EnforceDefault<CompanionInputFieldTextInput, string>
 	timer_allows_overrun: EnforceDefault<CompanionInputFieldCheckbox, boolean>
-	timer_increment_value : EnforceDefault<CompanionInputFieldTextInput, string>
-	trigger_target:EnforceDefault<CompanionInputFieldDropdown, string>
+	timer_increment_value: EnforceDefault<CompanionInputFieldTextInput, string>
+	trigger_target: EnforceDefault<CompanionInputFieldDropdown, string>
 	trigger_next_previous: EnforceDefault<CompanionInputFieldDropdown, string>
 	transport_layer: EnforceDefault<CompanionInputFieldDropdown, string>
 	transport_skip_time: EnforceDefault<CompanionInputFieldTextInput, string>
@@ -103,7 +108,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Audio Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Audio Item' },
 			{ id: 'trigger_first', label: 'Trigger First Audio Item' },
-			{ id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Audio Item By It's ID" },
 		],
 		default: 'focus',
 	},
@@ -116,7 +121,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Audio Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Audio Item' },
 			{ id: 'trigger_first', label: 'Trigger First Audio Item' },
-			{ id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Audio Item By It's ID" },
 			{ id: 'focus_next', label: 'Move Focus To Next Playlist' },
 			{ id: 'focus_previous', label: 'Move Focus To Previous Playlist' },
 		],
@@ -132,7 +137,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Audio Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Audio Item' },
 			{ id: 'trigger_first', label: 'Trigger First Audio Item' },
-			{ id: 'trigger_id', label: 'Trigger Audio Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Audio Item By It's ID" },
 		],
 		default: 'focus',
 	},
@@ -144,7 +149,7 @@ export const options: Options = {
 		choices: [
 			{ id: 'focus', label: 'Focus Active Presentation Playlist' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
-			{ id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -156,7 +161,7 @@ export const options: Options = {
 		choices: [
 			{ id: 'focus', label: 'Focus Active Announcement Playlist' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
-			{ id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -169,7 +174,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Playlist Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Playlist Item' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
-			{ id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
 			{ id: 'focus_next', label: 'Move Focus To Next Playlist' },
 			{ id: 'focus_previous', label: 'Move Focus To Previous Playlist' },
 		],
@@ -185,7 +190,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Playlist Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Playlist Item' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
-			{ id: 'trigger_index', label: 'Trigger Playlist Item By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -199,7 +204,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Slide' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Slide' },
 			{ id: 'trigger_first', label: 'Trigger First Slide' },
-			{ id: 'trigger_index', label: 'Trigger Slide By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
 		],
@@ -214,7 +219,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Slide' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Slide' },
 			{ id: 'trigger_first', label: 'Trigger First Slide' },
-			{ id: 'trigger_index', label: 'Trigger Slide By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
 			{ id: 'focus_next', label: 'Move Focus To Next Presentation' },
@@ -225,14 +230,15 @@ export const options: Options = {
 	specific_presentation_operation: {
 		type: 'dropdown',
 		label: 'Specific Presentation: Operation',
-		tooltip: 'Choose an operation to perform on a specifically identified Presentation. NOTE: This action targets the presentation in the library - not a playlist!',
+		tooltip:
+			'Choose an operation to perform on a specifically identified Presentation. NOTE: This action targets the presentation in the library - not a playlist!',
 		id: 'specific_presentation_operation',
 		choices: [
 			{ id: 'focus', label: 'Focus Specified Presentation' },
 			{ id: 'trigger_next', label: 'Trigger Next Slide' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Slide' },
 			{ id: 'trigger_first', label: 'Trigger First Slide' },
-			{ id: 'trigger_index', label: 'Trigger Slide By It\'s Index' },
+			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
 		],
@@ -249,7 +255,8 @@ export const options: Options = {
 	presentation_id: {
 		type: 'textinput',
 		label: 'Presentation ID',
-		tooltip: 'Enter Presentation Name or Index or UUID.  Also can use a path. Click Learn to get the UUID of the currently focused presentation.',
+		tooltip:
+			'Enter Presentation Name or Index or UUID.  Also can use a path. Click Learn to get the UUID of the currently focused presentation.',
 		id: 'presentation_id',
 		default: '',
 		useVariables: true,
@@ -265,7 +272,8 @@ export const options: Options = {
 	audio_playlist_id: {
 		type: 'textinput',
 		label: 'Audio Playlist Id',
-		tooltip: 'Enter Audio Playlist Name or Index or UUID. Click Learn to get the UUID of the currently focused audio playlist.',
+		tooltip:
+			'Enter Audio Playlist Name or Index or UUID. Click Learn to get the UUID of the currently focused audio playlist.',
 		id: 'audio_playlist_id',
 		default: '',
 		useVariables: true,
@@ -275,10 +283,10 @@ export const options: Options = {
 		label: 'Audio Item ID',
 		tooltip: 'Enter Audio Item Name or Index or UUID',
 		id: 'audio_item_id',
-		isVisible: ((options) => options.active_audioplaylist_operation == 'trigger_id' ||
+		isVisible: (options) =>
+			options.active_audioplaylist_operation == 'trigger_id' ||
 			options.focused_audioplaylist_operation == 'trigger_id' ||
-			options.specific_audioplaylist_operation == 'trigger_id'
-		),
+			options.specific_audioplaylist_operation == 'trigger_id',
 		default: '',
 		useVariables: true,
 	},
@@ -287,11 +295,11 @@ export const options: Options = {
 		label: 'Group ID',
 		tooltip: 'Enter Group Name or Index or UUID',
 		id: 'group_id_text',
-		isVisible: ((options) => options.group_id_dropdown == 'manually_specify_groupid' &&
+		isVisible: (options) =>
+			options.group_id_dropdown == 'manually_specify_groupid' &&
 			(options.active_presentation_operation == 'group' ||
-			options.focused_presentation_operation == 'group' ||
-			options.specific_presentation_operation == 'group')
-		),
+				options.focused_presentation_operation == 'group' ||
+				options.specific_presentation_operation == 'group'),
 		default: '',
 		useVariables: true,
 	},
@@ -300,21 +308,19 @@ export const options: Options = {
 		label: 'Group',
 		tooltip: 'Choose an existing Group\nOr manually specify via text/variable)',
 		id: 'group_id_dropdown',
-		isVisible: ((options) => options.active_presentation_operation == 'group' ||
+		isVisible: (options) =>
+			options.active_presentation_operation == 'group' ||
 			options.focused_presentation_operation == 'group' ||
-			options.specific_presentation_operation == 'group'
-		),
-		choices: [
-			{ id: 'manually_specify_groupid', label: 'Manually Specify Group ID Below' },
-		],
-		default: ''
+			options.specific_presentation_operation == 'group',
+		choices: [{ id: 'manually_specify_groupid', label: 'Manually Specify Group ID Below' }],
+		default: '',
 	},
 	look_id_text: {
 		type: 'textinput',
 		label: 'Look ID',
 		tooltip: 'Enter Look Name or Index or UUID',
 		id: 'look_id_text',
-		isVisible: ((options) => options.look_id_dropdown == 'manually_specify_lookid'),
+		isVisible: (options) => options.look_id_dropdown == 'manually_specify_lookid',
 		default: '',
 		useVariables: true,
 	},
@@ -323,17 +329,15 @@ export const options: Options = {
 		label: 'Look',
 		tooltip: 'Choose an existing Look\nOr manually specify via text/variable)',
 		id: 'look_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_lookid', label: 'Manually Specify Look ID Below' },
-		],
-		default: ''
+		choices: [{ id: 'manually_specify_lookid', label: 'Manually Specify Look ID Below' }],
+		default: '',
 	},
 	macro_id_text: {
 		type: 'textinput',
 		label: 'Macro ID',
 		tooltip: 'Enter Macro Name or Index or UUID',
 		id: 'macro_id_text',
-		isVisible: ((options) => options.macro_id_dropdown == 'manually_specify_macroid'),
+		isVisible: (options) => options.macro_id_dropdown == 'manually_specify_macroid',
 		default: '',
 		useVariables: true,
 	},
@@ -342,9 +346,7 @@ export const options: Options = {
 		label: 'Macro',
 		tooltip: 'Choose an existing Macro\nOr manually specify via text/variable',
 		id: 'macro_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_macroid', label: 'Manually Specify Macro ID Below' },
-		],
+		choices: [{ id: 'manually_specify_macroid', label: 'Manually Specify Macro ID Below' }],
 		default: '',
 	},
 	active_mediaplaylist_operation: {
@@ -357,7 +359,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Media Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Media Item' },
 			{ id: 'trigger_first', label: 'Trigger First Media Item' },
-			{ id: 'trigger_id', label: 'Trigger Media Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Media Item By It's ID" },
 		],
 		default: 'focus',
 	},
@@ -370,7 +372,7 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Media Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Media Item' },
 			{ id: 'trigger_first', label: 'Trigger First Media Item' },
-			{ id: 'trigger_id', label: 'Trigger Media Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Media Item By It's ID" },
 			{ id: 'focus_next', label: 'Move Focus To Next Playlist' },
 			{ id: 'focus_previous', label: 'Move Focus To Previous Playlist' },
 		],
@@ -386,14 +388,15 @@ export const options: Options = {
 			{ id: 'trigger_next', label: 'Trigger Next Media Item' },
 			{ id: 'trigger_previous', label: 'Trigger Previous Media Item' },
 			{ id: 'trigger_first', label: 'Trigger First Media Item' },
-			{ id: 'trigger_id', label: 'Trigger Media Item By It\'s ID' },
+			{ id: 'trigger_id', label: "Trigger Media Item By It's ID" },
 		],
 		default: 'focus',
 	},
 	media_playlist_id: {
 		type: 'textinput',
 		label: 'Media Playlist Id',
-		tooltip: 'Enter Media Playlist Name or Index or UUID. Click Learn to get the UUID of the currently focused media playlist.',
+		tooltip:
+			'Enter Media Playlist Name or Index or UUID. Click Learn to get the UUID of the currently focused media playlist.',
 		id: 'media_playlist_id',
 		default: '',
 		useVariables: true,
@@ -403,10 +406,10 @@ export const options: Options = {
 		label: 'Media Item Id',
 		tooltip: 'Enter Media Item Name or Index or UUID',
 		id: 'media_item_id',
-		isVisible: ((options) => options.active_mediaplaylist_operation == 'trigger_id' ||
+		isVisible: (options) =>
+			options.active_mediaplaylist_operation == 'trigger_id' ||
 			options.focused_mediaplaylist_operation == 'trigger_id' ||
-			options.specific_mediaplaylist_operation == 'trigger_id'
-		),
+			options.specific_mediaplaylist_operation == 'trigger_id',
 		default: '',
 		useVariables: true,
 	},
@@ -426,7 +429,7 @@ export const options: Options = {
 		label: 'Message ID',
 		tooltip: 'Enter Message Name or Index or UUID',
 		id: 'message_id_text',
-		isVisible: ((options) => options.message_id_dropdown == 'manually_specify_messageid'),
+		isVisible: (options) => options.message_id_dropdown == 'manually_specify_messageid',
 		default: 'TODO: not yet implemented',
 		useVariables: true,
 	},
@@ -435,9 +438,7 @@ export const options: Options = {
 		label: 'Message',
 		tooltip: 'Choose an existing Message\nOr manually specify via text/variable',
 		id: 'message_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_messageid', label: 'Manually Specify Message ID Below' },
-		],
+		choices: [{ id: 'manually_specify_messageid', label: 'Manually Specify Message ID Below' }],
 		default: '',
 	},
 	prop_operation: {
@@ -457,7 +458,7 @@ export const options: Options = {
 		label: 'Prop ID',
 		tooltip: 'Enter Prop Name or Index or UUID',
 		id: 'prop_id_text',
-		isVisible: ((options) => options.prop_id_dropdown == 'manually_specify_propid'),
+		isVisible: (options) => options.prop_id_dropdown == 'manually_specify_propid',
 		default: '',
 		useVariables: true,
 	},
@@ -466,9 +467,7 @@ export const options: Options = {
 		label: 'Prop',
 		tooltip: 'Choose an existing Prop\nOr manually specify text/variable',
 		id: 'prop_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_propid', label: 'Manually Specify Prop ID Below' },
-		],
+		choices: [{ id: 'manually_specify_propid', label: 'Manually Specify Prop ID Below' }],
 		default: '',
 	},
 	stagedisplay_operation: {
@@ -487,9 +486,11 @@ export const options: Options = {
 	stage_message_text: {
 		type: 'textinput',
 		label: 'Stage Message Text',
-		tooltip: 'Enter text to display on stage message.\nEscape \" and \\ with a leading \\',
+		tooltip: 'Enter text to display on stage message.\nEscape " and \\ with a leading \\',
 		id: 'stage_message_text',
-		isVisible: ((options) => options.stagedisplay_operation == 'show_stage_message' || options.stagedisplay_operation == 'toggle_stage_message'),
+		isVisible: (options) =>
+			options.stagedisplay_operation == 'show_stage_message' ||
+			options.stagedisplay_operation == 'toggle_stage_message',
 		default: '',
 		useVariables: true,
 	},
@@ -498,10 +499,9 @@ export const options: Options = {
 		label: 'Stage Screen Id',
 		tooltip: 'Enter Stage Screen Name or Index or UUID',
 		id: 'stagescreen_id_text',
-		isVisible: ((options) => 
+		isVisible: (options) =>
 			options.stagescreen_id_dropdown == 'manually_specify_stagescreenid' &&
-			options.stagedisplay_operation == 'set_layout'
-	),
+			options.stagedisplay_operation == 'set_layout',
 		default: '',
 		useVariables: true,
 	},
@@ -510,10 +510,8 @@ export const options: Options = {
 		label: 'Stage Screen',
 		tooltip: 'Choose an existing Stage Screen\nOr manually specify via text/variable',
 		id: 'stagescreen_id_dropdown',
-		isVisible: ((options) => options.stagedisplay_operation == 'set_layout'),
-		choices: [
-			{ id: 'manually_specify_stagescreenid', label: 'Manually Specify Stage Screen ID Below' },
-		],
+		isVisible: (options) => options.stagedisplay_operation == 'set_layout',
+		choices: [{ id: 'manually_specify_stagescreenid', label: 'Manually Specify Stage Screen ID Below' }],
 		default: '',
 	},
 	stagescreenlayout_id_text: {
@@ -521,10 +519,9 @@ export const options: Options = {
 		label: 'Stage Layout Id',
 		tooltip: 'Enter Stage Screen Layout Name or Index or UUID',
 		id: 'stagescreenlayout_id_text',
-		isVisible: ((options) => 
+		isVisible: (options) =>
 			options.stagescreenlayout_id_dropdown == 'manually_specify_stagescreenlayoutid' &&
-			options.stagedisplay_operation == 'set_layout'
-		),
+			options.stagedisplay_operation == 'set_layout',
 		default: '',
 		useVariables: true,
 	},
@@ -533,12 +530,8 @@ export const options: Options = {
 		label: 'Stage Layout',
 		tooltip: 'Choose an existing Stage Screen Layout\nOr manually specify via text/variable',
 		id: 'stagescreenlayout_id_dropdown',
-		isVisible: ((options) =>
-			options.stagedisplay_operation == 'set_layout'
-		),
-		choices: [
-			{ id: 'manually_specify_stagescreenlayoutid', label: 'Manually Specify Stage Screen Layout ID Below' },
-		],
+		isVisible: (options) => options.stagedisplay_operation == 'set_layout',
+		choices: [{ id: 'manually_specify_stagescreenlayoutid', label: 'Manually Specify Stage Screen Layout ID Below' }],
 		default: '',
 	},
 	screens_choice: {
@@ -569,7 +562,7 @@ export const options: Options = {
 		label: 'Video Input ID',
 		tooltip: 'Enter Video Input Name or Index or UUID',
 		id: 'video_input_id_text',
-		isVisible: ((options) => options.video_input_id_dropdown == 'manually_specify_videoinputsid'),
+		isVisible: (options) => options.video_input_id_dropdown == 'manually_specify_videoinputsid',
 		default: '',
 		useVariables: true,
 	},
@@ -578,9 +571,7 @@ export const options: Options = {
 		label: 'Video Input',
 		tooltip: 'Choose an existing Video Input\nOr manually specify via text/variable',
 		id: 'video_input_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_videoinputsid', label: 'Manually Specify Video Input ID Below' },
-		],
+		choices: [{ id: 'manually_specify_videoinputsid', label: 'Manually Specify Video Input ID Below' }],
 		default: '',
 	},
 	capture_operation: {
@@ -608,10 +599,8 @@ export const options: Options = {
 		type: 'dropdown',
 		label: 'Clear Group',
 		id: 'clear_group_id_dropdown',
-		isVisible: ((options) => options.clear_layer_or_group_dropdown == 'group'),
-		choices: [
-			{ id: 'manually_specify_cleargroupid', label: 'Manually Specify Clear Group ID Below' },
-		],
+		isVisible: (options) => options.clear_layer_or_group_dropdown == 'group',
+		choices: [{ id: 'manually_specify_cleargroupid', label: 'Manually Specify Clear Group ID Below' }],
 		default: '',
 	},
 	clear_group_id_text: {
@@ -619,7 +608,9 @@ export const options: Options = {
 		label: 'Clear Group ID',
 		tooltip: 'Enter Clear Group Name or Index or UUID',
 		id: 'clear_group_id_text',
-		isVisible: ((options) => options.clear_group_id_dropdown == 'manually_specify_cleargroupid' && options.clear_layer_or_group_dropdown == 'group'),
+		isVisible: (options) =>
+			options.clear_group_id_dropdown == 'manually_specify_cleargroupid' &&
+			options.clear_layer_or_group_dropdown == 'group',
 		default: '',
 		useVariables: true,
 	},
@@ -627,7 +618,7 @@ export const options: Options = {
 		type: 'dropdown',
 		label: 'Layer',
 		id: 'clear_layer_dropdown',
-		isVisible: ((options) => options.clear_layer_or_group_dropdown == 'layer'),
+		isVisible: (options) => options.clear_layer_or_group_dropdown == 'layer',
 		choices: [
 			{ label: 'Audio', id: 'audio' },
 			{ label: 'Props', id: 'props' },
@@ -643,11 +634,11 @@ export const options: Options = {
 		type: 'dropdown',
 		label: 'Operation',
 		id: 'timeline_operation',
-		isVisible: ((options) => options.active_announcement_operation == 'timeline_operation' ||
+		isVisible: (options) =>
+			options.active_announcement_operation == 'timeline_operation' ||
 			options.active_presentation_operation == 'timeline_operation' ||
 			options.focused_presentation_operation == 'timeline_operation' ||
-			options.specific_presentation_operation == 'timeline_operation'
-		),
+			options.specific_presentation_operation == 'timeline_operation',
 		choices: [
 			{ label: 'Play', id: 'play' },
 			{ label: 'Pause', id: 'pause' },
@@ -660,9 +651,7 @@ export const options: Options = {
 		label: 'Timer',
 		tooltip: 'Choose an existing Timer\nOr manually specify via text/variable',
 		id: 'timer_id_dropdown',
-		choices: [
-			{ id: 'manually_specify_timerid', label: 'Manually Specify Timer ID Below' },
-		],
+		choices: [{ id: 'manually_specify_timerid', label: 'Manually Specify Timer ID Below' }],
 		default: 'manually_specify_timerid',
 	},
 	timer_id_text: {
@@ -670,7 +659,7 @@ export const options: Options = {
 		label: 'Timer ID',
 		id: 'timer_id_text',
 		tooltip: 'Enter Timer Name or Index or UUID',
-		isVisible: ((options) => options.timer_id_dropdown == 'manually_specify_timerid'),
+		isVisible: (options) => options.timer_id_dropdown == 'manually_specify_timerid',
 		default: '',
 		useVariables: true,
 	},
@@ -691,9 +680,10 @@ export const options: Options = {
 	timer_optional_operation: {
 		type: 'dropdown',
 		label: 'Operation (Optional, can be None)',
-		tooltip: 'Choose an optional operation to perform in addition to setting details of timer - Select "None" to perform no operation and just set the timer',
+		tooltip:
+			'Choose an optional operation to perform in addition to setting details of timer - Select "None" to perform no operation and just set the timer',
 		id: 'timer_optional_operation',
-		isVisible: ((options) => options.timer_operation == 'set'),
+		isVisible: (options) => options.timer_operation == 'set',
 		choices: [
 			{ label: 'Start', id: 'start' },
 			{ label: 'Stop', id: 'stop' },
@@ -707,7 +697,7 @@ export const options: Options = {
 		type: 'dropdown',
 		label: 'Type',
 		id: 'timer_type',
-		isVisible: ((options) => options.timer_operation == 'set'),
+		isVisible: (options) => options.timer_operation == 'set',
 		choices: [
 			{ label: 'Countdown Timer', id: 'countdown' },
 			{ label: 'Countdown To Time', id: 'countdownto' },
@@ -718,37 +708,30 @@ export const options: Options = {
 	timer_duration: {
 		type: 'textinput',
 		label: 'Duration',
-		tooltip: 'Duration. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid duration.',
+		tooltip:
+			'Duration. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid duration.',
 		id: 'timer_duration',
 		default: '00:05:00',
 		regex: '/^(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\))$/', // Supports hh:mm:ss, or mm:ss, or just ss. Any or all of hh,mm or ss can be more 1 or more digits. You can also use variables to construct a valid duration.
-		isVisible: ((options) => 
-			options.timer_type == 'countdown' &&
-			options.timer_operation == 'set'
-		),
+		isVisible: (options) => options.timer_type == 'countdown' && options.timer_operation == 'set',
 		useVariables: true,
 	},
 	timer_time_of_day: {
 		type: 'textinput',
 		label: 'Time Of Day',
-		tooltip: 'Time of day to countdown to. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
+		tooltip:
+			'Time of day to countdown to. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
 		id: 'timer_time_of_day',
 		regex: '/^(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\))$/', // Supports hh:mm:ss, or mm:ss, or just ss. Any or all of hh,mm or ss can be more 1 or more digits. You can also use variables to construct a valid time.
 		default: '09:00:00',
-		isVisible: ((options) => 
-			options.timer_type == 'countdownto' &&
-			options.timer_operation == 'set'
-		),
+		isVisible: (options) => options.timer_type == 'countdownto' && options.timer_operation == 'set',
 		useVariables: true,
 	},
 	timer_timeperiod: {
 		type: 'dropdown',
 		label: 'Time Period',
 		id: 'timer_timeperiod',
-		isVisible: ((options) => 
-			options.timer_type == 'countdownto' &&
-			options.timer_operation == 'set'
-		),
+		isVisible: (options) => options.timer_type == 'countdownto' && options.timer_operation == 'set',
 		choices: [
 			{ label: 'AM', id: 'am' },
 			{ label: 'PM', id: 'pm' },
@@ -760,32 +743,28 @@ export const options: Options = {
 		type: 'checkbox',
 		label: 'Allows Overrun',
 		id: 'timer_allows_overrun',
-		isVisible: ((options) => options.timer_operation == 'set'),
+		isVisible: (options) => options.timer_operation == 'set',
 		default: true,
 	},
 	timer_start_time: {
 		type: 'textinput',
 		label: 'Start Time',
-		tooltip: 'Start Time. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
+		tooltip:
+			'Start Time. In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
 		id: 'timer_start_time',
 		regex: '/^(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\))$/', // Supports hh:mm:ss, or mm:ss, or just ss. Any or all of hh,mm or ss can be more 1 or more digits. You can also use variables to construct a valid time.
-		isVisible: ((options) => 
-			options.timer_type == 'elapsed' &&
-			options.timer_operation == 'set'
-		),
+		isVisible: (options) => options.timer_type == 'elapsed' && options.timer_operation == 'set',
 		default: '00:00:00',
 		useVariables: true,
 	},
 	timer_end_time: {
 		type: 'textinput',
-		label: 'End Time (Optional). In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
+		label:
+			'End Time (Optional). In the form of hh:mm:ss or mm:ss or ss. Any or all of hh, mm, ss can have any number of digits. You can also use variables to construct a valid time.',
 		tooltip: 'Optional End Time (In the form of HH:MM:SS). Leave blank for no limit.',
 		id: 'timer_end_time',
 		regex: '/^(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\)):?(\\d*|\\$\\(.*:.*\\))$/', // Supports hh:mm:ss, or mm:ss, or just ss. Any or all of hh,mm or ss can be more 1 or more digits. You can also use variables to construct a valid time.
-		isVisible: ((options) => 
-			options.timer_type == 'elapsed' &&
-			options.timer_operation == 'set'
-		),
+		isVisible: (options) => options.timer_type == 'elapsed' && options.timer_operation == 'set',
 		default: '',
 		useVariables: true,
 	},
@@ -794,19 +773,18 @@ export const options: Options = {
 		label: 'New Name (Optional)',
 		tooltip: 'OPTIONAL new name for timer. (Leave blank to keep timer name unchanged)',
 		id: 'timer_new_name',
-		isVisible: ((options) => 
-			options.timer_operation == 'set' &&
-			options.timer_optional_operation == 'none' // TODO: It seems you can only rename when NOT performing an operation on top of the set. Remove this if that ever changes
-		),
+		// TODO: It seems you can only rename when NOT performing an operation on top of the set. Remove this if that ever changes
+		isVisible: (options) => options.timer_operation == 'set' && options.timer_optional_operation == 'none',
 		default: '',
 		useVariables: true,
 	},
 	timer_increment_value: {
 		type: 'textinput',
 		label: 'Time (+-seconds)',
-		tooltip: 'The number of seconds to add to this currently running timer. A negative number will subtract time from this timer.',
+		tooltip:
+			'The number of seconds to add to this currently running timer. A negative number will subtract time from this timer.',
 		id: 'timer_increment_value',
-		isVisible: ((options) => options.timer_operation == 'increment'),
+		isVisible: (options) => options.timer_operation == 'increment',
 		default: '30',
 		useVariables: true,
 	},
@@ -841,7 +819,8 @@ export const options: Options = {
 		label: 'Number Of Seconds To Skip',
 		tooltip: 'Positive Integer',
 		id: 'transport_skip_time',
-		isVisible: ((options) => options.transport_operation == 'skip_forward' || options.transport_operation == 'skip_backward'),
+		isVisible: (options) =>
+			options.transport_operation == 'skip_forward' || options.transport_operation == 'skip_backward',
 		default: '15',
 		useVariables: true,
 	},
@@ -850,7 +829,7 @@ export const options: Options = {
 		label: 'Goto Time',
 		tooltip: 'Positive Integer',
 		id: 'transport_goto_time',
-		isVisible: ((options) => options.transport_operation == 'go_to_time'),
+		isVisible: (options) => options.transport_operation == 'go_to_time',
 		default: '15',
 		useVariables: true,
 	},
@@ -859,7 +838,7 @@ export const options: Options = {
 		label: 'Seconds From End',
 		tooltip: 'Positive Integer',
 		id: 'transport_goto_end_time',
-		isVisible: ((options) => options.transport_operation == 'go_to_end'),
+		isVisible: (options) => options.transport_operation == 'go_to_end',
 		default: '0',
 		useVariables: true,
 	},
@@ -888,7 +867,8 @@ export const options: Options = {
 		type: 'textinput', // I know, you would think this input field would be a Number -  But this is a textinput so that it can support Variables (which may be useful for indexes)
 		label: 'Index',
 		id: 'index',
-		isVisible: ((options) => options.active_announcement_operation == 'trigger_index' ||
+		isVisible: (options) =>
+			options.active_announcement_operation == 'trigger_index' ||
 			options.active_presentation_operation == 'trigger_index' ||
 			options.focused_presentation_operation == 'trigger_index' ||
 			options.specific_presentation_operation == 'trigger_index' ||
@@ -896,9 +876,7 @@ export const options: Options = {
 			options.active_presentation_playlist_operation == 'trigger_index' ||
 			options.focused_playlist_operation == 'trigger_index' ||
 			options.specific_playlist_operation == 'trigger_index' ||
-			options.hasOwnProperty('library_id')
-
-		),
+			options.hasOwnProperty('library_id'),
 		default: '0',
 		useVariables: true,
 	},
@@ -914,48 +892,66 @@ export const options: Options = {
 
 // Used for module local cache of state
 // varid is a clean form of the variable ID with - removed from UUID
-export type ProID = {uuid: string, name: string, index: number}
-export type ProTimer = {id:ProID, time: string, varid: string, state: string}
-export type StageScreenWithLayout = {id:ProID, varid: string, layout_uuid: string, layout_name: string, layout_index: number}
-export type ProMessageToken = {name:string,text?:{text:string},timer?:{id:ProID, allows_overrun:boolean}} //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
-export type ProMessage = {id:ProID,tokens:ProMessageToken[]}
-export type ProLayersStatus = {video_input: boolean, media: boolean, slide: boolean, announcements: boolean, props: boolean, messages: boolean, audio: boolean}
-export type ProScreensStatus = {'audience': boolean, 'stage': boolean,} 
-export type ProTransportLayersStatus = {'presentation': boolean, 'announcement': boolean, 'audio': boolean}
-export type ProProp = {id:ProID, is_active:boolean}
-export type ProGroup = {id:ProID, color:{red:number, green: number, blue: number, alpha: number} }
-export type ProMacro = {id:ProID, color:{red:number, green: number, blue: number, alpha: number}, image_type:string }
+export type ProID = { uuid: string; name: string; index: number }
+export type ProTimer = { id: ProID; time: string; varid: string; state: string }
+export type StageScreenWithLayout = {
+	id: ProID
+	varid: string
+	layout_uuid: string
+	layout_name: string
+	layout_index: number
+}
+export type ProMessageToken = { name: string; text?: { text: string }; timer?: { id: ProID; allows_overrun: boolean } } //TODO: complete this type for all timer properties (if/when messages action is updated to support timers)
+export type ProMessage = { id: ProID; tokens: ProMessageToken[] }
+export type ProLayersStatus = {
+	video_input: boolean
+	media: boolean
+	slide: boolean
+	announcements: boolean
+	props: boolean
+	messages: boolean
+	audio: boolean
+}
+export type ProScreensStatus = { audience: boolean; stage: boolean }
+export type ProTransportLayersStatus = { presentation: boolean; announcement: boolean; audio: boolean }
+export type ProProp = { id: ProID; is_active: boolean }
+export type ProGroup = { id: ProID; color: { red: number; green: number; blue: number; alpha: number } }
+export type ProMacro = {
+	id: ProID
+	color: { red: number; green: number; blue: number; alpha: number }
+	image_type: string
+}
 
 export type ProPresenterStateStore = {
-	proTransportLayersStatus: ProTransportLayersStatus,
-	proLayersStatus: ProLayersStatus,
-	proScreensStatus: ProScreensStatus,
-	proGroups: ProGroup[],
-	proTimers: ProTimer[],
-	proProps: ProProp[],
-	proMacros: ProMacro[],
-	stageScreensWithLayout: StageScreenWithLayout[],
-	messageTokenInputs: CompanionInputFieldTextInput[], // Dynamically created text inputs for ALL message tokens across ALL messages.  Where the ID of each input is in form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName' and it's visbility is based on the uuid of the selected message.
-	looksChoices: DropdownChoice[],
-	macroChoices: DropdownChoice[],
-	propChoices: DropdownChoice[],
-	videoInputChoices: DropdownChoice[],
-	timerChoices: DropdownChoice[], // TODO: Consider re-fafactoring code to use the proTimers array instead of this array (not important - not even sure it makes the code any "better")
-	stageScreenChoices: DropdownChoice[],
-	stageScreenLayoutChoices: DropdownChoice[],
-	messageChoices: DropdownChoice[],
-	clearGroupChoices: DropdownChoice[],
-	activeLookID: ProID,
-	stageMessage: string,
+	proTransportLayersStatus: ProTransportLayersStatus
+	proLayersStatus: ProLayersStatus
+	proScreensStatus: ProScreensStatus
+	proGroups: ProGroup[]
+	proTimers: ProTimer[]
+	proProps: ProProp[]
+	proMacros: ProMacro[]
+	stageScreensWithLayout: StageScreenWithLayout[]
+	messageTokenInputs: CompanionInputFieldTextInput[] // Dynamically created text inputs for ALL message tokens across ALL messages.  Where the ID of each input is in form of 'TokensParentMessageUUID__[???|txt|tmr]__TokenName' and it's visbility is based on the uuid of the selected message.
+	looksChoices: DropdownChoice[]
+	macroChoices: DropdownChoice[]
+	propChoices: DropdownChoice[]
+	videoInputChoices: DropdownChoice[]
+	timerChoices: DropdownChoice[] // TODO: Consider re-fafactoring code to use the proTimers array instead of this array (not important - not even sure it makes the code any "better")
+	stageScreenChoices: DropdownChoice[]
+	stageScreenLayoutChoices: DropdownChoice[]
+	messageChoices: DropdownChoice[]
+	clearGroupChoices: DropdownChoice[]
+	activeLookID: ProID
+	stageMessage: string
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps
-export function timestampToSeconds(timestampString: string):number {
+export function timestampToSeconds(timestampString: string): number {
 	const isNegative = timestampString.startsWith('-') // Check and record if negative
 	const absTimestampString = timestampString.replace('-', '') // Remove the negative sign if present
 
-	const components: string[] = absTimestampString.split(":")
-	
+	const components: string[] = absTimestampString.split(':')
+
 	if (components.length == 3) {
 		return (Number(components[0]) * 3600 + Number(components[1]) * 60 + Number(components[2])) * (isNegative ? -1 : 1)
 	} else if (components.length == 2) {
@@ -966,31 +962,30 @@ export function timestampToSeconds(timestampString: string):number {
 }
 
 // Custom function to convert a timestamp (in seconds) to a formated string - supports hh|h|mm|m|ss|s
-export function secondsToTimestamp(seconds: number, format:string):string {
+export function secondsToTimestamp(seconds: number, format: string): string {
 	// Get the absolute value of seconds for formatting
-	const isNegative = seconds < 0;
-	const absSeconds = Math.abs(seconds);
-	
+	const isNegative = seconds < 0
+	const absSeconds = Math.abs(seconds)
+
 	// Calculate hours, minutes, and seconds
-	const hours = Math.floor(absSeconds / 3600);
-	const minutes = Math.floor((absSeconds % 3600) / 60);
-	const secs = absSeconds % 60;
-	
+	const hours = Math.floor(absSeconds / 3600)
+	const minutes = Math.floor((absSeconds % 3600) / 60)
+	const secs = absSeconds % 60
 
 	// Replace double specifiers first (HH, hh, mm, ss) with zero-padded values
 	let formattedTime = format
 		.replace(/hh|HH/g, pad(hours, '0', 2))
 		.replace(/mm/g, pad(minutes, '0', 2))
-		.replace(/ss/g, pad(secs, '0', 2));
+		.replace(/ss/g, pad(secs, '0', 2))
 
 	// Replace single specifiers (H, h, m, s) with non-padded values
 	formattedTime = formattedTime
 		.replace(/h|H/g, hours.toString())
 		.replace(/m/g, minutes.toString())
-		.replace(/s/g, secs.toString());
-	
+		.replace(/s/g, secs.toString())
+
 	// Add negative sign if the original time was negative
-	return isNegative ? `-${formattedTime}` : formattedTime;
+	return isNegative ? `-${formattedTime}` : formattedTime
 }
 
 // Borrowed pad function from Companion/shared-lib/lib/Utils.ts
@@ -1005,7 +1000,7 @@ export function pad(str0: string | number, ch: string, len: number): string {
 }
 
 // Borrowed secondsToTimestamp function from Companion/shared-lib/lib/Expression/ExpressionFunctions.ts
-export function secondsToTimestampBF(v: number, type:string):string {
+export function secondsToTimestampBF(v: number, type: string): string {
 	let negative = v < 0
 	v = Math.abs(v)
 

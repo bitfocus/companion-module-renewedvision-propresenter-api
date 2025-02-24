@@ -14,7 +14,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(192, 192, 255),
 				bgcolor: combineRgb(0, 0, 153),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB8AAAAZCAYAAADJ9/UkAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB8AAAAZCAYAAADJ9/UkAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -34,7 +35,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.activeAnnouncementOperation,
-							options: {active_announcement_operation: 'focus'},
+							options: { active_announcement_operation: 'focus' },
 						},
 					],
 					up: [],
@@ -53,7 +54,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				bgcolor: combineRgb(120, 0, 0),
 				color: combineRgb(255, 192, 192),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TpSoVBTuIOGSo\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAYAAAByDd+UAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw1AUhU9TpSoVBTuIOGSo\
 						ThakijhqFYpQIdQKrTqYvPRHaNKQpLg4Cq4FB38Wqw4uzro6uAqC4A+Iu+Ck6CIl3pcUWsR44fE+zrvn8N59gFAvM83qGAc03TbT\
 						yYSYza2IoVcEEEI3+hGXmWXMSlIKvvV1T91UdzGe5d/3Z/WqeYsBAZF4hhmmTbxOPLVpG5z3iSOsJKvE58RjJl2Q+JHrisdvnIsu\
 						CzwzYmbSc8QRYrHYxkobs5KpEU8SR1VNp3wh67HKeYuzVq6y5j35C8N5fXmJ67SGkcQCFiFBhIIqNlCGjRjtOikW0nSe8PEPuX6J\
@@ -127,7 +129,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						text: 'Stop\\n\\n\\n$(Propresenter-API:capture_time)',
 					},
 				},
-			]
+			],
 		},
 		// **** CLEAR *****
 		['Clear Group']: {
@@ -139,7 +141,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAOBnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZltdiQrj4T/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAOBnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZltdiQrj4T/\
 						s4pZAt+C5QCCc2YHs/x5RJbdttvu23fm7TqurMrKJEERCoVot//nv4/7L/6l3qPLRVrttXr+5Z57HHxo/vk37nvw+b4/X/rrt/D5\
 						vHv/IXIqcUzP11Zf17+dD+8DPIfBp/JhoLZeP8zPP/T8Gr99GSg+h2Qzss/6Gqi/Bkrx+SG8BhjPsnztTT4uYe7nuN+W354/Z2+5\
 						fZ72b9+F6GnhOSnGnULyvKdUnwkk+8suDfvhvie7kNfge7rv/RUzAvJdnLwh85qt+4RE+vXDp/Nv//h+bGn590HdV3jfP4Ufzn9B\
@@ -289,7 +292,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAANVHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZpncis7DoX/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAANVHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZpncis7DoX/\
 						cxWzBOawHMaq2cEsfz6QLVn2lWRfv2eV1XIHEMBBOKCs5v/+u9R/+PHReuVDyrHEqPnxxRdb+ZD1+an73Wi/388f9bpmPp9X9wuW\
 						U46jO3/meN1/O2/uAm4CjQ4PgnK/LrTPF4q/5Ocvguw5ONFIPo9LULkEOXsumEtAvTSNJadHE9o8x3kzP59fJW8+f1b7j78T3huB\
 						dZy10xmneXcuHgWc/HrlqlzY75kbtUt89q7sM+HymTjyiZ+0IHNpqz4h4T4ufDp/+ylaLzHN/ylUfYX3/sm8OP8F3VDPecWJz6jE\
@@ -402,7 +406,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'audio'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'audio' },
 						},
 					],
 					up: [],
@@ -430,7 +434,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAOaXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppchs7EoT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAOaXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppchs7EoT/\
 						4xRzBOwFHAdrxNxgjj9fASRlybIt6z0zxKaa3ViqsjKzWjbrf//d5j/8izFbE5OUXHO2/Is1Vt/4UOz91867s/G831/64zv3/rx5\
 						feE5FTiG+2vJj+uf591rgHtofEo/DFTGa6Z3X9T4GL98GMjfQ9AV6ef5GKg+Bgr+fuEeA7S7LZtrkR+30Nc9ruf2y/0x+hbL+2X/\
 						9LsQvZmYJ3i/gguW9xDyXUDQn2hC0y/Oe+FCG4TPkVfj0vSIGQH5LE5WM/NYrXmXifD2xbvzz3/V2q1biz8Paj6m9/XJ/eL8h+ym\
@@ -548,7 +553,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'messages'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'messages' },
 						},
 					],
 					up: [],
@@ -576,7 +581,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAARrnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppkhs5soT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAARrnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppkhs5soT/\
 						4xRzBOzLcbCazQ3e8edzJFmSSktX9+uiiUkmk0ggwsPdA5TZ//ffY/7DX7IumphKzS1ny19ssfnOi2qfv36fnY33+XnTX5+5H8+b\
 						jw88pwLH8Lyt+XX9+7z7GOA9oLPpu4HqfH0wfvygxdf49dNA/jkEzUiv12ug9hoo+OcD9xqgv2aaWy3fL2Hs57jfy6/PP6OnWH+c\
 						9k/vC9FbifsE73dwwfIcQn4mEPQvmtD1wX2uXGhD4bW/Z2xor5gpkL+Ik1VmXrM1P2QifPvgh/PvPwY+Wlr8eVDzOb0fr9xvzn/K\
@@ -707,7 +713,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'props'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'props' },
 						},
 					],
 					up: [],
@@ -735,7 +741,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAbCAYAAABvCO8sAAALGHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZlrduM4DoX/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABwAAAAbCAYAAABvCO8sAAALGHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZlrduM4DoX/\
 						cxWzBL5BLofPc2YHvfz5QNqppJJUu6f6X3d8bMmSDIG4wMWFYtYf/93mP/yFUouJSUquOVv+Yo3VN3aKvX/tfDobz+f9Mh7n3Mfj\
 						xvXHCc+hwDbcryU/rn8ed28G7qaxl94ZKo87YPDDiRof9stPhvzdBPVI9+fDUH0YCv6ecA8D7S7L5lrk/RL6utv1XH65b6MfsXx0\
 						+9N3IXozcZ/g/QouWD5DyNeBoO9oQtMT57NwoQ1y9v09/ogZAfkqTlaReXhrPiARfpx4xO3jX7V269LiZ6PmZ3jf9n6Cd+ev0U3t\
@@ -841,7 +848,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'announcements'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'announcements' },
 						},
 					],
 					up: [],
@@ -869,7 +876,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB0AAAAaCAYAAABLlle3AAAI+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja5VlZduy6Dfzn\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB0AAAAaCAYAAABLlle3AAAI+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja5VlZduy6Dfzn\
 						KrIEThi4HJIgz8kOsvwUKLXttu/0rvsnJy23pJYoEERhKMhh/effO/wLnyJSQyVRbswRn9pqyx0nGq9PP/sU69lfP+y+l56vh9Tv\
 						GxmXCo7l+ql8j39cT28CrkPHGX0QpPO+MZ5vtHrL10+C8nUorpGf3xqGdgsq+bqRbgH91pSbyscljHUd12P5en2D76o+q/3lt8B6\
 						Rpin5LxKKhH7UvhSoPi3htL9xtkrBsYiOK8Y5lfktpkb8gd2io7MrW14QqK837gN+vxpMW5fWv0qNHyG9+3sE7yLfowu9WtEwIVn\
@@ -968,7 +976,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'slide'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'slide' },
 						},
 					],
 					up: [],
@@ -996,7 +1004,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAPAXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZlZciQ5kkT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAAPAXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZlZciQ5kkT/\
 						cYo5AjbDchwsBpG5wRy/n8GDLDJXZlW3zE9nJMM9fDEHbFFThTv9v/897n/4l7tkl6W20kvx/Ms99zjYaf75N+538Pl+Pz/661z4\
 						fNy9n4gcSmzT87OV1/Vvx8O7gWcz2JMPhtp6nZifT/T8st++MRSfTbIR2f5+GeovQyk+J8LLwHim5Utv9eMUpj5bfZt+e/6cfeX2\
 						edjf/a54bwvPSTFqCsnznVJ5BpDsL7s07MT9blzoU2U/J+H7uTQ9DvmRn7xF5jVa9ykS6a8Tn46//eP3sanl7426b8P7vhd+cvyb\
@@ -1117,7 +1126,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'media'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'media' },
 						},
 					],
 					up: [],
@@ -1145,7 +1154,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 128, 128),
 				bgcolor: combineRgb(75, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAACEAAAAaCAYAAAA5WTUBAAAHRXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7VhbdiQrDvxn\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAACEAAAAaCAYAAAA5WTUBAAAHRXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7VhbdiQrDvxn\
 						FbMEJJAEyxEgzpkdzPInyKyy226727fbn7fSlVAkKUChR8gp/vffnf6DDzfNqYo17aoZn9prZ0en5fvj151yve7Xhx8tfr8ZT+SP\
 						B4yhgrbcP5s+5j/HXwXcjaMnPwhq8/FgvH3Q60N+eyeI76acHZ3+egjqD0GF7wf0EOCPnWpv9uMRRtxtPI/f7m86t9rebvun3wbt\
 						LcE6hTkKlYx7KXpvoJxvTcXPg+veMDEXu/qKOxd+6Owo8gM95YPMY7fpDRLl9cFDoW8/Ped9jlZ/Fprew/vSewfv7B+jK37PSBh4\
@@ -1238,7 +1248,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.clearLayerOrGroup,
-							options: {clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'video_input'},
+							options: { clear_layer_or_group_dropdown: 'layer', clear_layer_dropdown: 'video_input' },
 						},
 					],
 					up: [],
@@ -1268,7 +1278,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(255, 0, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAbCAYAAAB836/YAAAXpXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZpXkhu7lkX/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABQAAAAbCAYAAAB836/YAAAXpXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZpXkhu7lkX/\
 						MYoeQsIDw4GN6Bn08HttgCwjlfRuxH0qqUjRZALHbHMyzfq//93mf/iTfH1MiLmkmtLDn1BDdY0n5bl/2vltn3B+3/+E13v2++vG\
 						9tcbjpc8j/7+t6TX59+v248D3IfGs/jlQGW83ujf36ivM7vyy4HcffBakZ7P14Hq60De3TfeS293W0+qJX/dQl/3cb23X+4/o1+h\
 						fF/2b//PRG9GzuOdW976h9/ep7sAr3/B+KY3zm+vD/LT+Jf4/fjyihkB+SlOjzLzWq35lgn/+cYrbt//1OfZ2lr4/aDm1/T2+XN6\
@@ -1441,7 +1452,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(128, 128, 255),
 				bgcolor: combineRgb(0, 0, 153),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAQeHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZlrciQrsoT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAQeHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZlrciQrsoT/\
 						s4pZAu+A5QABZrODu/z5giypu9XSabXdo5IqS5lZEMTDw510+//+e9x/+MlNmstFWu21en5yzz0OPjT//Iz7Hny+788/83Ut/Hre\
 						vV+InEoc0/Nvq6/7386H9wGew+BT+Wmgtt5n+uVCz6/x24eB4nNIZpF91tdA/TVQis+F8BpgPMvytTf5eQlzP8f9tvz2/Dl7y+1X\
 						s3/7X/CeFuZJMe4Ukuc9pfoYkOwvuzTswn1PdiOvwU3hvvuXz3DIZ37yFpmXte6XSKQfF345//bTvT+2tPz7oO5jeN8/hS/Of4hu\
@@ -1562,7 +1574,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.focusedPresentationOperation,
-							options: {focused_presentation_operation:'focus_previous'},
+							options: { focused_presentation_operation: 'focus_previous' },
 						},
 					],
 					up: [],
@@ -1579,7 +1591,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(128, 128, 255),
 				bgcolor: combineRgb(0, 0, 153),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAPVHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppdl0pskb/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABsAAAAbCAYAAACN1PRVAAAPVHpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppdl0pskb/\
 						M4oaAkHPcICAtd4M3vBrB0eSLVmylc6yUjq3OZcmmq/hptv//3/H/Yd/qWTvUq6t9FI8/1JPPQweNP/8G/ev+HT/Pk/my3vy/nX3\
 						9kbgpcg1Pk9bebn/9XV5G+C5DB7lnwZq622md2/09DJ++zBQeC7RVmSP9WWg/jJQDM8b8jLAeLblS2/15y3M/Vz36/bb8+vsT2rv\
 						l/3L80r0NDNPDGFHiZ6/MZZnAdF+k4vD3rh/o93Iz+AmeyXH+hIzAvJZnLxl5mW17l0m4o833r3++q97f2xr6ddB3cf0vj2SL17/\
@@ -1696,7 +1709,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.focusedPresentationOperation,
-							options: {focused_presentation_operation:'focus_next'},
+							options: { focused_presentation_operation: 'focus_next' },
 						},
 					],
 					up: [],
@@ -1713,7 +1726,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(128, 128, 255),
 				bgcolor: combineRgb(0, 0, 153),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
 						uYpZAt8gl8MHeM7sYJY/F8ySbFly2z7d8zFVUmVWPpgkIhABlNP//Pu4f/FKSbzLRVrttXpeueceBzvNP69xP4PP9/P5kl/nwsfj\
 						LozXicihxDY9X1t9Xf92PLwP8GwGe+W7gdp6nZgfT/TXk2P7YaD4bJLNyPb3a6D+GijF58Tb1MdrprU3+X4JU5+tvi2/Pf/OPnL7\
 						OO1P34Xo7cJzUoyaQvJ8plSfCST7zy4NO8EnB+xCvo1UUr+f7RUzC+QXcfKGzGu27gMS6duJV0A/vrr3x5aWPw/qfoR3/QTe970f\
@@ -1814,7 +1828,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.focusedPresentationOperation,
-							options: {focused_presentation_operation:'trigger_first'},
+							options: { focused_presentation_operation: 'trigger_first' },
 						},
 					],
 					up: [],
@@ -1834,7 +1848,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 255, 192),
 				bgcolor: combineRgb(153, 153, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAaCAYAAACgoey0AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAaCAYAAACgoey0AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
 						nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
 						4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
 						CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
@@ -1855,7 +1870,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.stageDisplayOperation,
-							options: {stagedisplay_operation: 'toggle_stage_message', stage_message_text: 'Okay'},
+							options: { stagedisplay_operation: 'toggle_stage_message', stage_message_text: 'Okay' },
 						},
 					],
 					up: [],
@@ -1866,11 +1881,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					feedbackId: 'StageMessage',
 					options: {
 						check_option: 'specific_stage_message_active',
-						stage_message_text: 'Okay'
+						stage_message_text: 'Okay',
 					},
 					style: {
 						bgcolor: combineRgb(255, 0, 0),
-						color: combineRgb(255,192,192)
+						color: combineRgb(255, 192, 192),
 					},
 				},
 			],
@@ -1884,7 +1899,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 255, 192),
 				bgcolor: combineRgb(153, 153, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAaCAYAAACgoey0AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAaCAYAAACgoey0AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
 						nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
 						4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
 						CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
@@ -1907,11 +1923,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.stageDisplayOperation,
-							options: {stagedisplay_operation: 'show_stage_message', stage_message_text: 'Okay'},
+							options: { stagedisplay_operation: 'show_stage_message', stage_message_text: 'Okay' },
 						},
 						{
 							actionId: ActionId.stageDisplayOperation,
-							options: {stagedisplay_operation: 'hide_stage_message', stage_message_text: 'Okay'},
+							options: { stagedisplay_operation: 'hide_stage_message', stage_message_text: 'Okay' },
 							delay: 5000,
 						},
 					],
@@ -1923,11 +1939,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					feedbackId: 'StageMessage',
 					options: {
 						check_option: 'specific_stage_message_active',
-						stage_message_text: 'Okay'
+						stage_message_text: 'Okay',
 					},
 					style: {
 						bgcolor: combineRgb(255, 0, 0),
-						color: combineRgb(255,192,192)
+						color: combineRgb(255, 192, 192),
 					},
 				},
 			],
@@ -1942,7 +1958,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(182, 182, 182),
 				bgcolor: combineRgb(72, 72, 72),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAAI1HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVpZdus6DvzH\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAAI1HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVpZdus6DvzH\
 						KnoJnECCy+F4Tu+gl98FUnYUx/Gzoxddm7JEgWAVUBx0afzvv5P+g7/gfaTASWKO0eAv5JBdwYmY/VfWtzVhfe8f7bhnv18nm48b\
 						Dpc8Sr9/Sjzq367bu4FdFJzxyZAcLdj6/UYOh315MOR24dUjPe+HoXwY8m7fsIeBsrtlYpZ07kIduzye3zDgQ/oV5LvbP34noNcZ\
 						7Xjnhrfe4BsAbwe8fgL5ojfWt9eKKPWc8R38zRgAeYbT/Q8401RXw9NK31i5nz2wNQ4o6JGt4I4q/gHkeC+fXifLDzf8vX13bjnI\
@@ -2035,7 +2052,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.screensOperation,
-							options: {screens_choice: 'audience', screens_operation:'toggle'},
+							options: { screens_choice: 'audience', screens_operation: 'toggle' },
 						},
 					],
 					up: [],
@@ -2049,7 +2066,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					},
 					style: {
 						bgcolor: combineRgb(0, 102, 0),
-						png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAANGXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVrnlfMwDvyP\
+						png64:
+							'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAANGXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVrnlfMwDvyP\
 								Kq4EZoLlMIDvXQdX/g1I2escdr/12pIVQAKDMKBM8r//TvoP/qILTCFmTiUlg79QQnEVO2z2X12f1oT1ub/045y9Pk62HCccDnls\
 								/f7K6bj+dNyeBexNxV68EMTHCLZdnyjhkM83gtzeeJ2R7o9DUDkEebdP2ENA3WqZVDhfqtBkb4/7txnwJv0IfD3tu+8Z1hsR43jn\
 								xFtv8On9MQGv70C+4oTFp16khxz2/TriPR/CYJBHdjr/wc40darh4UVXqJz3btCSwxR0i1ZwxyX+xsjpvH14nGy8OeHP47vLkQMf\
@@ -2152,7 +2170,6 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						pngalignment: 'center:center',
 					},
 				},
-
 			],
 		},
 		['Stage Screens Toggle']: {
@@ -2164,7 +2181,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(182, 182, 182),
 				bgcolor: combineRgb(72, 72, 72),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAAI1HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVpZdus6DvzH\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAAI1HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVpZdus6DvzH\
 						KnoJnECCy+F4Tu+gl98FUnYUx/Gzoxddm7JEgWAVUBx0afzvv5P+g7/gfaTASWKO0eAv5JBdwYmY/VfWtzVhfe8f7bhnv18nm48b\
 						Dpc8Sr9/Sjzq367bu4FdFJzxyZAcLdj6/UYOh315MOR24dUjPe+HoXwY8m7fsIeBsrtlYpZ07kIduzye3zDgQ/oV5LvbP34noNcZ\
 						7Xjnhrfe4BsAbwe8fgL5ojfWt9eKKPWc8R38zRgAeYbT/Q8401RXw9NK31i5nz2wNQ4o6JGt4I4q/gHkeC+fXifLDzf8vX13bjnI\
@@ -2257,7 +2275,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.screensOperation,
-							options: {screens_choice: 'stage', screens_operation:'toggle'},
+							options: { screens_choice: 'stage', screens_operation: 'toggle' },
 						},
 					],
 					up: [],
@@ -2271,7 +2289,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					},
 					style: {
 						bgcolor: combineRgb(0, 102, 0),
-						png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAANGXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVrnlfMwDvyP\
+						png64:
+							'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAANGXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVrnlfMwDvyP\
 								Kq4EZoLlMIDvXQdX/g1I2escdr/12pIVQAKDMKBM8r//TvoP/qILTCFmTiUlg79QQnEVO2z2X12f1oT1ub/045y9Pk62HCccDnls\
 								/f7K6bj+dNyeBexNxV68EMTHCLZdnyjhkM83gtzeeJ2R7o9DUDkEebdP2ENA3WqZVDhfqtBkb4/7txnwJv0IfD3tu+8Z1hsR43jn\
 								xFtv8On9MQGv70C+4oTFp16khxz2/TriPR/CYJBHdjr/wc40darh4UVXqJz3btCSwxR0i1ZwxyX+xsjpvH14nGy8OeHP47vLkQMf\
@@ -2374,7 +2393,6 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						pngalignment: 'center:center',
 					},
 				},
-
 			],
 		},
 		// **** TIMER *****
@@ -2385,11 +2403,12 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			category: 'Transport',
 			type: 'button',
 			style: {
-				text: 'Present\'n\\n\\n\\nPlay',
+				text: "Present'n\\n\\n\\nPlay",
 				size: 14,
 				color: combineRgb(220, 150, 235),
 				bgcolor: combineRgb(100, 0, 100),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
 						uYpZAt8gl8MHeM7sYJY/F8ySbFly2z7d8zFVUmVWPpgkIhABlNP//Pu4f/FKSbzLRVrttXpeueceBzvNP69xP4PP9/P5kl/nwsfj\
 						LozXicihxDY9X1t9Xf92PLwP8GwGe+W7gdp6nZgfT/TXk2P7YaD4bJLNyPb3a6D+GijF58Tb1MdrprU3+X4JU5+tvi2/Pf/OPnL7\
 						OO1P34Xo7cJzUoyaQvJ8plSfCST7zy4NO8EnB+xCvo1UUr+f7RUzC+QXcfKGzGu27gMS6duJV0A/vrr3x5aWPw/qfoR3/QTe970f\
@@ -2490,7 +2509,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.transportLayerOperation,
-							options: {transport_layer: 'presentation', transport_operation:'play'},
+							options: { transport_layer: 'presentation', transport_operation: 'play' },
 						},
 					],
 					up: [],
@@ -2503,11 +2522,12 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			category: 'Transport',
 			type: 'button',
 			style: {
-				text: 'Present\'n\\n\\n\\nPause',
+				text: "Present'n\\n\\n\\nPause",
 				size: 14,
 				color: combineRgb(220, 150, 235),
 				bgcolor: combineRgb(100, 0, 100),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
 						KmYJIAGC5YCBc2YHs/wpsEk6naQfl2vaYIOsR1VBmtp//3b6BxdzCOS8xpBCMLhccokzHqI5rzx7a9zsz5drxPvDPNl0LTCmBKOc\
 						rzFc9mv+7uAcMp78B0fxuBbK40Jyl//4yRGfg4yMxnO9HKXLkfC5YC8H+SzLhBT1YwmlnWNb5cfzptG5+Jj207sCveoRR5ibWDHo\
 						RcKZgIzbkeSxgB4TwxBvWfzszTSVE5BXOJnBzJUtPTAh94U5v4hYF977KM09O6XP9Ob2mt7b0yd2fT7nCROPrITb+HLe+k/zsjIa\
@@ -2582,7 +2602,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.transportLayerOperation,
-							options: {transport_layer: 'presentation', transport_operation:'pause'},
+							options: { transport_layer: 'presentation', transport_operation: 'pause' },
 						},
 					],
 					up: [],
@@ -2600,7 +2620,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(220, 150, 235),
 				bgcolor: combineRgb(100, 0, 100),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
 						uYpZAt8gl8MHeM7sYJY/F8ySbFly2z7d8zFVUmVWPpgkIhABlNP//Pu4f/FKSbzLRVrttXpeueceBzvNP69xP4PP9/P5kl/nwsfj\
 						LozXicihxDY9X1t9Xf92PLwP8GwGe+W7gdp6nZgfT/TXk2P7YaD4bJLNyPb3a6D+GijF58Tb1MdrprU3+X4JU5+tvi2/Pf/OPnL7\
 						OO1P34Xo7cJzUoyaQvJ8plSfCST7zy4NO8EnB+xCvo1UUr+f7RUzC+QXcfKGzGu27gMS6duJV0A/vrr3x5aWPw/qfoR3/QTe970f\
@@ -2701,7 +2722,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.transportLayerOperation,
-							options: {transport_layer: 'presentation', transport_operation:'toggle_play_pause'},
+							options: { transport_layer: 'presentation', transport_operation: 'toggle_play_pause' },
 						},
 					],
 					up: [],
@@ -2716,7 +2737,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					style: {
 						bgcolor: combineRgb(255, 65, 255),
 						color: combineRgb(255, 225, 255),
-						png64: 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
+						png64:
+							'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
 								KmYJIAGC5YCBc2YHs/wpsEk6naQfl2vaYIOsR1VBmtp//3b6BxdzCOS8xpBCMLhccokzHqI5rzx7a9zsz5drxPvDPNl0LTCmBKOc\
 								rzFc9mv+7uAcMp78B0fxuBbK40Jyl//4yRGfg4yMxnO9HKXLkfC5YC8H+SzLhBT1YwmlnWNb5cfzptG5+Jj207sCveoRR5ibWDHo\
 								RcKZgIzbkeSxgB4TwxBvWfzszTSVE5BXOJnBzJUtPTAh94U5v4hYF977KM09O6XP9Ob2mt7b0yd2fT7nCROPrITb+HLe+k/zsjIa\
@@ -2787,7 +2809,6 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						pngalignment: 'center:center',
 					},
 				},
-
 			],
 		},
 		// **** TRIGGER *****
@@ -2800,7 +2821,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 223, 192),
 				bgcolor: combineRgb(255, 100, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAAD43pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZdbluMoDIbf\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAAD43pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZdbluMoDIbf\
 						WcUsASEEYjmA4ZzZwSx/fuFLJamkKtXdD/Mw5thgEELoE3Lixj9/T/cXLiriXZSsqaTkccUSS6hoqN+vup7k43quKxxDeL/rd1T8\
 						KUGeUfP+qumQP/vpUrBXFS25UaT9GGj3AyUe+vVB0WESm0XW3g5F5VDEYR+gQ0Hdt+VT0Xy7hTb2epzb1/129oh6b/an9wzvbYJ1\
 						OITBxB5P5rQbwHZHx9UG1pNNEKXiLnhGzofP4JBnfvJG5rDW3ZHgj4Elf4I4L7xP21r8rNQ94r1aD3i7PqcrdZdw6Linkq76aT/J\
@@ -2879,7 +2901,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.triggerOperation,
-							options: {trigger_target: 'presentation', trigger_next_previous:'previous'},
+							options: { trigger_target: 'presentation', trigger_next_previous: 'previous' },
 						},
 					],
 					up: [],
@@ -2896,7 +2918,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 223, 192),
 				bgcolor: combineRgb(255, 100, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAADx3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjaxZddkusoDIXf\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAACAAAAAZCAYAAABQDyyRAAADx3pUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjaxZddkusoDIXf\
 						WcUsAUkIxHIwhqq7g1n+HPBPx0nndqc7VWPKgEEIoU9A4tq/f7r7Bw9lYRc0Wcwxejwhh8wFFfPbU2ZOPsx8Prx34fvS7ij7Q4K8\
 						oJTt0+Iuf7TTqWArCmp6o8jq3rFcO3LY9dudot0kGRaN+roryrsi4a2DdgVlW5aP2dLtEpa2le1Yvm2vG1mwq9kP3wneWxXzCHMT\
 						Eo9cJG4GyHiDkzI6Zi5DEKngNeQqh8/gkM/85AeZ3Vp3ISEfHVP+AHE8+O5jaeFRqbvHe9bu8Fb7nK6WTcKh4UolnuWn7aR37XJY\
@@ -2973,7 +2996,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.triggerOperation,
-							options: {trigger_target: 'presentation', trigger_next_previous:'next'},
+							options: { trigger_target: 'presentation', trigger_next_previous: 'next' },
 						},
 					],
 					up: [],
@@ -2985,13 +3008,12 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 		// These are dynamically added in code below.
 		// **** VIDEO INPUT *****
 		// TODO: These are dynamically added in code below.
-
 	}
 
 	// *** DYNAMICALLY GENERATED PRESETS ***
 
 	// Dynamically create LookTrigger presets for each lookChoice in propresenterStateStore...
-	instance.propresenterStateStore.looksChoices.forEach(lookChoice => {
+	instance.propresenterStateStore.looksChoices.forEach((lookChoice) => {
 		const lookID: string = lookChoice.label as string
 		presets[lookID] = {
 			name: lookID + ' Look',
@@ -3002,7 +3024,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(218, 218, 218),
 				bgcolor: combineRgb(110, 110, 110),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAZCAYAAABD2GxlAAAUUnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppdiS7boT/\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAACgAAAAZCAYAAABD2GxlAAAUUnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarZppdiS7boT/\
 						cxVeQnIml8PxHO/Ay/cHMLNKpda93f1sqVsl1cAEMQQiwDTrf/57m//iK12pmBBzSTWli69QQ3WNX8p1vpr+tFfQn/rlntfs5/PG\
 						1vsFx1OeR3/+LOl+//O8fS1wHhq/xS8LlXG/0D9fqOFlwedC7jx4sUh+n/dC9V7Iu/OCvRdoZ1tXqiV/3UJf5/H+/HED/438COXT\
 						7F/+znhvRq7jnVve+ouf3qdjgJf/wfgmL+hPL2/kUX53+vPZKg75yU+vL/xstpgafnzTR1Rev32L1u0BtvYtWsHdb/HfnJxejz8+\
@@ -3142,7 +3165,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.lookIdTrigger,
-							options: {look_id_dropdown:lookID},
+							options: { look_id_dropdown: lookID },
 						},
 					],
 					up: [],
@@ -3151,11 +3174,12 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			feedbacks: [
 				{
 					feedbackId: 'ActiveLook',
-					options: {active_look_dropdown:lookID},
+					options: { active_look_dropdown: lookID },
 					style: {
 						bgcolor: combineRgb(255, 255, 255),
 						color: combineRgb(110, 110, 110),
-						png64: 'iVBORw0KGgoAAAANSUhEUgAAACgAAAAZCAYAAABD2GxlAAATFXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjapZppciM7DoT/\
+						png64:
+							'iVBORw0KGgoAAAANSUhEUgAAACgAAAAZCAYAAABD2GxlAAATFXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjapZppciM7DoT/\
 								8xRzhOJOHodrxNxgjj8fwNLmdrRf97PbllousUAsmQlQZv3vv9v8h6+YUzAh5pJqShdfoYbqGk/Kdb6a/rZX0N/65R5/s5+vG1vv\
 								Pzhe8jz689+S7usfr9vnAueh8Sy+LVTG/Yf++YcanhZ8LuTOgxeL5Pm8F6r3Qt6dP9h7gXa2daVa8vsW+jqP9/uPG/gx8iuUT7N/\
 								+X/GezNyH+/c8tZf/PY+HQO8/ATjm/xBfxd3Xm78jvrKY6s45Ds/Pb/ws9liavj2oo+oPJ99idbtAbb2JVrB3Zf4L05Oz8dvXzc2\
@@ -3286,7 +3310,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 								UZRNIFcLtAGvppSmJKvyhGkIIQwU8xdC2BZF0eV7Qt0MtJvZ0/mnZmYv+4ukcQ5DqxE4bmYv+c3Efa4FOvww/r1iM9sKfAxMAWeA\
 								C8AjwAvAmnnOg0HgtOtpA7DVb7ZVUm8mxrzNK0M5dt4rzroy9zkjaW9+Ld4HDJW58ef+lWO/Afv/kyQAURTdCSGc9vioLWHjU5K+\
 								jKJoKISwssTQ+AX4QNL4fQSd5GQI4TvgYWD9LGSoBzgYRVEOIIRwFlgBrE2Jnwa6gU8k/Z1KB81sNfAG8LzHVb7l/CnWlVT0zawJ\
-								2AE8k+BrwpPyhKQrpf7VVXnQr/KCfxu4AVxKeiQk6Gg98Jj/CY76k+1XSXeKYf8BY8YQYa6jEdEAAAAASUVORK5CYII='
+								2AE8k+BrwpPyhKQrpf7VVXnQr/KCfxu4AVxKeiQk6Gg98Jj/CY76k+1XSXeKYf8BY8YQYa6jEdEAAAAASUVORK5CYII=',
 					},
 				},
 			],
@@ -3294,7 +3318,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 	})
 
 	// Dynamically create MacroTrigger presets for each macroChoice in propresenterStateStore...
-	instance.propresenterStateStore.proMacros.forEach(proMacro => {
+	instance.propresenterStateStore.proMacros.forEach((proMacro) => {
 		const macroID: string = proMacro.id.uuid as string
 		const macroLabel: string = proMacro.id.name as string
 		presets[macroID] = {
@@ -3305,8 +3329,14 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: 'Macro\\n\\n\\n' + macroLabel, // macroLabel.slice(0,7)
 				size: 14,
 				color: combineRgb(255, 255, 255),
-				bgcolor: combineRgb(proMacro.color.red * 255, proMacro.color.green * 255, proMacro.color.blue * 255, proMacro.color.alpha * 255), //combineRgb(153, 153, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				bgcolor: combineRgb(
+					proMacro.color.red * 255,
+					proMacro.color.green * 255,
+					proMacro.color.blue * 255,
+					proMacro.color.alpha * 255
+				), //combineRgb(153, 153, 0),
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3325,19 +3355,18 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.marcoIdTrigger,
-							options: {macro_id_dropdown:macroID},
+							options: { macro_id_dropdown: macroID },
 						},
 					],
 					up: [],
 				},
 			],
-			feedbacks: [
-			],
+			feedbacks: [],
 		}
 	})
 
 	// Dynamically create Message presets for each messageChoice in propresenterStateStore...
-	instance.propresenterStateStore.messageChoices.forEach(message => {
+	instance.propresenterStateStore.messageChoices.forEach((message) => {
 		const messageID: string = message.id as string
 		const messageLabel: string = message.label as string
 		presets[messageID] = {
@@ -3349,7 +3378,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 223, 192),
 				bgcolor: combineRgb(204, 101, 0),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3371,20 +3401,19 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 							actionId: ActionId.messageOperation,
 							options: {
 								message_operation: 'show',
-								message_id_dropdown:messageID,
+								message_id_dropdown: messageID,
 							},
 						},
 					],
 					up: [],
 				},
 			],
-			feedbacks: [
-			],
+			feedbacks: [],
 		}
 	})
 
 	// Dynamically create PropToggle presets for each propChoice in propresenterStateStore...
-	instance.propresenterStateStore.propChoices.forEach(propChoice => {
+	instance.propresenterStateStore.propChoices.forEach((propChoice) => {
 		const propID: string = propChoice.id as string
 		const propLabel: string = propChoice.label as string
 		presets[propID] = {
@@ -3396,7 +3425,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(100, 190, 205),
 				bgcolor: combineRgb(0, 100, 100),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3420,8 +3450,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.propOperation,
 							options: {
-								prop_operation:'toggle',
-								prop_id_dropdown:propID,
+								prop_operation: 'toggle',
+								prop_id_dropdown: propID,
 							},
 						},
 					],
@@ -3431,7 +3461,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 			feedbacks: [
 				{
 					feedbackId: 'PropActive',
-					options: {prop_id_dropdown:propID},
+					options: { prop_id_dropdown: propID },
 					style: {
 						bgcolor: combineRgb(0, 165, 225),
 						color: combineRgb(255, 255, 255),
@@ -3442,13 +3472,17 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 	})
 
 	// Dynamically create Group presets for each proGroup in propresenterStateStore...
-	instance.propresenterStateStore.proGroups.forEach(proGroup => {
+	instance.propresenterStateStore.proGroups.forEach((proGroup) => {
 		const proGroupID: string = proGroup.id.name as string // Using Name since UUID does NOT work with current API (bug)
 		const proGroupLabel: string = proGroup.id.name as string
 		// Default to black if a group has no color
-		let groupBGColor: {red:number, green:number, blue:number} = {red:0, green:0, blue:0}
+		let groupBGColor: { red: number; green: number; blue: number } = { red: 0, green: 0, blue: 0 }
 		if (proGroup.color) {
-			groupBGColor = {red:proGroup.color.red * 255, green:proGroup.color.green * 255, blue:proGroup.color.blue * 255}
+			groupBGColor = {
+				red: proGroup.color.red * 255,
+				green: proGroup.color.green * 255,
+				blue: proGroup.color.blue * 255,
+			}
 		}
 		presets[proGroupID] = {
 			name: proGroupLabel + ' Group',
@@ -3459,7 +3493,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 255, 255),
 				bgcolor: combineRgb(groupBGColor.red, groupBGColor.green, groupBGColor.blue),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAbCAQAAADB9PeaAAAAynpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabVFbEsMgCPzn\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB4AAAAbCAQAAADB9PeaAAAAynpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjabVFbEsMgCPzn\
 						FD2Csj7wOKZJZ3qDHr8YSBubknF5rLMBpO31fNBtGHOhlKuUVkpQSy017hpIMOs7xpB2tGRzLs51iosTrCWoh6VS/P5Rjx8Bc12j\
 						fBKSuxPLTLTk+vIjxOYwOhrx6kLNhcBGRBfoNlYoTep5hOUY7TCxQwOSzG1f8qrbW7P+B8wbIoIiUKwBjJMIXYmoGIBxUb+OvCOj\
 						+ijjBf4tHN86+X4mozd+Pl6htsf32AAADQRpQ0NQa0NHQ29sb3JTcGFjZUdlbmVyaWNHcmF5R2FtbWEyXzIAAHicpVcHXJPXFr/f\
@@ -3567,37 +3602,37 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.activePresentationOperation,
 							options: {
-								active_presentation_operation:'group',
-								group_id_dropdown:proGroupID,
+								active_presentation_operation: 'group',
+								group_id_dropdown: proGroupID,
 							},
 						},
 					],
 					up: [],
 				},
 			],
-			feedbacks: [
-			],
+			feedbacks: [],
 		}
 	})
 
 	// Dynamically create Stage Layout presets for each stage-screen and stage-layout...
 	instance.propresenterStateStore.stageScreenChoices.forEach((stageScreen, index) => {
-		instance.propresenterStateStore.stageScreenLayoutChoices.forEach(stageLayout => {
-			const stage_screen_id:string = stageScreen.id as string
-			const stage_screen_label:string = stageScreen.label as string
-			const stage_layout_id:string = stageLayout.id as string
-			const stage_layout_label:string = stageLayout.label as string
+		instance.propresenterStateStore.stageScreenLayoutChoices.forEach((stageLayout) => {
+			const stage_screen_id: string = stageScreen.id as string
+			const stage_screen_label: string = stageScreen.label as string
+			const stage_layout_id: string = stageLayout.id as string
+			const stage_layout_label: string = stageLayout.label as string
 
 			presets[stage_screen_id + stage_layout_id] = {
 				name: stage_screen_label + ' - ' + stage_layout_label,
 				category: 'Stage Layouts',
 				type: 'button',
 				style: {
-					text: stage_screen_label.slice(0,6) + '\\n\\n\\n' + stage_layout_label,
+					text: stage_screen_label.slice(0, 6) + '\\n\\n\\n' + stage_layout_label,
 					size: 14,
 					color: combineRgb(225, 225, 225),
-					bgcolor: combineRgb(0+((index%2)*70), 0+((index%2)*70), 0+((index%2)*70)), // Make the background for the layout buttons, a slightly different shade of black for each screen for every second stage screen (to help seperate them visually by screen)
-					png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+					bgcolor: combineRgb(0 + (index % 2) * 70, 0 + (index % 2) * 70, 0 + (index % 2) * 70), // Make the background for the layout buttons, a slightly different shade of black for each screen for every second stage screen (to help seperate them visually by screen)
+					png64:
+						'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 							O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 							SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 							n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3614,7 +3649,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						down: [
 							{
 								actionId: ActionId.stageDisplayOperation,
-								options: {stagedisplay_operation: 'set_layout', stagescreen_id_dropdown: stage_screen_id, stagescreenlayout_id_dropdown:stage_layout_id},
+								options: {
+									stagedisplay_operation: 'set_layout',
+									stagescreen_id_dropdown: stage_screen_id,
+									stagescreenlayout_id_dropdown: stage_layout_id,
+								},
 							},
 						],
 						up: [],
@@ -3625,11 +3664,12 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						feedbackId: 'StageLayouts',
 						options: {
 							stagescreen_id_dropdown: stage_screen_id,
-							stagescreenlayout_id_dropdown: stage_layout_id
+							stagescreenlayout_id_dropdown: stage_layout_id,
 						},
 						style: {
-							color: combineRgb(0,255,0),
-							png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+							color: combineRgb(0, 255, 0),
+							png64:
+								'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
 									nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
 									4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
 									CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
@@ -3649,20 +3689,20 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 
 	// Dynamically create Timer presets for each configured Timer...
 	instance.propresenterStateStore.proTimers.forEach((proTimer, index) => {
-
-		const timer_id:string = proTimer.id.uuid as string
-		const timer_label:string = proTimer.id.name as string
+		const timer_id: string = proTimer.id.uuid as string
+		const timer_label: string = proTimer.id.name as string
 
 		presets[timer_id + ' Show/Toggle'] = {
 			name: 'Timer' + timer_label + ' Show/Toggle',
 			category: 'Timers',
 			type: 'button',
 			style: {
-				text: `$(Propresenter-API:timer_${timer_id.replaceAll('-','')}_custom)` + '\\n\\n\\n' + timer_label,
+				text: `$(Propresenter-API:timer_${timer_id.replaceAll('-', '')}_custom)` + '\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABQAAAAaCAYAAAC3g3x9AAAKvXpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja1Zhbdhw5DkT/\
 						uYpZAt8gl8MHeM7sYJY/F8ySbFly2z7d8zFVUmVWPpgkIhABlNP//Pu4f/FKSbzLRVrttXpeueceBzvNP69xP4PP9/P5kl/nwsfj\
 						LozXicihxDY9X1t9Xf92PLwP8GwGe+W7gdp6nZgfT/TXk2P7YaD4bJLNyPb3a6D+GijF58Tb1MdrprU3+X4JU5+tvi2/Pf/OPnL7\
 						OO1P34Xo7cJzUoyaQvJ8plSfCST7zy4NO8EnB+xCvo1UUr+f7RUzC+QXcfKGzGu27gMS6duJV0A/vrr3x5aWPw/qfoR3/QTe970f\
@@ -3763,7 +3803,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					down: [
 						{
 							actionId: ActionId.timerOperation,
-							options: {timer_id_dropdown:timer_id, timer_operation: 'toggle'},
+							options: { timer_id_dropdown: timer_id, timer_operation: 'toggle' },
 						},
 					],
 					up: [],
@@ -3774,10 +3814,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					feedbackId: 'TimerState',
 					options: {
 						timer_id_dropdown: timer_id,
-						timer_state: 'running'
+						timer_state: 'running',
 					},
 					style: {
-						png64: 'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
+						png64:
+							'iVBORw0KGgoAAAANSUhEUgAAABEAAAAZCAYAAADXPsWXAAAD+XpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHjarVZblusoDPzX\
 								KmYJIAGC5YCBc2YHs/wpsEk6naQfl2vaYIOsR1VBmtp//3b6BxdzCOS8xpBCMLhccokzHqI5rzx7a9zsz5drxPvDPNl0LTCmBKOc\
 								rzFc9mv+7uAcMp78B0fxuBbK40Jyl//4yRGfg4yMxnO9HKXLkfC5YC8H+SzLhBT1YwmlnWNb5cfzptG5+Jj207sCveoRR5ibWDHo\
 								RcKZgIzbkeSxgB4TwxBvWfzszTSVE5BXOJnBzJUtPTAh94U5v4hYF977KM09O6XP9Ob2mt7b0yd2fT7nCROPrITb+HLe+k/zsjIa\
@@ -3858,8 +3899,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: '30m CtDn\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3882,7 +3924,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.timerOperation,
 							options: {
-								timer_id_dropdown:timer_id,
+								timer_id_dropdown: timer_id,
 								timer_operation: 'set',
 								timer_type: 'countdown',
 								timer_duration: '00:30:00',
@@ -3909,8 +3951,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: '9:00AM\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABwAAAAZCAYAAAAiwE4nAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3935,7 +3978,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.timerOperation,
 							options: {
-								timer_id_dropdown:timer_id,
+								timer_id_dropdown: timer_id,
 								timer_operation: 'set',
 								timer_type: 'countdownto',
 								timer_duration: '',
@@ -3962,8 +4005,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: 'Elapsed\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\
 						O9lFRRxrFYpQIdQKrTqYXPoFTRqSFBdHwbXg4Mdi1cHFWVcHV0EQ/ABxdnBSdJES/5cUWsR4cNyPd/ced+8Af7PKVLMnAaiaZWRS\
 						SSGXXxWCrwghiH4MIyYxU58TxTQ8x9c9fHy9i/Ms73N/jgGlYDLAJxAnmG5YxBvEM5uWznmfOMLKkkJ8Tjxh0AWJH7kuu/zGueSw\
 						n2dGjGxmnjhCLJS6WO5iVjZU4mniqKJqlO/Puaxw3uKsVuusfU/+wnBBW1nmOs0xpLCIJYgQIKOOCqqwEKdVI8VEhvaTHv5Rxy+S\
@@ -3986,7 +4030,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.timerOperation,
 							options: {
-								timer_id_dropdown:timer_id,
+								timer_id_dropdown: timer_id,
 								timer_operation: 'set',
 								timer_type: 'elapsed',
 								timer_duration: '',
@@ -4013,8 +4057,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: '+1 Min\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
 						nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
 						4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
 						CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
@@ -4038,7 +4083,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.timerOperation,
 							options: {
-								timer_id_dropdown:timer_id,
+								timer_id_dropdown: timer_id,
 								timer_operation: 'increment',
 								timer_increment_value: '60',
 							},
@@ -4058,8 +4103,9 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				text: '-1 Min\\n\\n\\n' + timer_label,
 				size: 14,
 				color: combineRgb(0, 205, 0),
-				bgcolor: combineRgb(0, 102-((index%2)*30), 0), // Make the background for the buttons, a slightly different shade for every second timer
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
+				bgcolor: combineRgb(0, 102 - (index % 2) * 30, 0), // Make the background for the buttons, a slightly different shade for every second timer
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TRSktDnZQcchQ\
 						nSxKFXHUKhShQqkVWnUwufQLmjQkKS6OgmvBwY/FqoOLs64OroIg+AHi7OCk6CIl/i8ptIjx4Lgf7+497t4BQqPCVLNrAlA1y0gn\
 						4mI2tyr2vCKAQYQwjpjETH0ulUrCc3zdw8fXuyjP8j735wgpeZMBPpF4lumGRbxBPL1p6Zz3icOsJCnE58RjBl2Q+JHrsstvnIsO\
 						CzwzbGTS88RhYrHYwXIHs5KhEk8RRxRVo3wh67LCeYuzWqmx1j35C4N5bWWZ6zSHkcAilpCCCBk1lFGBhSitGikm0rQf9/APOf4U\
@@ -4082,7 +4128,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.timerOperation,
 							options: {
-								timer_id_dropdown:timer_id,
+								timer_id_dropdown: timer_id,
 								timer_operation: 'increment',
 								timer_increment_value: '-60',
 							},
@@ -4096,7 +4142,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 	})
 
 	// Dynamically create Video Input presets for each videoInputChoice in propresenterStateStore...
-	instance.propresenterStateStore.videoInputChoices.forEach(videoInput => {
+	instance.propresenterStateStore.videoInputChoices.forEach((videoInput) => {
 		const videoInputID: string = videoInput.id as string
 		const videoInputLabel: string = videoInput.label as string
 		presets[videoInputID] = {
@@ -4108,7 +4154,8 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				size: 14,
 				color: combineRgb(255, 230, 255),
 				bgcolor: combineRgb(223, 40, 133),
-				png64: 'iVBORw0KGgoAAAANSUhEUgAAAB4AAAARCAYAAADKZhx3AAAEpnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7VdLkiQnDN1z\
+				png64:
+					'iVBORw0KGgoAAAANSUhEUgAAAB4AAAARCAYAAADKZhx3AAAEpnpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7VdLkiQnDN1z\
 						Ch8BSQiJ4/CN8A18fD/IrJru6rbdPbPxYpJIoECp3xMSFeZff67wBx7yEkNS81xyjnhSSYUrJh6vp56eYjr99WPee/R+PdA9iYwl\
 						wSjXT883/WOdngyuoWKmbxh5vzfa+42Sbv7+woivQbZGez5uRuVmJHxt0M2gXmbFXNzemtBu0+7vLzfgDbtL/l7tD78N3hsKOcI8\
 						hSSiF7kVkP1qkIoJoWcpmxBtr2T0SR6awCGf+en5FGi0tqrpU6J3qDxnL2iVh7Nf0Up8k8iLk/Nz/HQ9kL5syFM+v5Wc/J7x+3WA\
@@ -4189,15 +4236,14 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 						{
 							actionId: ActionId.videoInputsIdTrigger,
 							options: {
-								video_input_id_dropdown:videoInputID,
+								video_input_id_dropdown: videoInputID,
 							},
 						},
 					],
 					up: [],
 				},
 			],
-			feedbacks: [
-			],
+			feedbacks: [],
 		}
 	})
 
