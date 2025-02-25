@@ -79,6 +79,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		midi_port_dropdown: 'virtual',
 		companion_port: 8000,
 		suppress_active_presentation_change_warning: false,
+		number_slides: 32,
+		number_words: 128,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -1066,7 +1068,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			if (this.config.exta_debug_logs) {
 				this.log('debug', 'Immediate call to setVariableDefinitions()')
 			}
-			this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
+			this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore, this.config))
 			ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 		} else {
 			// Create a pending call to setVariableDefinitions - ensuring at least a 2000 msec time since last time it was called
@@ -1076,7 +1078,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					if (this.config.exta_debug_logs) {
 						this.log('debug', 'Delayed call to setVariableDefinitions()')
 					}
-					this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
+					this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore, this.config))
 					ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 					if (this.setVariableDefinitionsTimeoutId) clearTimeout(this.setVariableDefinitionsTimeoutId)
 					this.setVariableDefinitionsTimeoutId = null

@@ -14,6 +14,8 @@ export interface DeviceConfig {
 	midi_port_dropdown: string
 	companion_port: number
 	suppress_active_presentation_change_warning: boolean
+	number_slides: number
+	number_words: number
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -136,6 +138,31 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			default: 8000,
 			min: 1,
 			max: 65535,
+		},
+		{
+			type: 'static-text',
+			label: '',
+			id: 'slide_grabber',
+			width: 12,
+			value: '<h6>Slide Grabber:</h6>'
+		},
+		{
+			type: 'number',
+			id: 'number_slides',
+			label: 'Number of Slide Variables',
+			width: 4,
+			min: 1,
+			max: 256,
+			default: 32,
+		},
+		{
+			type: 'number',
+			id: 'number_words',
+			label: 'Number of Word Variables',
+			width: 4,
+			min: 1,
+			max: 1024,
+			default: 128,
 		},
 		{
 			type: 'static-text',

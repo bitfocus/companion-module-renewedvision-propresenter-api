@@ -3,7 +3,8 @@ import {
 	CompanionInputFieldDropdown,
 	CompanionInputFieldTextInput,
 	DropdownChoice,
-} from '@companion-module/base'
+    CompanionInputFieldNumber
+} from "@companion-module/base"
 
 // Force options to have a default to prevent sending undefined values
 type EnforceDefault<T, U> = Omit<T, 'default'> & { default: U }
@@ -79,7 +80,10 @@ export interface Options {
 	transport_goto_end_time: EnforceDefault<CompanionInputFieldTextInput, string>
 	transport_goto_time: EnforceDefault<CompanionInputFieldTextInput, string>
 	transport_operation: EnforceDefault<CompanionInputFieldDropdown, string>
-	capture_operation: EnforceDefault<CompanionInputFieldDropdown, string>
+	capture_operation: EnforceDefault<CompanionInputFieldDropdown, string>,
+	max_num_slides: EnforceDefault<CompanionInputFieldNumber, number>,
+	max_num_words: EnforceDefault<CompanionInputFieldNumber, number>,
+	var_start: EnforceDefault<CompanionInputFieldNumber, number>,
 }
 
 export const options: Options = {
@@ -207,6 +211,9 @@ export const options: Options = {
 			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
+			{ id: 'get_slides', label: 'Get Slides In A Specific Group'},
+			{ id: 'get_words', label: 'Get Words In A Specific Group'},
+			{ id: 'get_current', label: 'Get the Current Slide'}
 		],
 		default: 'focus',
 	},
@@ -299,7 +306,9 @@ export const options: Options = {
 			options.group_id_dropdown == 'manually_specify_groupid' &&
 			(options.active_presentation_operation == 'group' ||
 				options.focused_presentation_operation == 'group' ||
-				options.specific_presentation_operation == 'group'),
+				options.specific_presentation_operation == 'group' ||
+			options.active_presentation_operation == 'get_slides' ||
+			options.active_presentation_operation == 'get_words'),
 		default: '',
 		useVariables: true,
 	},
@@ -311,7 +320,9 @@ export const options: Options = {
 		isVisible: (options) =>
 			options.active_presentation_operation == 'group' ||
 			options.focused_presentation_operation == 'group' ||
-			options.specific_presentation_operation == 'group',
+			options.specific_presentation_operation == 'group' ||
+            options.active_presentation_operation == 'get_slides' ||
+			options.active_presentation_operation == 'get_words',
 		choices: [{ id: 'manually_specify_groupid', label: 'Manually Specify Group ID Below' }],
 		default: '',
 	},
@@ -887,6 +898,36 @@ export const options: Options = {
 		id: 'presentation_uuid',
 		default: '',
 		useVariables: true,
+	},
+	max_num_slides: {
+		type: 'number',
+		label: 'Maxium Number of Slides',
+		id: 'max_num_slides',
+		default: 8,
+		min: 1,
+		max: 32,
+		isVisible: ((options) => options.active_presentation_operation == 'get_slides'),
+	},
+	max_num_words: {
+		type: 'number',
+		label: 'Maxium Number of Words',
+		id: 'max_num_words',
+		default: 32,
+		min: 1,
+		max: 128,
+		isVisible: ((options) => options.active_presentation_operation == 'get_words' || options.active_presentation_operation == 'get_current'),
+	},
+	var_start: {
+		type: 'number',
+		label: 'Variable number to start at',
+		id: 'var_start',
+		default: 1,
+		min: 1,
+		max: 1024,
+		isVisible: ((options) => options.active_presentation_operation == 'get_slides'
+		|| options.active_presentation_operation == 'get_words'
+		|| options.active_presentation_operation == 'get_current'
+		),
 	},
 }
 

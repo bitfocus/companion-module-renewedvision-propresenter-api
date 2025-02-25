@@ -279,6 +279,13 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		})
 	}
 
+	for (let i = 1; i <= config.number_slides; i++) {
+		variables.push({ variableId: `slide_${i}`, name: `Slide ${i}` })
+	}
+	for (let i = 1; i <= config.number_words; i++) {
+		variables.push({ variableId: `word_${i}`, name: `Word ${i}` })
+	}
+
 	return variables
 }
 
