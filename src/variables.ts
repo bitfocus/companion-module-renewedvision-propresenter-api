@@ -176,6 +176,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_presentation_playlist_json',
 	})
 	variables.push({
+		name: 'Active Presentation Playlist Item Names',
+		variableId: 'active_presentation_playlist_item_names',
+	})
+	variables.push({
 		name: 'Focused Playlist Items JSON',
 		variableId: 'focused_playlist_items_json',
 	})

@@ -479,7 +479,7 @@ export const options: Options = {
 			{ id: 'show_stage_message', label: 'Show Stage Message' },
 			{ id: 'hide_stage_message', label: 'Hide Stage Message' },
 			{ id: 'toggle_stage_message', label: 'Toggle Stage Message' },
-			{ id: 'set_layout', label: 'Set Stage Dipslay Layout' },
+			{ id: 'set_layout', label: 'Set Stage Display Layout' },
 		],
 		default: 'show_stage_message',
 	},
