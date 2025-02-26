@@ -1,5 +1,5 @@
-import { CompanionVariableValues } from "@companion-module/base"
-import { DeviceConfig, InstanceBaseExt } from "./config"
+import { CompanionVariableValues } from '@companion-module/base'
+import { DeviceConfig, InstanceBaseExt } from './config'
 import { ProPresenterStateStore } from './utils'
 
 let variableValuesCache: CompanionVariableValues // Local cache of variable values - used in ResetVariablesFromLocalCache() to return values to variables each time they are re-created.
@@ -251,7 +251,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		{
 			name: 'Capture Time (Custom Format)',
 			variableId: 'capture_time_custom',
-		},
+		}
 	)
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {
@@ -267,7 +267,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 			{
 				name: proTimer.id.name + ' (Custom Format)',
 				variableId: proTimer.varid + '_custom',
-			},
+			}
 		)
 	}
 
@@ -275,7 +275,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 	for (const stageScreenWithLayout of propresenterStateStore.stageScreensWithLayout) {
 		variables.push({
 			name: stageScreenWithLayout.id.name,
-			variableId: stageScreenWithLayout.varid
+			variableId: stageScreenWithLayout.varid,
 		})
 	}
 
@@ -289,7 +289,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
  */
 export function SetVariableValues(instance: InstanceBaseExt<DeviceConfig>, values: CompanionVariableValues) {
 	// Cache values that were set so they can be used as an easy method to reset values after setting definitions again later
-	variableValuesCache = {...variableValuesCache, ...values}
+	variableValuesCache = { ...variableValuesCache, ...values }
 
 	// Set variable values
 	instance.setVariableValues(values)
