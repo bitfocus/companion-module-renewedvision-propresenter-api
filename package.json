@@ -8,7 +8,8 @@
 		"build:main": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch",
 		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
-		"lint": "yarn lint:raw ."
+		"lint": "yarn lint:raw .",
+		"format": "prettier -w ."
 	},
 	"license": "MIT",
 	"repository": {

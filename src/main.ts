@@ -644,14 +644,16 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_playlist_index: statusJSONObject.data.presentation.playlist.index,
 				active_presentation_playlist_uuid: statusJSONObject.data.presentation.playlist.uuid,
 			})
-      
+
 			const activePlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
-        statusJSONObject.data.presentation.playlist.uuid
-      )
+				statusJSONObject.data.presentation.playlist.uuid
+			)
 			if (activePlaylistItemsResponse.ok) {
 				SetVariableValues(this, {
-          active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items),
-					active_presentation_playlist_item_names: activePlaylistItemsResponse.data.items.map((a: { id: { name: string } }) => a.id.name),
+					active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items),
+					active_presentation_playlist_item_names: activePlaylistItemsResponse.data.items.map(
+						(a: { id: { name: string } }) => a.id.name
+					),
 				})
 			}
 		} else {

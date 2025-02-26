@@ -1,2 +1,9 @@
 package.json
 /LICENSE.md
+dist
+.github
+README.md
+companion
+build-config.cjs
+tsconfig.build.json
+tsconfig.json
