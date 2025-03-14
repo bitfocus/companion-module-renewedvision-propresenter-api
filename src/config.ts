@@ -16,6 +16,8 @@ export interface DeviceConfig {
 	suppress_active_presentation_change_warning: boolean
 	number_slides: number
 	number_words: number
+	max_words_current_slide: number
+	start_words_current_slide: number
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -152,17 +154,35 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: 'Number of Slide Variables',
 			width: 4,
 			min: 1,
-			max: 256,
-			default: 32,
+			max: 128,
+			default: 16,
 		},
 		{
 			type: 'number',
 			id: 'number_words',
 			label: 'Number of Word Variables',
 			width: 4,
+			min: 2,
+			max: 512,
+			default: 32,
+		},
+		{
+			type: 'number',
+			id: 'max_words_current_slide',
+			label: 'Number of words for the current and next slide',
+			width: 4,
 			min: 1,
-			max: 1024,
-			default: 128,
+			max: instance.config.number_words,
+			default: 8,
+		},
+		{
+			type: 'number',
+			id: 'start_words_current_slide',
+			label: 'The first variable for storing current and next slide words',
+			width: 4,
+			min: 1,
+			max: instance.config.number_words,
+			default: 1,
 		},
 		{
 			type: 'static-text',

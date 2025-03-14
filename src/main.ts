@@ -81,6 +81,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		suppress_active_presentation_change_warning: false,
 		number_slides: 32,
 		number_words: 128,
+		max_words_current_slide: 8,
+		start_words_current_slide: 1,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -481,6 +483,56 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	statusSlideUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		if (this.config.exta_debug_logs) {
 			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
+		}
+
+		if (this.config.max_words_current_slide === undefined) {
+			this.log('error', 'Max words variable is not a number')
+			return
+		}
+
+		const max_words: number = this.config.max_words_current_slide as number
+		const current_words: string[] = []
+		const text = statusJSONObject.data.current.text.replaceAll('\n', ' ').split(' ')
+		for (let j = 0; j < text.length; j++) {
+			current_words.push(text[j])
+		}
+
+		const next_words: string[] = []
+		const next_text = statusJSONObject.data.next.text.replaceAll('\n', ' ').split(' ')
+		for (let j = 0; j < text.length; j++) {
+			next_words.push(next_text[j])
+		}
+
+		if (this.config.start_words_current_slide === undefined) {
+			this.log('error', 'Starting variable is not a number')
+			return
+		}
+
+		const start: number = this.config.start_words_current_slide as number
+
+		this.log('debug', `Setting ${max_words * 2} word variables`)
+
+		for (let i = 0; i < max_words; i++) {
+			this.log('debug', `Setting variable "word_${start + i}"`)
+
+			if (i < current_words.length) {
+				SetVariableValues(this, {
+					[`word_${start + i}`]: current_words[i],
+				})
+			} else {
+				SetVariableValues(this, {
+					[`word_${start + i}`]: '',
+				})
+			}
+			if (i < next_words.length) {
+				SetVariableValues(this, {
+					[`word_${start + i + max_words}`]: next_words[i],
+				})
+			} else {
+				SetVariableValues(this, {
+					[`word_${start + i + max_words}`]: '',
+				})
+			}
 		}
 
 		SetVariableValues(this, {
