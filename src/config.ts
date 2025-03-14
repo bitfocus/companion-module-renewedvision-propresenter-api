@@ -144,7 +144,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: '',
 			id: 'slide_grabber',
 			width: 12,
-			value: '<h6>Slide Grabber:</h6>'
+			value: '<h6>Slide Grabber:</h6>',
 		},
 		{
 			type: 'number',
