@@ -211,9 +211,8 @@ export const options: Options = {
 			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
-			{ id: 'get_slides', label: 'Get Slides In A Specific Group' },
-			{ id: 'get_words', label: 'Get Words In A Specific Group' },
-			{ id: 'get_current', label: 'Get the Current Slide' },
+			{ id: 'get_group_slides', label: 'Get Slides In A Specific Group' },
+			{ id: 'get_group_words', label: 'Get Words In A Specific Group' },
 		],
 		default: 'focus',
 	},
@@ -307,8 +306,8 @@ export const options: Options = {
 			(options.active_presentation_operation == 'group' ||
 				options.focused_presentation_operation == 'group' ||
 				options.specific_presentation_operation == 'group' ||
-				options.active_presentation_operation == 'get_slides' ||
-				options.active_presentation_operation == 'get_words'),
+				options.active_presentation_operation == 'get_group_slides' ||
+				options.active_presentation_operation == 'get_group_words'),
 		default: '',
 		useVariables: true,
 	},
@@ -321,8 +320,8 @@ export const options: Options = {
 			options.active_presentation_operation == 'group' ||
 			options.focused_presentation_operation == 'group' ||
 			options.specific_presentation_operation == 'group' ||
-			options.active_presentation_operation == 'get_slides' ||
-			options.active_presentation_operation == 'get_words',
+			options.active_presentation_operation == 'get_group_slides' ||
+			options.active_presentation_operation == 'get_group_words',
 		choices: [{ id: 'manually_specify_groupid', label: 'Manually Specify Group ID Below' }],
 		default: '',
 	},
@@ -906,7 +905,7 @@ export const options: Options = {
 		default: 8,
 		min: 1,
 		max: 32,
-		isVisible: (options) => options.active_presentation_operation == 'get_slides',
+		isVisible: (options) => options.active_presentation_operation == 'get_group_slides',
 	},
 	max_num_words: {
 		type: 'number',
@@ -916,7 +915,7 @@ export const options: Options = {
 		min: 1,
 		max: 128,
 		isVisible: (options) =>
-			options.active_presentation_operation == 'get_words' || options.active_presentation_operation == 'get_current',
+			options.active_presentation_operation == 'get_group_words',
 	},
 	var_start: {
 		type: 'number',
@@ -926,9 +925,8 @@ export const options: Options = {
 		min: 1,
 		max: 1024,
 		isVisible: (options) =>
-			options.active_presentation_operation == 'get_slides' ||
-			options.active_presentation_operation == 'get_words' ||
-			options.active_presentation_operation == 'get_current',
+			options.active_presentation_operation == 'get_group_slides' ||
+			options.active_presentation_operation == 'get_group_words',
 	},
 }
 

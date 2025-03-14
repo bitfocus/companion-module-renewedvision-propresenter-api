@@ -638,7 +638,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
 						)
 						break
-					case 'get_slides':
+					case 'get_group_slides':
 						const slide_presentation = await instance.ProPresenter.presentationActiveGet()
 						if (slide_presentation === null) {
 							instance.log('error', 'no presentation active')
@@ -693,7 +693,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 							}
 						}
 						break
-					case 'get_words':
+					case 'get_group_words':
 						const words_presentation = await instance.ProPresenter.presentationActiveGet()
 						if (words_presentation === null) {
 							instance.log('error', 'no presentation active')
@@ -751,60 +751,6 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 							} else {
 								instance.setVariableValues({
 									[`word_${start + i}`]: '',
-								})
-							}
-						}
-						break
-					case 'get_current':
-						const current_slide = await instance.ProPresenter.statusSlide()
-						if (current_slide === null) {
-							instance.log('error', 'no presentation active')
-							return
-						}
-
-						if (actionEvent.options.max_num_slides === undefined) {
-							instance.log('error', 'Max slides is not a number')
-							return
-						}
-
-						if (actionEvent.options.max_num_words === undefined) {
-							instance.log('error', 'Max words is not a number')
-							return
-						}
-
-						if (actionEvent.options.var_start === undefined) {
-							instance.log('error', 'Starting variable is not a number')
-							return
-						}
-
-						const current_start: number = actionEvent.options.var_start as number
-						const num_words: number = actionEvent.options.max_num_slides as number
-
-						instance.setVariableValues({
-							[`slide_${current_start}`]: current_slide.data.current.text,
-						})
-
-						const current_words: string[] = []
-						const text = current_slide.data.current.text.replaceAll('\n', ' ').split(' ')
-						for (let j = 0; j < text.length; j++) {
-							current_words.push(text[j])
-						}
-
-						if (current_words.length === 0) {
-							instance.log('error', 'no words found')
-							return
-						}
-
-						for (let i = 0; i < num_words; i++) {
-							instance.log('debug', `Setting variable "word_${current_start + i}"`)
-
-							if (i < current_words.length) {
-								instance.setVariableValues({
-									[`word_${current_start + i}`]: current_words[i],
-								})
-							} else {
-								instance.setVariableValues({
-									[`word_${current_start + i}`]: '',
 								})
 							}
 						}

@@ -4,7 +4,7 @@ import { ProPresenterStateStore } from './utils'
 
 let variableValuesCache: CompanionVariableValues // Local cache of variable values - used in ResetVariablesFromLocalCache() to return values to variables each time they are re-created.
 
-export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore) {
+export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore, config: DeviceConfig) {
 	const variables = []
 
 	variables.push({
