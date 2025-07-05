@@ -914,6 +914,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				const thisProTimerState = instance.propresenterStateStore.proTimers.find(
 					(proTimerState) =>
 						proTimerState.id.uuid == timerID ||
+						proTimerState.id.uuid.replace(/-/g, '') == timerID ||
 						proTimerState.id.name == timerID ||
 						proTimerState.id.index == parseInt(timerID)
 				)
