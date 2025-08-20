@@ -483,11 +483,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		SetVariableValues(this, {
 			active_presentation_current_slide_text: statusJSONObject.data.current.text,
-			active_presentation_next_slide_text: statusJSONObject.data.next.text,
+			active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
 			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
-			active_presentation_next_slide_notes: statusJSONObject.data.next.notes,
+			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
 			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next.uuid,
+			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
@@ -718,15 +718,18 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				statusJSONObject.data.playlist.uuid
 			)
 			this.log('debug', 'focusedPlaylistItems: ' + JSON.stringify(focusedPlaylistItemsResponse))
-			if (focusedPlaylistItemsResponse.ok)
+			if (focusedPlaylistItemsResponse.ok) {
 				SetVariableValues(this, {
 					focused_playlist_items_json: JSON.stringify(focusedPlaylistItemsResponse.data.items),
 				})
-			SetVariableValues(this, {
-				focused_playlist_item_names: focusedPlaylistItemsResponse.data.items.map(
-					(a: { id: { name: string } }) => a.id.name
-				),
-			})
+				SetVariableValues(this, {
+					focused_playlist_item_names: focusedPlaylistItemsResponse.data.items.map(
+						(a: { id: { name: string } }) => a.id.name
+					),
+				})
+			} else {
+				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+			}
 		} else {
 			SetVariableValues(this, {
 				focused_playlist_name: '',
