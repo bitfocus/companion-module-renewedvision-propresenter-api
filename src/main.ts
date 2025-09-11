@@ -588,7 +588,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		SetVariableValues(this, { video_countdown_timer: videoCountdownTimerJSONObject.data })
 	}
 
-	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
+
+	presentationSlideIndexUpdate = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation_index) {
 			// ProPresenter can return a null presentation_index when no presentation is active
@@ -599,12 +600,58 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
 				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 			})
+
+			// Try to get complete presentation data from library to see if it contains slide labels
+			try {
+				const presentationUUID = statusJSONObject.data.presentation_index.presentation_id.uuid
+				// Get presentation data by UUID to get slide labels
+				const presentationByUUID = await this.ProPresenter.presentationUUIDGet(presentationUUID)
+				if (presentationByUUID.ok && presentationByUUID.data) {
+					// Extract slide labels from the presentation data
+					const currentSlideIndex = statusJSONObject.data.presentation_index.index
+					let currentSlideLabel = ''
+									
+					// Look through all groups to find the slide at the current index
+					if (presentationByUUID.data.presentation && presentationByUUID.data.presentation.groups) {
+						let slideCount = 0
+						for (const group of presentationByUUID.data.presentation.groups) {
+							if (group.slides) {
+								for (const slide of group.slides) {
+										if (slideCount === currentSlideIndex) {
+										currentSlideLabel = slide.label || ''
+										break
+									}
+									slideCount++
+								}
+								if (currentSlideLabel) break
+							}
+						}
+					}
+					
+					// Always set the slide label variable (empty string if no label found)
+					SetVariableValues(this, {
+						active_presentation_current_slide_label: currentSlideLabel
+					})
+					
+					if (!currentSlideLabel) {
+						this.log('debug', 'No slide label found for index: ' + currentSlideIndex + ', setting to empty string')
+					}
+				}
+
+			} catch (error) {
+				this.log('debug', 'Error fetching presentation data for slide labels: ' + error)
+				// Set to empty string if there's an error
+				SetVariableValues(this, {
+					active_presentation_current_slide_label: ''
+				})
+			}
 		} else {
 			SetVariableValues(this, {
 				// For the times when no presentation is active:
 				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '', // Also set label to empty when no presentation
 			})
 		}
 	}
