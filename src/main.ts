@@ -487,7 +487,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
 			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
 			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_next_slide_imageuuid:
+				statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
@@ -588,7 +589,6 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		SetVariableValues(this, { video_countdown_timer: videoCountdownTimerJSONObject.data })
 	}
 
-
 	presentationSlideIndexUpdate = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation_index) {
@@ -610,14 +610,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					// Extract slide labels from the presentation data
 					const currentSlideIndex = statusJSONObject.data.presentation_index.index
 					let currentSlideLabel = ''
-									
+
 					// Look through all groups to find the slide at the current index
 					if (presentationByUUID.data.presentation && presentationByUUID.data.presentation.groups) {
 						let slideCount = 0
 						for (const group of presentationByUUID.data.presentation.groups) {
 							if (group.slides) {
 								for (const slide of group.slides) {
-										if (slideCount === currentSlideIndex) {
+									if (slideCount === currentSlideIndex) {
 										currentSlideLabel = slide.label || ''
 										break
 									}
@@ -627,22 +627,21 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 							}
 						}
 					}
-					
+
 					// Always set the slide label variable (empty string if no label found)
 					SetVariableValues(this, {
-						active_presentation_current_slide_label: currentSlideLabel
+						active_presentation_current_slide_label: currentSlideLabel,
 					})
-					
+
 					if (!currentSlideLabel) {
 						this.log('debug', 'No slide label found for index: ' + currentSlideIndex + ', setting to empty string')
 					}
 				}
-
 			} catch (error) {
 				this.log('debug', 'Error fetching presentation data for slide labels: ' + error)
 				// Set to empty string if there's an error
 				SetVariableValues(this, {
-					active_presentation_current_slide_label: ''
+					active_presentation_current_slide_label: '',
 				})
 			}
 		} else {
@@ -775,7 +774,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					),
 				})
 			} else {
-				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+				this.log(
+					'debug',
+					'Error getting focused playlist items: ' +
+						focusedPlaylistItemsResponse.status +
+						': ' +
+						focusedPlaylistItemsResponse.data
+				)
 			}
 		} else {
 			SetVariableValues(this, {
