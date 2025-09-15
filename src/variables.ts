@@ -32,6 +32,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'active_presentation_current_slide_text',
 	})
 	variables.push({
+		name: 'Active Presentation Current Slide Label',
+		variableId: 'active_presentation_current_slide_label',
+	})
+	variables.push({
 		name: 'Active Presentation Next Slide Text',
 		variableId: 'active_presentation_next_slide_text',
 	})
