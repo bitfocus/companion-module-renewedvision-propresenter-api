@@ -656,7 +656,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					let slideCount = 0
 					for (const arrangementGroupUUID of arrangement.groups) {
 						// Find the group in the presentation data
-						const group = presentationData.presentation.groups.find((g: any) => g.id?.uuid === arrangementGroupUUID)
+						const group = presentationData.presentation.groups.find((g: any) => (g.id?.uuid === arrangementGroupUUID) || (g.uuid === arrangementGroupUUID))
 						if (group && group.slides) {
 							for (const slide of group.slides) {
 								if (slideCount === slideIndex) {
