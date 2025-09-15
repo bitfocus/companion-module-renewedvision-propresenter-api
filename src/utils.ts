@@ -943,6 +943,7 @@ export type ProPresenterStateStore = {
 	clearGroupChoices: DropdownChoice[]
 	activeLookID: ProID
 	stageMessage: string
+	activePresentationData: any // Cached presentation data with slides and arrangements
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps
