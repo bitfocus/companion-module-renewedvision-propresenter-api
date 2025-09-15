@@ -418,7 +418,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				// Fetch initial presentation data if a presentation is active
 				try {
 					const activePresentationResult = await this.ProPresenter.presentationActiveGet()
-					if (activePresentationResult.ok && activePresentationResult.data && activePresentationResult.data.presentation) {
+					if (
+						activePresentationResult.ok &&
+						activePresentationResult.data &&
+						activePresentationResult.data.presentation
+					) {
 						const presentationUUID = activePresentationResult.data.presentation.id.uuid
 						await this.updatePresentationData(presentationUUID)
 					}
@@ -615,11 +619,16 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			const activePlaylistResult = await this.ProPresenter.playlistActiveGet()
 			let currentArrangement = ''
 
-			if (activePlaylistResult.ok && activePlaylistResult.data && activePlaylistResult.data.presentation && activePlaylistResult.data.presentation.playlist) {
+			if (
+				activePlaylistResult.ok &&
+				activePlaylistResult.data &&
+				activePlaylistResult.data.presentation &&
+				activePlaylistResult.data.presentation.playlist
+			) {
 				// Presentation is from a playlist
 				const playlistUUID = activePlaylistResult.data.presentation.playlist.uuid
 				const playlistItemIndex = activePlaylistResult.data.presentation.playlist.index
-				
+
 				// Get playlist data to find arrangement for this item
 				const playlistData = await this.ProPresenter.playlistPlaylistIdGet(playlistUUID)
 				if (playlistData.ok && playlistData.data && playlistData.data.items) {
@@ -631,7 +640,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			} else {
 				// Presentation is from library, get arrangement from active presentation
 				const activePresentationResult = await this.ProPresenter.presentationActiveGet()
-				if (activePresentationResult.ok && activePresentationResult.data && activePresentationResult.data.presentation) {
+				if (
+					activePresentationResult.ok &&
+					activePresentationResult.data &&
+					activePresentationResult.data.presentation
+				) {
 					currentArrangement = activePresentationResult.data.presentation.current_arrangement || ''
 				}
 			}
@@ -643,20 +656,30 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			}
 
 			// If we have a valid arrangement and arrangements exist, use arrangement-specific slide order
-			if (currentArrangement && presentationData.presentation.arrangements && presentationData.presentation.arrangements.length > 0) {
+			if (
+				currentArrangement &&
+				presentationData.presentation.arrangements &&
+				presentationData.presentation.arrangements.length > 0
+			) {
 				// Try to find arrangement by name first, then by UUID
-				let arrangement = presentationData.presentation.arrangements.find((arr: any) => arr.id?.name === currentArrangement)
+				let arrangement = presentationData.presentation.arrangements.find(
+					(arr: any) => arr.id?.name === currentArrangement
+				)
 				if (!arrangement) {
 					// If not found by name, try by UUID
-					arrangement = presentationData.presentation.arrangements.find((arr: any) => arr.id?.uuid === currentArrangement)
+					arrangement = presentationData.presentation.arrangements.find(
+						(arr: any) => arr.id?.uuid === currentArrangement
+					)
 				}
-				
+
 				if (arrangement) {
 					// Use arrangement-specific slide order based on arrangement groups
 					let slideCount = 0
 					for (const arrangementGroupUUID of arrangement.groups) {
 						// Find the group in the presentation data
-						const group = presentationData.presentation.groups.find((g: any) => (g.id?.uuid === arrangementGroupUUID) || (g.uuid === arrangementGroupUUID))
+						const group = presentationData.presentation.groups.find(
+							(g: any) => g.id?.uuid === arrangementGroupUUID || g.uuid === arrangementGroupUUID
+						)
 						if (group && group.slides) {
 							for (const slide of group.slides) {
 								if (slideCount === slideIndex) {
@@ -666,7 +689,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 							}
 						}
 					}
-					
+
 					return ''
 				}
 			}
@@ -718,7 +741,6 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		return ''
 	}
 
-
 	// Function to update presentation data when presentation changes
 	private async updatePresentationData(presentationUUID: string) {
 		try {
@@ -738,10 +760,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// ProPresenter can return a null presentation_index when no presentation is active
 			const slideIndex = statusJSONObject.data.presentation_index.index
 			const presentationUUID = statusJSONObject.data.presentation_index.presentation_id.uuid
-			
+
 			// Get slide label with arrangement support
 			const slideLabel = await this.getCurrentSlideLabelWithArrangement(slideIndex)
-			
+
 			SetVariableValues(this, {
 				active_presentation_slide_index: slideIndex,
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
@@ -775,10 +797,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
 			const presentationUUID = statusJSONObject.data.presentation.id.uuid
-			
+
 			// Update presentation data when presentation changes
 			await this.updatePresentationData(presentationUUID)
-			
+
 			SetVariableValues(this, {
 				active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 				active_presentation_name: statusJSONObject.data.presentation.id.name,
@@ -787,7 +809,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		} else {
 			// Clear presentation data when no presentation is active
 			this.propresenterStateStore.activePresentationData = null
-			
+
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 				active_presentation_name: '',
@@ -889,7 +911,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					),
 				})
 			} else {
-				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+				this.log(
+					'debug',
+					'Error getting focused playlist items: ' +
+						focusedPlaylistItemsResponse.status +
+						': ' +
+						focusedPlaylistItemsResponse.data
+				)
 			}
 		} else {
 			SetVariableValues(this, {
