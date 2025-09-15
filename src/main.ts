@@ -51,6 +51,7 @@ const emptyPropresenterStateStore: ProPresenterStateStore = {
 		index: -1,
 	},
 	stageMessage: '',
+	activePresentationData: null,
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
@@ -414,6 +415,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.initFeedbacks()
 				this.checkFeedbacks()
 
+				// Fetch initial presentation data if a presentation is active
+				try {
+					const activePresentationResult = await this.ProPresenter.presentationActiveGet()
+					if (activePresentationResult.ok && activePresentationResult.data && activePresentationResult.data.presentation) {
+						const presentationUUID = activePresentationResult.data.presentation.id.uuid
+						await this.updatePresentationData(presentationUUID)
+					}
+				} catch (error) {
+					this.log('debug', 'Error fetching initial presentation data: ' + error)
+				}
+
 				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter - it should be updated every second)
 				setInterval(() => {
 					SetVariableValues(this, { time_since_last_status_update: (Date.now() - this.timeOfLastStatusUpdate) / 1000 })
@@ -481,13 +493,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
 		}
 
+		// Handle case where current or next slide data is null
+		const currentSlide = statusJSONObject.data.current
+		const nextSlide = statusJSONObject.data.next
+
 		SetVariableValues(this, {
-			active_presentation_current_slide_text: statusJSONObject.data.current.text,
-			active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
-			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
-			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
-			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_current_slide_text: currentSlide ? currentSlide.text : '',
+			active_presentation_next_slide_text: nextSlide ? nextSlide.text : '',
+			active_presentation_current_slide_notes: currentSlide ? currentSlide.notes : '',
+			active_presentation_next_slide_notes: nextSlide ? nextSlide.notes : '',
+			active_presentation_current_slide_imageuuid: currentSlide ? currentSlide.uuid : '',
+			active_presentation_next_slide_imageuuid: nextSlide ? nextSlide.uuid : '',
 		})
 	}
 
@@ -588,16 +604,63 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		SetVariableValues(this, { video_countdown_timer: videoCountdownTimerJSONObject.data })
 	}
 
+	// Helper function to get current slide label from cached presentation data
+	private getCurrentSlideLabel(slideIndex: number): string {
+		if (!this.propresenterStateStore.activePresentationData) {
+			return ''
+		}
+
+		const presentationData = this.propresenterStateStore.activePresentationData
+		if (!presentationData.presentation || !presentationData.presentation.groups) {
+			return ''
+		}
+
+		// Count through all slides to find the one at the current index
+		let slideCount = 0
+		for (const group of presentationData.presentation.groups) {
+			if (group.slides) {
+				for (const slide of group.slides) {
+					if (slideCount === slideIndex) {
+						return slide.label || ''
+					}
+					slideCount++
+				}
+			}
+		}
+
+		return ''
+	}
+
+	// Function to update presentation data when presentation changes
+	private async updatePresentationData(presentationUUID: string) {
+		try {
+			// Get presentation data from library
+			const presentationData = await this.ProPresenter.presentationUUIDGet(presentationUUID)
+			if (presentationData.ok && presentationData.data) {
+				this.propresenterStateStore.activePresentationData = presentationData.data
+				this.log('debug', 'Updated presentation data for UUID: ' + presentationUUID)
+			}
+		} catch (error) {
+			this.log('debug', 'Error updating presentation data: ' + error)
+		}
+	}
+
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation_index) {
 			// ProPresenter can return a null presentation_index when no presentation is active
+			const slideIndex = statusJSONObject.data.presentation_index.index
+			
+			// Get slide label from cached data
+			const slideLabel = this.getCurrentSlideLabel(slideIndex)
+			
 			SetVariableValues(this, {
-				active_presentation_slide_index: statusJSONObject.data.presentation_index.index,
+				active_presentation_slide_index: slideIndex,
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
 				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_current_slide_label: slideLabel,
 			})
 		} else {
 			SetVariableValues(this, {
@@ -605,6 +668,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
 			})
 		}
 	}
@@ -618,20 +682,29 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
-	activePresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
+	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
+			const presentationUUID = statusJSONObject.data.presentation.id.uuid
+			
+			// Update presentation data when presentation changes
+			await this.updatePresentationData(presentationUUID)
+			
 			SetVariableValues(this, {
 				active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 				active_presentation_name: statusJSONObject.data.presentation.id.name,
-				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
+				active_presentation_uuid: presentationUUID,
 			})
 		} else {
+			// Clear presentation data when no presentation is active
+			this.propresenterStateStore.activePresentationData = null
+			
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
 			})
 		}
 	}
