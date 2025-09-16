@@ -487,7 +487,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
 			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
 			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_next_slide_imageuuid:
+				statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
@@ -587,10 +588,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	videoCountdownTimerUpdated = (videoCountdownTimerJSONObject: StatusUpdateJSON) => {
 		// Convert time format to seconds
 		const timeInSeconds = timestampToSeconds(videoCountdownTimerJSONObject.data)
-		
-		SetVariableValues(this, { 
+
+		SetVariableValues(this, {
 			video_countdown_timer: videoCountdownTimerJSONObject.data,
-			video_countdown_timer_seconds: timeInSeconds
+			video_countdown_timer_seconds: timeInSeconds,
 		})
 	}
 
@@ -734,7 +735,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					),
 				})
 			} else {
-				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+				this.log(
+					'debug',
+					'Error getting focused playlist items: ' +
+						focusedPlaylistItemsResponse.status +
+						': ' +
+						focusedPlaylistItemsResponse.data
+				)
 			}
 		} else {
 			SetVariableValues(this, {
