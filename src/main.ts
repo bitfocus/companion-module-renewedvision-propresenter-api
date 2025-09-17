@@ -609,51 +609,16 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	// Helper function to get current slide label from cached presentation data with arrangement support
-	private async getCurrentSlideLabelWithArrangement(slideIndex: number): Promise<string> {
-		if (!this.propresenterStateStore.activePresentationData) {
-			return ''
-		}
-
+	private async getCurrentSlideInfoWithArrangement(slideIndex: number): Promise<{label: string, groupName: string}> {
 		try {
-			// First check if presentation is from a playlist
-			const activePlaylistResult = await this.ProPresenter.playlistActiveGet()
-			let currentArrangement = ''
-
-			if (
-				activePlaylistResult.ok &&
-				activePlaylistResult.data &&
-				activePlaylistResult.data.presentation &&
-				activePlaylistResult.data.presentation.playlist
-			) {
-				// Presentation is from a playlist
-				const playlistUUID = activePlaylistResult.data.presentation.playlist.uuid
-				const playlistItemIndex = activePlaylistResult.data.presentation.playlist.index
-
-				// Get playlist data to find arrangement for this item
-				const playlistData = await this.ProPresenter.playlistPlaylistIdGet(playlistUUID)
-				if (playlistData.ok && playlistData.data && playlistData.data.items) {
-					const playlistItem = playlistData.data.items[playlistItemIndex]
-					if (playlistItem && playlistItem.arrangement) {
-						currentArrangement = playlistItem.arrangement
-					}
-				}
-			} else {
-				// Presentation is from library, get arrangement from active presentation
-				const activePresentationResult = await this.ProPresenter.presentationActiveGet()
-				if (
-					activePresentationResult.ok &&
-					activePresentationResult.data &&
-					activePresentationResult.data.presentation
-				) {
-					currentArrangement = activePresentationResult.data.presentation.current_arrangement || ''
-				}
-			}
-
-			// Now get the slide label based on arrangement
+			// Get the current arrangement from the active presentation data
 			const presentationData = this.propresenterStateStore.activePresentationData
-			if (!presentationData.presentation || !presentationData.presentation.groups) {
-				return ''
+			if (!presentationData || !presentationData.presentation || !presentationData.presentation.groups) {
+				return { label: '', groupName: '' }
 			}
+
+			// Get current arrangement from the presentation data
+			const currentArrangement = presentationData.currentArrangement
 
 			// If we have a valid arrangement and arrangements exist, use arrangement-specific slide order
 			if (
@@ -683,14 +648,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						if (group && group.slides) {
 							for (const slide of group.slides) {
 								if (slideCount === slideIndex) {
-									return slide.label || ''
+									return {
+										label: slide.label || '',
+										groupName: group.id?.name || group.name || ''
+									}
 								}
 								slideCount++
 							}
 						}
 					}
 
-					return ''
+					return { label: '', groupName: '' }
 				}
 			}
 
@@ -700,29 +668,32 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				if (group.slides) {
 					for (const slide of group.slides) {
 						if (slideCount === slideIndex) {
-							return slide.label || ''
+							return {
+								label: slide.label || '',
+								groupName: group.id?.name || group.name || ''
+							}
 						}
 						slideCount++
 					}
 				}
 			}
 
-			return ''
+			return { label: '', groupName: '' }
 		} catch (error) {
 			// Fallback to simple method on any error
-			return this.getCurrentSlideLabelSimple(slideIndex)
+			return this.getCurrentSlideInfoSimple(slideIndex)
 		}
 	}
 
-	// Simple fallback function for getting slide label without arrangement logic
-	private getCurrentSlideLabelSimple(slideIndex: number): string {
+	// Simple fallback function for getting slide info without arrangement logic
+	private getCurrentSlideInfoSimple(slideIndex: number): {label: string, groupName: string} {
 		if (!this.propresenterStateStore.activePresentationData) {
-			return ''
+			return { label: '', groupName: '' }
 		}
 
 		const presentationData = this.propresenterStateStore.activePresentationData
 		if (!presentationData.presentation || !presentationData.presentation.groups) {
-			return ''
+			return { label: '', groupName: '' }
 		}
 
 		// Count through all slides to find the one at the current index
@@ -731,14 +702,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			if (group.slides) {
 				for (const slide of group.slides) {
 					if (slideCount === slideIndex) {
-						return slide.label || ''
+						return {
+							label: slide.label || '',
+							groupName: group.id?.name || group.name || ''
+						}
 					}
 					slideCount++
 				}
 			}
 		}
 
-		return ''
+		return { label: '', groupName: '' }
 	}
 
 	// Function to update presentation data when presentation changes
@@ -761,8 +735,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			const slideIndex = statusJSONObject.data.presentation_index.index
 			const presentationUUID = statusJSONObject.data.presentation_index.presentation_id.uuid
 
-			// Get slide label with arrangement support
-			const slideLabel = await this.getCurrentSlideLabelWithArrangement(slideIndex)
+			// Get both slide label and group name with arrangement support
+			const slideInfo = await this.getCurrentSlideInfoWithArrangement(slideIndex)
 
 			SetVariableValues(this, {
 				active_presentation_slide_index: slideIndex,
@@ -770,7 +744,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: presentationUUID,
 				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
-				active_presentation_current_slide_label: slideLabel,
+				active_presentation_current_slide_label: slideInfo.label,
+				active_presentation_current_slide_group_name: slideInfo.groupName,
 			})
 		} else {
 			SetVariableValues(this, {
@@ -779,6 +754,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_name: '',
 				active_presentation_uuid: '',
 				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
 			})
 		}
 	}
@@ -790,6 +766,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			focused_presentation_name: statusJSONObject.data.name,
 			focused_presentation_uuid: statusJSONObject.data.uuid,
 		})
+
+		// Clear presentation-related variables when no presentation is active
+		if (!statusJSONObject.data.uuid) {
+			SetVariableValues(this, {
+				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_name: '',
+				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
+			})
+		}
 	}
 
 	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
