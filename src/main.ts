@@ -609,7 +609,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	// Helper function to get current slide label from cached presentation data with arrangement support
-	private async getCurrentSlideInfoWithArrangement(slideIndex: number): Promise<{label: string, groupName: string}> {
+	private async getCurrentSlideInfoWithArrangement(slideIndex: number): Promise<{ label: string; groupName: string }> {
 		try {
 			// Get the current arrangement from the active presentation data
 			const presentationData = this.propresenterStateStore.activePresentationData
@@ -650,7 +650,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 								if (slideCount === slideIndex) {
 									return {
 										label: slide.label || '',
-										groupName: group.id?.name || group.name || ''
+										groupName: group.id?.name || group.name || '',
 									}
 								}
 								slideCount++
@@ -670,7 +670,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						if (slideCount === slideIndex) {
 							return {
 								label: slide.label || '',
-								groupName: group.id?.name || group.name || ''
+								groupName: group.id?.name || group.name || '',
 							}
 						}
 						slideCount++
@@ -686,7 +686,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	// Simple fallback function for getting slide info without arrangement logic
-	private getCurrentSlideInfoSimple(slideIndex: number): {label: string, groupName: string} {
+	private getCurrentSlideInfoSimple(slideIndex: number): { label: string; groupName: string } {
 		if (!this.propresenterStateStore.activePresentationData) {
 			return { label: '', groupName: '' }
 		}
@@ -704,7 +704,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					if (slideCount === slideIndex) {
 						return {
 							label: slide.label || '',
-							groupName: group.id?.name || group.name || ''
+							groupName: group.id?.name || group.name || '',
 						}
 					}
 					slideCount++
