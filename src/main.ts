@@ -487,7 +487,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
 			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
 			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_next_slide_imageuuid:
+				statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
@@ -538,6 +539,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						timestampToSeconds(timercurrent.time),
 						this.config.custom_timer_format_string
 					),
+					['timer_' + timercurrent.id.uuid.replace(/-/g, '') + '_state']: timercurrent.state,
 				},
 			}
 		}
@@ -728,7 +730,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					),
 				})
 			} else {
-				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+				this.log(
+					'debug',
+					'Error getting focused playlist items: ' +
+						focusedPlaylistItemsResponse.status +
+						': ' +
+						focusedPlaylistItemsResponse.data
+				)
 			}
 		} else {
 			SetVariableValues(this, {
