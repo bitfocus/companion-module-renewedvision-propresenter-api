@@ -629,14 +629,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
 			})
 
-			// The ProPresenter API doesn't return the total number of slides, we have to determin this by checkign the current arrangement, counting slides in each group, and adding everything together
+			// The ProPresenter API doesn't return the total number of slides, we have to figure this out based on current arrangement and group slide counts
 			// Older versions of ProPresenter did not return arrangement information
 			if (statusJSONObject.data.presentation.arrangements && statusJSONObject.data.presentation.current_arrangement) {
 				const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
 					(arrangement: any) => arrangement.id.uuid == statusJSONObject.data.presentation.current_arrangement
 				)
 				let totalSlides = 0
-				// Sometimes ProPresenter returns an arrangement with no groups or and invalid arrangement uuid for the `Master` arrangement
+				// In testing, the Master arrangement is sometimes returned as an arrangement with no groups, or an invalid arrangement uuid.
 				if (currentArrangement && currentArrangement.groups.length > 0) {
 					for (const groupUuid of currentArrangement.groups) {
 						const group = statusJSONObject.data.presentation.groups.find((g: any) => g.uuid == groupUuid)
