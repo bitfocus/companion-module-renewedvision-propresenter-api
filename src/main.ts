@@ -487,7 +487,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
 			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
 			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_next_slide_imageuuid:
+				statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
@@ -627,6 +628,31 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_name: statusJSONObject.data.presentation.id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
 			})
+
+			// The ProPresenter API doesn't return the total number of slides, we have to determin this by checkign the current arrangement, counting slides in each group, and adding everything together
+			// Older versions of ProPresenter did not return arrangement information
+			if (statusJSONObject.data.presentation.arrangements && statusJSONObject.data.presentation.current_arrangement) {
+				const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
+					(arrangement: any) => arrangement.id.uuid == statusJSONObject.data.presentation.current_arrangement
+				)
+				let totalSlides = 0
+				// Sometimes ProPresenter returns an arrangement with no groups or and invalid arrangement uuid for the `Master` arrangement
+				if (currentArrangement && currentArrangement.groups.length > 0) {
+					for (const groupUuid of currentArrangement.groups) {
+						const group = statusJSONObject.data.presentation.groups.find((g: any) => g.uuid == groupUuid)
+						if (group) {
+							totalSlides += group.slides.length
+						}
+					}
+				} else {
+					for (const group of statusJSONObject.data.presentation.groups) {
+						totalSlides += group.slides.length
+					}
+				}
+				SetVariableValues(this, {
+					active_presentation_slides_count: totalSlides,
+				})
+			}
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
@@ -728,7 +754,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					),
 				})
 			} else {
-				this.log('debug', 'Error getting focused playlist items: ' + focusedPlaylistItemsResponse.status + ': ' + focusedPlaylistItemsResponse.data)
+				this.log(
+					'debug',
+					'Error getting focused playlist items: ' +
+						focusedPlaylistItemsResponse.status +
+						': ' +
+						focusedPlaylistItemsResponse.data
+				)
 			}
 		} else {
 			SetVariableValues(this, {
