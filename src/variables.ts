@@ -168,6 +168,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		variableId: 'video_countdown_timer',
 	})
 	variables.push({
+		name: 'Video Countdown Timer Seconds',
+		variableId: 'video_countdown_timer_seconds',
+	})
+	variables.push({
 		name: 'Timers Current JSON',
 		variableId: 'timers_current_json',
 	})

@@ -587,7 +587,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	videoCountdownTimerUpdated = (videoCountdownTimerJSONObject: StatusUpdateJSON) => {
-		SetVariableValues(this, { video_countdown_timer: videoCountdownTimerJSONObject.data })
+		// Convert time format to seconds
+		const timeInSeconds = timestampToSeconds(videoCountdownTimerJSONObject.data)
+
+		SetVariableValues(this, {
+			video_countdown_timer: videoCountdownTimerJSONObject.data,
+			video_countdown_timer_seconds: timeInSeconds,
+		})
 	}
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
