@@ -4,7 +4,7 @@ import { ProPresenterStateStore } from './utils'
 
 let variableValuesCache: CompanionVariableValues // Local cache of variable values - used in ResetVariablesFromLocalCache() to return values to variables each time they are re-created.
 
-export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore) {
+export function GetVariableDefinitions(propresenterStateStore: ProPresenterStateStore, config: DeviceConfig) {
 	const variables = []
 
 	variables.push({
@@ -281,6 +281,13 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 			name: stageScreenWithLayout.id.name,
 			variableId: stageScreenWithLayout.varid,
 		})
+	}
+
+	for (let i = 1; i <= config.number_slides; i++) {
+		variables.push({ variableId: `slide_${i}`, name: `Slide ${i}` })
+	}
+	for (let i = 1; i <= config.number_words; i++) {
+		variables.push({ variableId: `word_${i}`, name: `Word ${i}` })
 	}
 
 	return variables

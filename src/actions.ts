@@ -601,6 +601,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				options.group_id_dropdown,
 				options.group_id_text,
 				options.timeline_operation,
+				options.max_num_slides,
+				options.max_num_words,
+				options.var_start,
 			],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_presentation_operation) {
@@ -634,6 +637,123 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.presentationActiveTimelineOperation(
 							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
 						)
+						break
+					case 'get_group_slides':
+						const slide_presentation = await instance.ProPresenter.presentationActiveGet()
+						if (slide_presentation === null) {
+							instance.log('error', 'no presentation active')
+							return
+						}
+
+						let slide_group_name: string = ''
+						if (actionEvent.options.group_id_dropdown == 'manually_specify_groupid') {
+							slide_group_name = await instance.parseVariablesInString(actionEvent.options.group_id_text as string)
+						} else {
+							slide_group_name = actionEvent.options.group_id_dropdown as string
+						}
+
+						const slide_group = slide_presentation.data.presentation.groups.find(
+							(grp: any) => grp.name === slide_group_name
+						)
+						if (slide_group === undefined) {
+							instance.log('error', 'group not found')
+							return
+						}
+
+						if (actionEvent.options.max_num_slides === undefined) {
+							instance.log('error', 'Max slides is not a number')
+							return
+						}
+
+						const slide_num: number = actionEvent.options.max_num_slides as number
+						const selected_slides = slide_group.slides.slice(0, slide_num)
+						if (selected_slides.length === 0) {
+							instance.log('error', 'no slides found')
+							return
+						}
+
+						if (actionEvent.options.var_start === undefined) {
+							instance.log('error', 'Starting variable is not a number')
+							return
+						}
+
+						const slide_start: number = actionEvent.options.var_start as number
+
+						for (let i = 0; i < slide_num; i++) {
+							instance.log('debug', `Setting variable "slide_${slide_start + i}"`)
+
+							if (i < selected_slides.length) {
+								instance.setVariableValues({
+									[`slide_${slide_start + i}`]: selected_slides[i].text,
+								})
+							} else {
+								instance.setVariableValues({
+									[`slide_${slide_start + i}`]: '',
+								})
+							}
+						}
+						break
+					case 'get_group_words':
+						const words_presentation = await instance.ProPresenter.presentationActiveGet()
+						if (words_presentation === null) {
+							instance.log('error', 'no presentation active')
+							return
+						}
+
+						let words_group_name: string = ''
+						if (actionEvent.options.group_id_dropdown == 'manually_specify_groupid') {
+							words_group_name = await instance.parseVariablesInString(actionEvent.options.group_id_text as string)
+						} else {
+							words_group_name = actionEvent.options.group_id_dropdown as string
+						}
+
+						const selected_group = words_presentation.data.presentation.groups.find(
+							(grp: any) => grp.name === words_group_name
+						)
+						if (selected_group === undefined) {
+							instance.log('error', 'group not found')
+							return
+						}
+
+						if (actionEvent.options.max_num_slides === undefined) {
+							instance.log('error', 'Max slides is not a number')
+							return
+						}
+
+						const num: number = actionEvent.options.max_num_slides as number
+						const selected_words: string[] = []
+						for (let i = 0; i < selected_group.slides.length; i++) {
+							const text = selected_group.slides[i].text.replaceAll('\n', ' ').split(' ')
+							for (let j = 0; j < text.length; j++) {
+								selected_words.push(text[j])
+							}
+						}
+
+						if (selected_words.length === 0) {
+							instance.log('error', 'no words found')
+							return
+						}
+
+						if (actionEvent.options.var_start === undefined) {
+							instance.log('error', 'Starting variable is not a number')
+							return
+						}
+
+						const start: number = actionEvent.options.var_start as number
+
+						for (let i = 0; i < num; i++) {
+							instance.log('debug', `Setting variable "word_${start + i}"`)
+
+							if (i < selected_words.length) {
+								instance.setVariableValues({
+									[`word_${start + i}`]: selected_words[i],
+								})
+							} else {
+								instance.setVariableValues({
+									[`word_${start + i}`]: '',
+								})
+							}
+						}
 						break
 					default:
 						console.log(
