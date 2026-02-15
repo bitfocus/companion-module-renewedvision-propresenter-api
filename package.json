@@ -22,7 +22,7 @@
 		"renewedvision-propresenter": "^7.7.2"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^1.5.1",
+		"@companion-module/tools": "^1.5.2",
 		"@types/node": "^18.12",
 		"@types/ws": "^8.5.4",
 		"husky": "^8.0.1",
