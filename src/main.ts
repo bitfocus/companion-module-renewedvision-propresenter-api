@@ -629,6 +629,31 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_name: statusJSONObject.data.presentation.id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
 			})
+
+			// The ProPresenter API doesn't return the total number of slides, we have to figure this out based on current arrangement and group slide counts
+			// Older versions of ProPresenter did not return arrangement information
+			if (statusJSONObject.data.presentation.arrangements && statusJSONObject.data.presentation.current_arrangement) {
+				const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
+					(arrangement: any) => arrangement.id.uuid == statusJSONObject.data.presentation.current_arrangement
+				)
+				let totalSlides = 0
+				// In testing, the Master arrangement is sometimes returned as an arrangement with no groups, or an invalid arrangement uuid.
+				if (currentArrangement && currentArrangement.groups.length > 0) {
+					for (const groupUuid of currentArrangement.groups) {
+						const group = statusJSONObject.data.presentation.groups.find((g: any) => g.uuid == groupUuid)
+						if (group) {
+							totalSlides += group.slides.length
+						}
+					}
+				} else {
+					for (const group of statusJSONObject.data.presentation.groups) {
+						totalSlides += group.slides.length
+					}
+				}
+				SetVariableValues(this, {
+					active_presentation_slides_count: totalSlides,
+				})
+			}
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
