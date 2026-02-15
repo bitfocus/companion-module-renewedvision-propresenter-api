@@ -511,7 +511,10 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				return (
 					instance.propresenterStateStore.proTimers.find(
 						(proTimer) =>
-							proTimer.id.uuid == timer_id || proTimerState.id.uuid.replace(/-/g, '') == timerID || proTimer.id.name == timer_id || proTimer.id.index == parseInt(timer_id)
+							proTimer.id.uuid == timer_id ||
+							proTimerState.id.uuid.replace(/-/g, '') == timerID ||
+							proTimer.id.name == timer_id ||
+							proTimer.id.index == parseInt(timer_id)
 					)?.state == feedback.options.timer_state
 				)
 			},
