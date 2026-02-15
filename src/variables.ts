@@ -267,6 +267,10 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 			{
 				name: proTimer.id.name + ' (Custom Format)',
 				variableId: proTimer.varid + '_custom',
+			},
+			{
+				name: proTimer.id.name + ' (State)',
+				variableId: proTimer.varid + '_state',
 			}
 		)
 	}
