@@ -922,6 +922,8 @@ export type ProMacro = {
 	image_type: string
 }
 
+export type ProPresentationArrangement = {id: ProID; groups: string[]}
+
 export type ProPresenterStateStore = {
 	proTransportLayersStatus: ProTransportLayersStatus
 	proLayersStatus: ProLayersStatus

@@ -6,7 +6,7 @@ import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues } from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
-import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp } from './utils'
+import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp, ProPresentationArrangement } from './utils'
 import { GetFeedbacks } from './feedbacks'
 import { Input } from '@julusian/midi'
 
@@ -620,7 +620,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
-	activePresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
+	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) =>  {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
@@ -631,29 +631,48 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			})
 
 			// The ProPresenter API doesn't return the total number of slides, we have to figure this out based on current arrangement and group slide counts
-			// Older versions of ProPresenter did not return arrangement information
-			if (statusJSONObject.data.presentation.arrangements && statusJSONObject.data.presentation.current_arrangement) {
-				const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
-					(arrangement: any) => arrangement.id.uuid == statusJSONObject.data.presentation.current_arrangement
-				)
+			// Older versions of ProPresenter do not return playlist arrangement information - it was not added until (about) version 21.
+			// The arrangement returned in data.presentation.current_arrangement of the presentation/active status updates is the default arrangement that the presentation has in the library - it could (quite likely) be a different arrangement chosen in a playlist)
+			// Therefore the correct arrangement should be determined from the active playlist of the active presentation.
+			// At the time of writing, the current version of Pro on Mac would automatically post playlist/active status updates automatically upon every presentation change...
+			// ...It would have been easy to the total slides calculstion purely in response to playlist/active but Pro on Winows was not posting the same updates - so that option if not currently available.
+			// Instead, we calculate here in presentation/active updates and synchronously poll the active playlist for current arrangement.
+			const activePlaylistResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistActiveGet()
+			if (activePlaylistResponse.ok) {
+				this.log('debug', 'Polled activePlaylist: ' + JSON.stringify(activePlaylistResponse.data))
 				let totalSlides = 0
-				// In testing, the Master arrangement is sometimes returned as an arrangement with no groups, or an invalid arrangement uuid.
-				if (currentArrangement && currentArrangement.groups.length > 0) {
-					for (const groupUuid of currentArrangement.groups) {
-						const group = statusJSONObject.data.presentation.groups.find((g: any) => g.uuid == groupUuid)
-						if (group) {
+
+				if (activePlaylistResponse.data.presentation.playlist_item) { // Version 21 and above include playlist_item info which contains the playlist arrangement for the presentation
+					if (activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid) { // Custom arrangement selected by the playlist
+						const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
+							(arrangement: ProPresentationArrangement) => arrangement.id.uuid == activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid
+						)
+						if (currentArrangement && currentArrangement.groups.length > 0) {
+							for (const groupUuid of currentArrangement.groups) {
+								const group = statusJSONObject.data.presentation.groups.find((g: any) => g.uuid == groupUuid)
+								if (group) {
+									totalSlides += group.slides.length
+								}
+							}
+						} else {
+							this.log('debug', 'currentArrangement, (' + currentArrangement + ') not found or has zero groups')
+						}
+					} else { // Master arrangement selected by the playlist
+						for (const group of statusJSONObject.data.presentation.groups) {
 							totalSlides += group.slides.length
 						}
 					}
-				} else {
+				} else { // Earlier versions of ProPresenter do not include activePlaylistResponse.data.presentation.playlist_item - the best we can do is return master total slides //TODO: consider pulling arrangement name from library and using that?
 					for (const group of statusJSONObject.data.presentation.groups) {
-						totalSlides += group.slides.length
-					}
+							totalSlides += group.slides.length
+						}
 				}
+
 				SetVariableValues(this, {
 					active_presentation_slides_count: totalSlides,
 				})
 			}
+			
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
@@ -664,6 +683,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	activePlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
+		// TODO: Consider adding logic to re-calculate totalslide count when user changes arrangement and re-triggers...
 		this.log('debug', 'activePlaylistUpdated: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation.playlist) {
 			SetVariableValues(this, {
