@@ -119,7 +119,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 		{
 			type: 'static-text',
 			label: '',
-			id: 'advanced',
+			id: 'midi_tip',
 			width: 12,
 			value:
 				'<b>🎹 Are you wanting "push" Companion buttons via MIDI?...</b><br>This feature uses a "hack" to push buttons by calling the Companion HTTP API.\

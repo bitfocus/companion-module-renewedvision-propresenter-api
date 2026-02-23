@@ -3,10 +3,10 @@
 	"name": "Propresenter-API",
 	"shortname": "Propresenter-API",
 	"description": "ProPresenter API Module (Pro Versions 7.9 and higher)",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"license": "MIT",
-	"repository": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest.git",
-	"bugs": "https://github.com/bitfocus/companion-module-renewedvision-propresenter-rest/issues",
+	"repository": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-api.git",
+	"bugs": "https://github.com/bitfocus/companion-module-renewedvision-propresenter-api/issues",
 	"maintainers": [
 		{
 			"name": "Jeffrey Davidsz",

@@ -1085,7 +1085,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// Therefore, this function includes logic to rate-limit (and coalesce) calls to setActionDefinitions(GetActions(this)) to ensure a gap of at least 2000msec between calls.
 
 		const timeSinceLastsetActionDefinitionsCall: number = Date.now() - this.lastSetActionDefinitionsTime // Calculate time since last call of setActionDefinitions
-		if (this.lastSetActionDefinitionsTime == 0 || Date.now() - timeSinceLastsetActionDefinitionsCall > 2000) {
+		if (this.lastSetActionDefinitionsTime == 0 || timeSinceLastsetActionDefinitionsCall > 2000) {
 			// If setActionDefinitions has not yet been called, or the time since the last call is greater than 2000msec, then it's okay to call it now...
 			this.setActionDefinitions(GetActions(this))
 			this.lastSetActionDefinitionsTime = Date.now() // Record new time of last call - for rate-limiting logic
@@ -1099,7 +1099,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					this.setActionDefinitions(GetActions(this))
 					if (this.setActionDefinitionsTimeoutId) clearTimeout(this.setActionDefinitionsTimeoutId)
 					this.setActionDefinitionsTimeoutId = null
-				}, 2000 - (Date.now() - timeSinceLastsetActionDefinitionsCall))
+				}, 2000 - timeSinceLastsetActionDefinitionsCall)
 			}
 		}
 	}
@@ -1117,26 +1117,27 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// It also employs ResetVariablesFromLocalCache() to return values to variables from cached data whenever variable are re-created.
 
 		const timeSinceLastSetVariableDefinitionsTimeCall: number = Date.now() - this.lastSetVariableDefinitionsTime // Calculate time since last call of setVariableDefinitions
-		if (this.lastSetVariableDefinitionsTime == 0 || Date.now() - timeSinceLastSetVariableDefinitionsTimeCall > 2000) {
+		if (this.lastSetVariableDefinitionsTime == 0 || timeSinceLastSetVariableDefinitionsTimeCall > 2000) {
 			// If setVariableDefinitions has not yet been called, or the time since the last call is greater than 2000msec, then it's okay to call it now...
 			if (this.config.exta_debug_logs) {
 				this.log('debug', 'Immediate call to setVariableDefinitions()')
 			}
+			this.lastSetVariableDefinitionsTime = Date.now()
 			this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
 			ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 		} else {
 			// Create a pending call to setVariableDefinitions - ensuring at least a 2000 msec time since last time it was called
 			if (!this.setVariableDefinitionsTimeoutId) {
 				this.setVariableDefinitionsTimeoutId = setTimeout(() => {
-					this.lastSetVariableDefinitionsTime = Date.now()
 					if (this.config.exta_debug_logs) {
 						this.log('debug', 'Delayed call to setVariableDefinitions()')
 					}
+					this.lastSetVariableDefinitionsTime = Date.now()
 					this.setVariableDefinitions(GetVariableDefinitions(this.propresenterStateStore))
 					ResetVariablesFromLocalCache(this) // Update variable values from previously cached old values
 					if (this.setVariableDefinitionsTimeoutId) clearTimeout(this.setVariableDefinitionsTimeoutId)
 					this.setVariableDefinitionsTimeoutId = null
-				}, 2000 - (Date.now() - timeSinceLastSetVariableDefinitionsTimeCall))
+				}, 2000 - timeSinceLastSetVariableDefinitionsTimeCall)
 			}
 		}
 	}
