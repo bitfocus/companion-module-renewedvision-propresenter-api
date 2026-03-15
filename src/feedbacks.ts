@@ -565,5 +565,13 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	)
 	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
 
+	// Update prop choices with data from propresenterStateStore
+	const propChoicesDropDown = feedbackDefinitions.PropActive?.options[0] as CompanionInputFieldDropdown
+	const manual_prop_choice = propChoicesDropDown.choices.pop() // The last item in the prop choices list (after all the current props list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Prop (in another text input)
+	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(
+		manual_prop_choice as DropdownChoice
+	)
+	propChoicesDropDown.default = propChoicesDropDown.choices[0].id
+
 	return feedbackDefinitions
 }
