@@ -116,7 +116,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				const midiMessageChannel: number = message[0] & 0x0f
 				const midiMessageIsNoteon: boolean = (message[0] & 0x90) == 0x90
 				const midiMessageNote: number = message[1]
-				const midiMessageVelocity: number = message[2]
+				let midiMessageVelocity: number = message[2]
 
 				this.log(
 					'debug',
@@ -127,6 +127,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				// page = channel
 				// row = note
 				// column = velocity
+				
+				// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).  
+				// Therefore, this module will use a workaround where any NoteOff message will set the midiMessageVelocity to 0 to allow ProPresenter users a simple way to press buttons in Column 0 - while channel and note are still mapped to page and row.
+				if (!midiMessageIsNoteon)
+					midiMessageVelocity = 0
+
 				const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
 					midiMessageChannel + 1
 				}/${midiMessageNote}/${midiMessageVelocity}/press`
@@ -596,15 +602,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
 				active_presentation_slide_index: statusJSONObject.data.presentation_index.index,
+				active_presentation_slides_remaining: Math.floor((this.getVariableValue('active_presentation_slides_count') as number) - statusJSONObject.data.presentation_index.index - 1),
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
-				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_index: statusJSONObject.data.presentation_index.presentation_id.index, // Note that this requires later versions of ProPresenter
 			})
 		} else {
 			SetVariableValues(this, {
 				// For the times when no presentation is active:
 				active_presentation_slide_index: '',
+				active_presentation_slides_remaining: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
 			})
@@ -625,7 +633,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
 			SetVariableValues(this, {
-				active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_index: statusJSONObject.data.presentation.id.index, // Note that this requires later versions of ProPresenter
 				active_presentation_name: statusJSONObject.data.presentation.id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation.id.uuid,
 			})
@@ -655,7 +663,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 								}
 							}
 						} else {
-							this.log('debug', 'currentArrangement, (' + currentArrangement + ') not found or has zero groups')
+							this.log('debug', 'currentArrangement, (' + JSON.stringify(currentArrangement) + ') not found or has zero groups. Assuming Master arrangement')
+							// Assume Master arrangement - This is a workaround for the fact that Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
+							for (const group of statusJSONObject.data.presentation.groups) {
+								totalSlides += group.slides.length
+							}
 						}
 					} else { // Master arrangement selected by the playlist
 						for (const group of statusJSONObject.data.presentation.groups) {
@@ -676,6 +688,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
+				active_presentation_slides_remaining: '',
+				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
 			})
