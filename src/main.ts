@@ -92,6 +92,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	private setActionDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
 	private lastSetVariableDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setVariableDefinitions() was called (0 means not yet called)
 	private setVariableDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
+	private lastSetFeedbackDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setFeedbackDefinitions() was called (0 means not yet called)
+	private setFeedbackDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
 	private timeOfLastStatusUpdate: number = 0 // A timestamp (in ms since epoch) of the last time that ProPresenter sent a timer/system_time status update.
 	public lastVideoInputJSON: string = '' // Used for checking if video inputs has changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/video_inputs and "everyone" is running versions that support it)
 	public lastGlobalGroupsJSON: string = '' // Used for checking if global groups have changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/groups and "everyone" is running versions that support it)
@@ -516,8 +518,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.propresenterStateStore.timerChoices = statusJSONObject.data.map(
 			(timer: { id: { uuid: string; name: string } }) => ({ id: timer.id.uuid, label: timer.id.name })
 		)
-		// Update Actions (this is rate limited)
+		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
+		this.initFeedbacks()
 
 		// Reset variable definitions (rate-limited)
 		this.initVariables()
@@ -857,8 +860,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.propresenterStateStore.looksChoices = statusJSONObject.data.map(
 			(look: { id: { uuid: string; name: string } }) => ({ id: look.id.name, label: look.id.name })
 		) // Note that we use the look name and not the UUID - as the active look will always have a different UUID, than any of the UUID in the list of configured looks - no idea why or how this is useful.
-		// Update Actions (this is rate limited)
+		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
+		this.initFeedbacks()
 	}
 
 	macrosUpdated = (statusJSONObject: StatusUpdateJSON) => {
@@ -887,8 +891,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			})
 		)
 		this.checkFeedbacks()
-		// Update Actions (this is rate limited)
+		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
+		this.initFeedbacks()
 	}
 
 	globalGroupsUpdated = (statusJSONObject: StatusUpdateJSON) => {
@@ -940,8 +945,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				label: stageScreenWithLayout.screen.name,
 			})
 		)
-		// Update Actions (this is rate limited)
+		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
+		this.initFeedbacks()
 
 		// Update all the dynamic stagescreen_layout var values
 		let newStageScreensWithLayout = {}
@@ -976,8 +982,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		this.checkFeedbacks()
 
-		// Update Actions (this is rate limited)
+		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
+		this.initFeedbacks()
 	}
 
 	stageMessageUpdated = (statusJSONObject: StatusUpdateJSON) => {
@@ -1157,8 +1164,29 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	initFeedbacks() {
-		// TODO: Consider adding rate-limit (and coalesce) logic
-		this.setFeedbackDefinitions(GetFeedbacks(this))
+		// This function is called whenever things like looks, props, timers, and stage screens are updated in ProPresenter (sometimes at each keystroke during a rename)
+		// It will call setFeedbackDefinitions(GetFeedbacks(this)) to build/refresh ALL feedbacks from scratch....
+		// However, calls to setFeedbackDefinitions(GetFeedbacks(this)) are a little "expensive", and should not be called "too often".
+		// Therefore, this function includes logic to rate-limit (and coalesce) calls to setFeedbackDefinitions(GetFeedbacks(this)) to ensure a gap of at least 2000msec between calls.
+
+		const timeSinceLastSetFeedbackDefinitionsCall: number = Date.now() - this.lastSetFeedbackDefinitionsTime // Calculate time since last call of setFeedbackDefinitions
+		if (this.lastSetFeedbackDefinitionsTime == 0 || timeSinceLastSetFeedbackDefinitionsCall > 2000) {
+			// If setFeedbackDefinitions has not yet been called, or the time since the last call is greater than 2000msec, then it's okay to call it now...
+			this.setFeedbackDefinitions(GetFeedbacks(this))
+			this.lastSetFeedbackDefinitionsTime = Date.now() // Record new time of last call - for rate-limiting logic
+		} else {
+			// If it has been less than 2000msec since the last call...
+			// Check if there is (not) already a previously created pending call to setFeedbackDefinitions and set one up if not (do nothing if one is pending)
+			if (!this.setFeedbackDefinitionsTimeoutId) {
+				// Create a pending call to setFeedbackDefinitions - ensuring at least a 2000 msec time since last time it was called
+				this.setFeedbackDefinitionsTimeoutId = setTimeout(() => {
+					this.lastSetFeedbackDefinitionsTime = Date.now()
+					this.setFeedbackDefinitions(GetFeedbacks(this))
+					if (this.setFeedbackDefinitionsTimeoutId) clearTimeout(this.setFeedbackDefinitionsTimeoutId)
+					this.setFeedbackDefinitionsTimeoutId = null
+				}, 2000 - timeSinceLastSetFeedbackDefinitionsCall)
+			}
+		}
 	}
 
 	processIncommingData(requestResponse: RequestAndResponseJSONValue) {
