@@ -26,12 +26,14 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 }
 
 export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCompanionConfigField[] {
-	const midi_port_dropdown: CompanionInputFieldDropdown = {
+	const midi_port_dropdown: SomeCompanionConfigField = {
 		type: 'dropdown',
 		id: 'midi_port_dropdown',
 		tooltip:
 			'The MIDI port that this module will listen to and push Companion buttons when a MIDI Note-On msg is recieved. Channel/Note/Intensity => page/row/column)',
 		label: 'Midi-Port Name',
+		width: 9,
+		isVisible: (options) => options.enable_midi_button_pusher == true,
 		choices: [],
 		default: 'virtual',
 	}
@@ -56,23 +58,15 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 		{
 			type: 'static-text',
 			label: '',
-			id: 'intro text',
-			width: 12,
-			value:
-				"<b>👉 Tip: You can read this module's help, guide and tooltips by clicking the (? in a black circle) symbol.</b>",
-		},
-		{
-			type: 'static-text',
-			label: '',
 			id: 'connection',
 			width: 12,
-			value: '<hr><h5>✅ Connection Settings:</h5>',
+			value: '<h5>✅ Required Connection Settings:</h5>',
 		},
 		{
 			type: 'textinput',
 			id: 'host',
 			label: 'ProPresenter Computer IP Address (Or Hostname)',
-			width: 6,
+			width: 5,
 			default: '',
 		},
 		{
@@ -80,7 +74,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			id: 'port',
 			label: 'ProPresenter Network Port',
 			tooltip: 'You can find the port that ProPresenter is listening to in ProPresenter Network Settings.',
-			width: 4,
+			width: 3,
 			default: 1025,
 			min: 1,
 			max: 65535,
@@ -90,7 +84,42 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: '',
 			id: 'optional',
 			width: 12,
-			value: '<br><hr><h5>❓Optional Settings:</h5>',
+			value: '<hr><h5>❓Optional Settings:</h5>',
+		},
+		{
+			id: 'enable_midi_button_pusher',
+			type: 'checkbox',
+			label: 'Enable MIDI Button Pushing',
+			default: false,
+			width: 3,
+		},
+		midi_port_dropdown as SomeCompanionConfigField,
+		{
+			type: 'textinput',
+			id: 'virtual_midi_port_name',
+			label: 'Virtual Midi Port Name',
+			width: 9,
+			isVisible: (options) => options.midi_port_dropdown == 'virtual' && options.enable_midi_button_pusher == true,
+			default: 'CompanionProPresenterMIDI',
+		},
+		{
+			type: 'number',
+			id: 'companion_port',
+			label: 'Companion Network Port',
+			tooltip:
+				"This is required for MIDI button pushing to work.  There is no way for this module to KNOW your Companion network port - you will need to copy it here, if it's not the default of 8000!",
+			width: 4,
+			isVisible: (options) => options.enable_midi_button_pusher == true,
+			default: 8000,
+			min: 1,
+			max: 65535,
+		},
+		{
+			type: 'static-text',
+			label: '',
+			id: 'connection',
+			width: 12,
+			value: '<br>',
 		},
 		{
 			type: 'textinput',
@@ -101,48 +130,11 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			default: 'mm:ss',
 		},
 		{
-			id: 'enable_midi_button_pusher',
-			type: 'checkbox',
-			label: 'Enable MIDI Button Pushing',
-			default: false,
-			width: 4,
-		},
-		midi_port_dropdown as SomeCompanionConfigField,
-		{
-			type: 'textinput',
-			id: 'virtual_midi_port_name',
-			label: 'Virtual Midi Port Name',
-			width: 8,
-			isVisible: (options) => options.midi_port_dropdown == 'virtual',
-			default: 'CompanionProPresenterMIDI',
-		},
-		{
-			type: 'static-text',
-			label: '',
-			id: 'midi_tip',
-			width: 12,
-			value:
-				'<b>🎹 Are you wanting "push" Companion buttons via MIDI?...</b><br>This feature uses a "hack" to push buttons by calling the Companion HTTP API.\
-			<br>To do this, it needs to know the network port that your instance of Companion is listening to. Unfortunately, there is no way for this module to lookup your Companion network port - so you will need to manually update it here. The default port is typically 8000. You can check the Companion network port in the Companion Window (or look up at the address bar now).\
-			<br>Make sure that Companion is listening to the localhost 127.0.0.1 (or All Interfaces 0.0.0.0)',
-		},
-		{
-			type: 'number',
-			id: 'companion_port',
-			label: 'Companion Network Port',
-			tooltip:
-				"There is no way for this module to KNOW your Companion network port - you will need to update it here, if it's not the default of 8000!",
-			width: 4,
-			default: 8000,
-			min: 1,
-			max: 65535,
-		},
-		{
 			type: 'static-text',
 			label: '',
 			id: 'advanced',
 			width: 12,
-			value: '<br><br><br><hr><h5>🔥 Advanced Settings:</h5><i>Normally, there is no need to change these.</i>',
+			value: '<hr><h5>🔥 Advanced Settings:</h5>',
 		},
 		{
 			type: 'checkbox',
@@ -170,6 +162,14 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 				'Suppresses warnings when on first/last slide and trying to go to previous/next with active presentation operations',
 			width: 4,
 			default: false,
+		},
+		{
+			type: 'static-text',
+			label: '',
+			id: 'intro text',
+			width: 12,
+			value:
+				"<hr><b>Tip:</b> You can read this module's help, guide and tooltips by clicking the (? in a black circle) symbol.",
 		},
 	]
 }

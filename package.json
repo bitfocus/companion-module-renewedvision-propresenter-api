@@ -1,6 +1,6 @@
 {
 	"name": "renewedvision-propresenter-api",
-	"version": "1.0.7",
+	"version": "1.1.0",
 	"main": "dist/main.js",
 	"scripts": {
 		"prepare": "husky install",
