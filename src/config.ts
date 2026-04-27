@@ -1,4 +1,4 @@
-import { InstanceBase, SomeCompanionConfigField, CompanionInputFieldDropdown } from '@companion-module/base'
+import { InstanceBase, SomeCompanionConfigField } from '@companion-module/base'
 import { ProPresenter } from 'renewedvision-propresenter'
 import { ProPresenterStateStore } from './utils'
 
