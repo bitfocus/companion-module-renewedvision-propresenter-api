@@ -12,6 +12,7 @@ export interface DeviceConfig {
 	enable_midi_button_pusher: boolean
 	virtual_midi_port_name: string
 	midi_port_dropdown: string
+	midi_base_page: number
 	companion_port: number
 	suppress_active_presentation_change_warning: boolean
 }
@@ -30,7 +31,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 		type: 'dropdown',
 		id: 'midi_port_dropdown',
 		tooltip:
-			'The MIDI port that this module will listen to and push Companion buttons when a MIDI Note-On msg is recieved. Channel/Note/Intensity => page/row/column)',
+			'The MIDI port that this module will listen to for MIDI Note-On messages.',
 		label: 'Midi-Port Name',
 		width: 9,
 		isVisible: (options) => options.enable_midi_button_pusher == true,
@@ -90,6 +91,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			id: 'enable_midi_button_pusher',
 			type: 'checkbox',
 			label: 'Enable MIDI Button Pushing',
+			tooltip: 'Enable remote button pushing when a MIDI Note-On msg is recieved. Channel/Note/Intensity => page/row/column',
 			default: false,
 			width: 3,
 		},
@@ -98,7 +100,7 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			type: 'textinput',
 			id: 'virtual_midi_port_name',
 			label: 'Virtual Midi Port Name',
-			width: 9,
+			width: 6,
 			isVisible: (options) => options.midi_port_dropdown == 'virtual' && options.enable_midi_button_pusher == true,
 			default: 'CompanionProPresenterMIDI',
 		},
@@ -108,11 +110,23 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: 'Companion Network Port',
 			tooltip:
 				"This is required for MIDI button pushing to work.  There is no way for this module to KNOW your Companion network port - you will need to copy it here, if it's not the default of 8000!",
-			width: 4,
+			width: 3,
 			isVisible: (options) => options.enable_midi_button_pusher == true,
 			default: 8000,
 			min: 1,
 			max: 65535,
+		},
+		{
+			type: 'number',
+			id: 'midi_base_page',
+			label: 'Midi Base Page',
+			tooltip:
+				"This is the page corresponding to MIDI channel 1.  You can change this to any page between 1 and 1000 to move the mapping of MIDIs 16 channels to any group of 16 pages.",
+			width: 3,
+			isVisible: (options) => options.enable_midi_button_pusher == true,
+			default: 1,
+			min: 1,
+			max: 1000,
 		},
 		{
 			type: 'static-text',

@@ -2,41 +2,18 @@
 
 This "**ProPresenter API**" module allows you to remotely control ProPresenter via it's <a href="https://openapi.propresenter.com" target="_blank">public API</a>  
 
-If you like learning from videos - I am (slowly) building a <a href="https://youtube.com/playlist?list=PLfD8xdMvz-lhwcoJOOJ7G8qTEb_XXp6v4&si=2jViRELfYAFOUwYy" target="_blank">Youtube Playlist</a> of videos where you can learn more.  In time, I plan to include some walkthroughs of some pretty advanced setups.  
-*But DON'T skip reading this help file! 😀*  
+*<a href="https://youtube.com/playlist?list=PLfD8xdMvz-lhwcoJOOJ7G8qTEb_XXp6v4&si=2jViRELfYAFOUwYy" target="_blank">ProPresenter API Companion Module - Youtube Playlist</a>*. 
 
 ![StreamDeck1.png](help-images/ProModule-StreamDeck1.png)  
   
 Starting with Companion 3.5 *and later*...
-#### There are now TWO Companion modules for ProPresenter ####  
+#### There are TWO Companion modules for ProPresenter ####  
   
 ![ProPresenter-Module-Comparison.png](help-images/ProPresenter-Module-Comparison.png)  
   
-**Why TWO modules?**  
-While it would have been ideal to update the old module to use both the old reverse-engineered remote protocol as well as the new vendor supported API, I wanted to get away from the supporting the reverse engineered code in the old module as it's becoming unsupportable. So I decided to make a completely new module that only uses the officially supported API.  
+**Are you using an old version of ProPresenter?**  
+If you are using a version of ProPresenter older than 7.9.2 then you will need to use the old "ProPresenter" module.
   
-This does mean that all existing buttons/triggers/etc from the old module in your current setup will NOT be upgraded or imported into the new module. Those buttons/triggers/etc remain with the old module. There is no automatic upgrade path from the old module to the new module - you will have to build new buttons/triggers etc.
-
-While this is not ideal, the main reason for this decision is SUPPORT - The reverse engineered code in the old module is not supported and no longer getting bug fixes from RV.  
-  
-Going forward, the new "ProPresenter API" module will **receive better and more reliable support.**  
-  
-**You can run BOTH modules at the same time...**  
-It's perfectly fine to run BOTH the old and new modules side-by-side, connected to the SAME ProPresenter!  
-There is no pressure to re-create your whole setup with actions from the new module and some users might need to run both for a while yet.  
-
-Take your time to explore the new actions and features that the new module offers.  See if there is any new functionality that you want to add to your setup and over time, when you are ready, slowly add the new actions to your old buttons and disable the old actions while testing.  Once you have proven the new actions work for you, you can remove the old actions.  
-  
-Also, please note that the old module does have a few actions that are not (yet) supported in the official ProPresenter API and if you use those actions, you will want to keep using the old module alongside the new module.
-
-Actions in old module that are not in new module:
-- Specific Slide (In a **playlist**/presentation)
-- Specific Slide With Label
-- Specific Slide In A Group
-
-  
-**Remember - You don't have to choose!**  
-Please don't forget that you can run BOTH modules at same time - connected to same instance of ProPresenter.  Keep running the old module version as long as you like or need to while exploring the new features in the new module version.  
 ___  
   
 
@@ -157,27 +134,27 @@ Feedbacks are typically used to update a button to show the state of something -
 ### Other Notes:
 Note that a few API functions were introduced in later versions of ProPresenter so there might be one or two actions that don't work if you are running an older version of ProPresenter.  
   
-Find My Mouse - handy for setups with multiple screens using native outputs.  
+**Find My Mouse:** A handy button action for setups with multiple screens using native outputs.  
   
-Arrangements - Do you use arrrangements? - If you want to do some actions that rely on knowing about presentation arrangements, you will have to wait for a future API update by RV. API support for working with arranged presentation is conspicuously missing from the current API.  There are no endpoints that include any arrangement info. Consequently there is no reliable way to get total slide count of a presentation (seems odd doesn't it)  
+**Arrangements:** - For a long time, the required API to support arrangements was missing.  So things like total slides and slides remaining were not aware of arrangements!  This has been added recently and you will need a recent version of ProPresenter for this to wotk (at least version 21 or higher)  
   
-Messages: Triggering supports text tokens only (Showing a dynamic number of text tokens for each select message, hurt my brain a bit - I kinda dread adding timers to the mix.  For now, timers can be configured and started seperately)  
+**Messages:** Triggering supports text tokens only (Showing a dynamic number of text tokens for each select message, hurt my brain a bit - I kinda dread adding timers to the mix.  For now, timers can be configured and started seperately)  
   
-If you use  to "Specific Presentation: Operation"/"Tigger Slide By It's Index" to trigger a specific slide in a specific presentation that is not the currently active presentation in a playlist...  
+If you use **Specific Presentation: Operation** -> "Tigger Slide By It's Index" to trigger a specific slide in a specific presentation that is not the currently active presentation in a playlist...  
 ...you might expect a subsequent call to "Active Presentation: Operation"/"Focus Active Presenation" to change focus to it within that playlist...  
 .. but it does not, instead, it will focus the presenation you specified but in the library it lives in.  
 You can however, trigger the **first** slide in *any* specific presentation in a playlist using "Specific Playlist: Operation"/"Trigger Playlist Item By It's Index" and then once it's the active presentation you can then trigger specific slides within it with "Specific Playlist: Operation"/"Trigger Slide By It's Index"
   
-Variables are not "reset" when disconnected or connection is lost - the last knwon values just stay!  
+**Bug:** Variables are not "reset" when disconnected or connection is lost - the last known values just stay!  
   
-Many dynamic variables use UUID in ID instead of name - Names can contain invalid characters for variable names. Also, ProPresenter allows duplicates names for items and Companion variable names must be unique.  This has the drawback of not being very readable when reading expressions tha contain these variables.  The nice thing about uuid is that it never changes - so you can rename objects as often as you like in ProPresenter and the _uuid_ style variables that refer to them will continue to work.  
+Many dynamic variables use **UUID** in ID instead of name - Names can contain invalid characters for variable names. Also, ProPresenter allows duplicates names for items and Companion variable names must be unique.  This has the drawback of not being very readable when reading expressions tha contain these variables.  The nice thing about uuid is that it never changes - so you can rename objects as often as you like in ProPresenter and the _uuid_ style variables that refer to them will continue to work.  
   
-The Set operation for a timer allows you to rename it - but ONLY IF you choose "None" for the optional operation.  
+The **Set operation for a timer** allows you to rename it - but ONLY IF you choose "None" for the optional operation.  
 When using a Timer set action to update a timer, I have seen that doing an operation (start/reset) too soon after you have updated it seems to revert the changes made by timer set action - wait a little while or use the option to set AND perform operation.  
   
-A momentary flash of warning symbol will appear on all buttons with ProPresenter actions when a request fails - check debug log for details. (prob invalid input in an action for a button or trigger)
+A momentary flash of **warning symbol** will appear on all buttons with ProPresenter actions when a request fails - check debug log for details. (Possibly an invalid input in an action for a button or trigger)
   
-Looks are identified by name or index.... UUID of live look does not match any UUID of the list of configured looks. So we can't use UUID for identifying a look to trigger.  
+**Looks** are identified by name or index.... UUID of live look does not match any UUID of the list of configured looks. So we can't use UUID for identifying a look to trigger.  
   
   
 ## 🎹 Simple MIDI Button Pusher: ##  

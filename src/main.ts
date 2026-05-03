@@ -77,6 +77,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		enable_midi_button_pusher: false,
 		virtual_midi_port_name: '',
 		midi_port_dropdown: 'virtual',
+		midi_base_page: 1,
 		companion_port: 8000,
 		suppress_active_presentation_change_warning: false,
 	}
@@ -126,7 +127,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				)
 
 				// api/location/<page>/<row>/<column>/press
-				// page = channel
+				// page = channel + config.midi_base_page
 				// row = note
 				// column = velocity
 				
@@ -136,7 +137,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					midiMessageVelocity = 0
 
 				const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
-					midiMessageChannel + 1
+					midiMessageChannel + config.midi_base_page
 				}/${midiMessageNote}/${midiMessageVelocity}/press`
 				this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
 
@@ -151,7 +152,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
 					})
 					.catch((error) => {
-						this.log('debug', 'Error fetching ' + buttonPressURL + '. ' + error)
+						this.log('error', 'Error fetching ' + buttonPressURL + '. ' + error)
 					})
 			})
 		}
@@ -179,7 +180,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			} catch (error) {
 				let message = 'Unknown Error'
 				if (error instanceof Error) message = error.message
-				this.log('debug', 'Error connecting midi port: ' + message)
+				this.log('error', 'Error connecting midi port: ' + message)
 			}
 		} else {
 			this.log('debug', 'MIDI button pusher disabled')
@@ -228,7 +229,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options: any) => {
 				this.log(
-					'debug',
+					'error',
 					'Request Error: ' +
 						requestAndResponseJSON.status +
 						'. ' +
@@ -475,10 +476,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	// Status callbacks: Use arrow notation to create property functions that capture *this* instance of ModuleInstance class
 	// ******************************************************************************************************************************
 
-	// This one is important - we get the system time sent every second.  When it arrives, we assume the module status is ok.
+	// We get the system time sent every second from ProPresenter there is a live/working status connection.
+	// Automatically update the module status to "OK" - but wait 5 seconds to give a bit more time for previous action errors to get user attention
 	systemTimeUpdated = (statusJSONObject: StatusUpdateJSON) => {
-		this.updateStatus(InstanceStatus.Ok)
-		this.timeOfLastStatusUpdate = Date.now()
+		if (Date.now() - this.timeOfLastStatusUpdate >= 5000) {
+			this.updateStatus(InstanceStatus.Ok)
+			this.timeOfLastStatusUpdate = Date.now()
+		}
 		if (this.config.exta_debug_logs) {
 			this.log('debug', 'System time: ' + statusJSONObject.data)
 		}
