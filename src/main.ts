@@ -111,6 +111,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	public async configUpdated(config: DeviceConfig) {
 		this.log('info', 'Module Config: ' + JSON.stringify(config))
+
+		// Ensure midi_base_page is at least 1 - As older module versions without this config will default to 0.
+		if (!config.midi_base_page || config.midi_base_page <= 0)
+			config.midi_base_page = 1
+
 		this.config = config
 
 		// Configure a callback for MIDI input messages
