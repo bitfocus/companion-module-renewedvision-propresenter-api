@@ -460,8 +460,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistActiveAnnouncementIndexTrigger(index)
 						break
 					case 'trigger_index_cueindex':
-						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
-						await instance.ProPresenter.playlistActiveAnnouncementIndexCueIndexTrigger(index, cue_index)
+						//const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						//await instance.ProPresenter.playlistActiveAnnouncementIndexCueIndexTrigger(index, cue_index)
 						break
 					default:
 						console.log(
@@ -489,8 +489,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistActivePresentationIndexTrigger(index)
 						break
 					case 'trigger_index_cueindex':
-						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
-						await instance.ProPresenter.playlistActivePresentationIndexCueIndexTrigger(index, cue_index)
+						//const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						//await instance.ProPresenter.playlistActivePresentationIndexCueIndexTrigger(index, cue_index)
 						break
 					default:
 						console.log(
@@ -532,8 +532,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistFocusedIndexTrigger(index)
 						break
 					case 'trigger_index_cueindex':
-						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
-						await instance.ProPresenter.playlistFocusedIndexCueIndexTrigger(index, cue_index)
+						//const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						//await instance.ProPresenter.playlistFocusedIndexCueIndexTrigger(index, cue_index)
 						break
 					case 'focus_next':
 						await instance.ProPresenter.playlistNextFocus()
@@ -584,8 +584,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistByPlaylistIdIndexTrigger(playlist_id, index)
 						break
 					case 'trigger_index_cueindex':
-						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
-						await instance.ProPresenter.playlistByPlaylistIdIndexCueIndexTrigger(playlist_id, index, cue_index)
+						//const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						//await instance.ProPresenter.playlistByPlaylistIdIndexCueIndexTrigger(playlist_id, index, cue_index)
 						break
 					default:
 						console.log(
