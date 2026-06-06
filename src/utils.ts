@@ -53,6 +53,7 @@ export interface Options {
 	video_input_id_text: EnforceDefault<CompanionInputFieldTextInput, string>
 	video_input_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
 	index: EnforceDefault<CompanionInputFieldTextInput, string>
+	cue_index: EnforceDefault<CompanionInputFieldTextInput, string>
 	presentation_uuid: EnforceDefault<CompanionInputFieldTextInput, string>
 	clear_layer_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
 	clear_layer_or_group_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
@@ -150,6 +151,7 @@ export const options: Options = {
 			{ id: 'focus', label: 'Focus Active Presentation Playlist' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
 			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
+			{ id: 'trigger_index_cueindex', label: "Trigger Cue By Index, in Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -162,6 +164,7 @@ export const options: Options = {
 			{ id: 'focus', label: 'Focus Active Announcement Playlist' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
 			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
+			{ id: 'trigger_index_cueindex', label: "Trigger Cue By Index, in Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -175,6 +178,7 @@ export const options: Options = {
 			{ id: 'trigger_previous', label: 'Trigger Previous Playlist Item' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
 			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
+			{ id: 'trigger_index_cueindex', label: "Trigger Cue By Index, in Playlist Item By It's Index" },
 			{ id: 'focus_next', label: 'Move Focus To Next Playlist' },
 			{ id: 'focus_previous', label: 'Move Focus To Previous Playlist' },
 		],
@@ -191,6 +195,7 @@ export const options: Options = {
 			{ id: 'trigger_previous', label: 'Trigger Previous Playlist Item' },
 			{ id: 'trigger_first', label: 'Trigger First Playlist Item' },
 			{ id: 'trigger_index', label: "Trigger Playlist Item By It's Index" },
+			{ id: 'trigger_index_cueindex', label: "Trigger Cue By Index, in Playlist Item By It's Index" },
 		],
 		default: 'focus',
 	},
@@ -873,10 +878,26 @@ export const options: Options = {
 			options.focused_presentation_operation == 'trigger_index' ||
 			options.specific_presentation_operation == 'trigger_index' ||
 			options.active_announcement_playlist_operation == 'trigger_index' ||
+			options.active_announcement_playlist_operation == 'trigger_index_cueindex' ||
 			options.active_presentation_playlist_operation == 'trigger_index' ||
+			options.active_presentation_playlist_operation == 'trigger_index_cueindex' ||
 			options.focused_playlist_operation == 'trigger_index' ||
+			options.focused_playlist_operation == 'trigger_index_cueindex' ||
 			options.specific_playlist_operation == 'trigger_index' ||
+			options.specific_playlist_operation == 'trigger_index_cueindex' ||
 			options.hasOwnProperty('library_id'),
+		default: '0',
+		useVariables: true,
+	},
+	cue_index: {
+		type: 'textinput', // I know, you would think this input field would be a Number -  But this is a textinput so that it can support Variables (which may be useful for indexes)
+		label: 'Cue Index',
+		id: 'cue_index',
+		isVisible: (options) =>
+			options.active_announcement_playlist_operation == 'trigger_index_cueindex' ||
+			options.active_presentation_playlist_operation == 'trigger_index_cueindex' ||
+			options.focused_playlist_operation == 'trigger_index_cueindex' ||
+			options.specific_playlist_operation == 'trigger_index_cueindex',
 		default: '0',
 		useVariables: true,
 	},

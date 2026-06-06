@@ -446,8 +446,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.activeAnnouncementPlaylistOperation]: {
 			name: 'Active Announcement Playlist: Operation',
 			description: 'Perform an operation on the Playlist that has the active announcement in it.',
-			options: [options.active_announcement_playlist_operation, options.index],
+			options: [options.active_announcement_playlist_operation, options.index, options.cue_index],
 			callback: async (actionEvent) => {
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 				switch (actionEvent.options.active_announcement_playlist_operation) {
 					case 'focus':
 						await instance.ProPresenter.playlistActiveAnnouncementFocus()
@@ -456,8 +457,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistActiveAnnouncementTrigger()
 						break
 					case 'trigger_index':
-						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 						await instance.ProPresenter.playlistActiveAnnouncementIndexTrigger(index)
+						break
+					case 'trigger_index_cueindex':
+						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						await instance.ProPresenter.playlistActiveAnnouncementIndexCueIndexTrigger(index, cue_index)
 						break
 					default:
 						console.log(
@@ -471,8 +475,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.activePresentationPlaylistOperation]: {
 			name: 'Active Presentation Playlist: Operation',
 			description: 'Perform an operation on the Playlist that has the active presentation in it.',
-			options: [options.active_presentation_playlist_operation, options.index],
+			options: [options.active_presentation_playlist_operation, options.index, options.cue_index],
 			callback: async (actionEvent) => {
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 				switch (actionEvent.options.active_presentation_playlist_operation) {
 					case 'focus':
 						await instance.ProPresenter.playlistActivePresentationFocus()
@@ -481,8 +486,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistActivePresentationTrigger()
 						break
 					case 'trigger_index':
-						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 						await instance.ProPresenter.playlistActivePresentationIndexTrigger(index)
+						break
+					case 'trigger_index_cueindex':
+						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						await instance.ProPresenter.playlistActivePresentationIndexCueIndexTrigger(index, cue_index)
 						break
 					default:
 						console.log(
@@ -507,8 +515,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.focusedPlaylistOperation]: {
 			name: 'Focused Playlist: Operation',
 			description: 'Perform an operation on the focused Playlist.',
-			options: [options.focused_playlist_operation, options.index],
+			options: [options.focused_playlist_operation, options.index, options.cue_index],
 			callback: async (actionEvent) => {
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 				switch (actionEvent.options.focused_playlist_operation) {
 					case 'trigger_next':
 						await instance.ProPresenter.playlistFocusedNextTrigger()
@@ -520,8 +529,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistFocusedTrigger()
 						break
 					case 'trigger_index':
-						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 						await instance.ProPresenter.playlistFocusedIndexTrigger(index)
+						break
+					case 'trigger_index_cueindex':
+						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						await instance.ProPresenter.playlistFocusedIndexCueIndexTrigger(index, cue_index)
 						break
 					case 'focus_next':
 						await instance.ProPresenter.playlistNextFocus()
@@ -551,9 +563,10 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.specificPlaylistOperation]: {
 			name: 'Specific Playlist: Operation',
 			description: 'Perform an operation on a specifically identified Playlist.',
-			options: [options.specific_playlist_operation, options.playlist_id, options.index],
+			options: [options.specific_playlist_operation, options.playlist_id, options.index, options.cue_index],
 			callback: async (actionEvent) => {
 				const playlist_id: string = await instance.parseVariablesInString(actionEvent.options.playlist_id as string)
+				const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 				switch (actionEvent.options.specific_playlist_operation) {
 					case 'focus':
 						await instance.ProPresenter.playlistByPlaylistIdFocus(playlist_id)
@@ -568,8 +581,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						await instance.ProPresenter.playlistByPlaylistIdTrigger(playlist_id)
 						break
 					case 'trigger_index':
-						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 						await instance.ProPresenter.playlistByPlaylistIdIndexTrigger(playlist_id, index)
+						break
+					case 'trigger_index_cueindex':
+						const cue_index: string = await instance.parseVariablesInString(actionEvent.options.cue_index as string)
+						await instance.ProPresenter.playlistByPlaylistIdIndexCueIndexTrigger(playlist_id, index, cue_index)
 						break
 					default:
 						console.log(
