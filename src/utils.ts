@@ -477,8 +477,8 @@ export const options: Options = {
 	},
 	stagedisplay_operation: {
 		type: 'dropdown',
-		label: 'Stage Display: Operation',
-		tooltip: 'Choose an operation to perform on a stage display',
+		label: 'Stage Message: Operation',
+		tooltip: 'Choose an operation to perform on a stage message',
 		id: 'stagedisplay_operation',
 		choices: [
 			{ id: 'show_stage_message', label: 'Show Stage Message' },

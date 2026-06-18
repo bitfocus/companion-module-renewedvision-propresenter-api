@@ -1869,7 +1869,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				{
 					down: [
 						{
-							actionId: ActionId.stageDisplayOperation,
+							actionId: ActionId.stageMessageOperation,
 							options: { stagedisplay_operation: 'toggle_stage_message', stage_message_text: 'Okay' },
 						},
 					],
@@ -1922,11 +1922,11 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 				{
 					down: [
 						{
-							actionId: ActionId.stageDisplayOperation,
+							actionId: ActionId.stageMessageOperation,
 							options: { stagedisplay_operation: 'show_stage_message', stage_message_text: 'Okay' },
 						},
 						{
-							actionId: ActionId.stageDisplayOperation,
+							actionId: ActionId.stageMessageOperation,
 							options: { stagedisplay_operation: 'hide_stage_message', stage_message_text: 'Okay' },
 							delay: 5000,
 						},
@@ -3648,7 +3648,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					{
 						down: [
 							{
-								actionId: ActionId.stageDisplayOperation,
+								actionId: ActionId.stageMessageOperation,
 								options: {
 									stagedisplay_operation: 'set_layout',
 									stagescreen_id_dropdown: stage_screen_id,

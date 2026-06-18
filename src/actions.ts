@@ -816,9 +816,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			},
 		},
 		// **** STAGE ****
-		[ActionId.stageDisplayOperation]: {
-			name: 'Stage Display: Operation',
-			description: 'Perform an operation on the stage display',
+		[ActionId.stageMessageOperation]: {
+			name: 'Stage Message: Operation',
+			description: 'Perform an operation on the stage message',
 			options: [
 				options.stagedisplay_operation,
 				options.stage_message_text,
@@ -1200,7 +1200,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
 
 	// Update stagescreen choices with data from propresenterStateStore
-	const stageScreenChoicesDropDown = actions[ActionId.stageDisplayOperation]?.options[2] as CompanionInputFieldDropdown
+	const stageScreenChoicesDropDown = actions[ActionId.stageMessageOperation]?.options[2] as CompanionInputFieldDropdown
 	const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
 	stageScreenChoicesDropDown.choices = instance.propresenterStateStore.stageScreenChoices.concat(
 		manual_stagescreen_choice as DropdownChoice
@@ -1208,7 +1208,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
 
 	// Update stagescreen layout choices with data from propresenterStateStore
-	const stageScreenLayoutChoicesDropDown = actions[ActionId.stageDisplayOperation]
+	const stageScreenLayoutChoicesDropDown = actions[ActionId.stageMessageOperation]
 		?.options[4] as CompanionInputFieldDropdown
 	const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
 	stageScreenLayoutChoicesDropDown.choices = instance.propresenterStateStore.stageScreenLayoutChoices.concat(
@@ -1307,7 +1307,7 @@ export enum ActionId {
 	propOperation = 'propOperation',
 
 	// Stage
-	stageDisplayOperation = 'stageDisplayOperation',
+	stageMessageOperation = 'stageMessageOperation',
 
 	// Screens
 	screensOperation = 'screensOperation',
