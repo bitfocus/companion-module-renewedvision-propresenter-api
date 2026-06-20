@@ -1514,9 +1514,9 @@ jest-worker@^27.4.5:
     supports-color "^8.0.0"
 
 js-yaml@^4.1.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.1.1.tgz#854c292467705b699476e1a2decc0c8a3458806b"
-  integrity sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/js-yaml/-/js-yaml-4.2.0.tgz#2bd9e85682dd91bd469afb809d816043b3d49524"
+  integrity sha512-ePWsvanv0DWuDRsW8dnt+R4jQ31SCRCQ7hhNcPXZPsoBZiemuZNYGf7adZdqX2D86j6rvKp3RpCxVTSb8WQlOw==
   dependencies:
     argparse "^2.0.1"
 
@@ -2038,10 +2038,10 @@ rechoir@^0.8.0:
   dependencies:
     resolve "^1.20.0"
 
-renewedvision-propresenter@^7.7.2:
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/renewedvision-propresenter/-/renewedvision-propresenter-7.7.2.tgz#3d34a8924fd9dbe568d8a916ed4a9cd333e1a7c5"
-  integrity sha512-ZyzVCqFWlFbffEIuzYnUg2XS+Ve2NsOSNhjVmCrdd+wKV3PFjRYPeBVe/B1eDDPTCbI2NdrB5sR7QQGVCnf0lA==
+renewedvision-propresenter@^7.7.3:
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/renewedvision-propresenter/-/renewedvision-propresenter-7.7.3.tgz#9ccac049d4d0d520279604da2b62c41e4eaaf629"
+  integrity sha512-U5+NYMUM4Ro0Q+wOzHlooVBCIUBOeIFBZ7lp8dPi4Vl3HqQqd8I7CKWAMLB9Z+6wUYNXHmA3xAeKEA8IfLzSUw==
   dependencies:
     typescript "^4.9.5"
 
