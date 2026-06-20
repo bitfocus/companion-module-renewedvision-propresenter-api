@@ -2038,10 +2038,10 @@ rechoir@^0.8.0:
   dependencies:
     resolve "^1.20.0"
 
-renewedvision-propresenter@^7.7.2:
-  version "7.7.2"
-  resolved "https://registry.yarnpkg.com/renewedvision-propresenter/-/renewedvision-propresenter-7.7.2.tgz#3d34a8924fd9dbe568d8a916ed4a9cd333e1a7c5"
-  integrity sha512-ZyzVCqFWlFbffEIuzYnUg2XS+Ve2NsOSNhjVmCrdd+wKV3PFjRYPeBVe/B1eDDPTCbI2NdrB5sR7QQGVCnf0lA==
+renewedvision-propresenter@^7.7.3:
+  version "7.7.3"
+  resolved "https://registry.yarnpkg.com/renewedvision-propresenter/-/renewedvision-propresenter-7.7.3.tgz#9ccac049d4d0d520279604da2b62c41e4eaaf629"
+  integrity sha512-U5+NYMUM4Ro0Q+wOzHlooVBCIUBOeIFBZ7lp8dPi4Vl3HqQqd8I7CKWAMLB9Z+6wUYNXHmA3xAeKEA8IfLzSUw==
   dependencies:
     typescript "^4.9.5"
 
@@ -2332,9 +2332,9 @@ tapable@^2.3.0:
   integrity sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==
 
 tar@^7.5.7:
-  version "7.5.11"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.11.tgz#1250fae45d98806b36d703b30973fa8e0a6d8868"
-  integrity sha512-ChjMH33/KetonMTAtpYdgUFr0tbz69Fp2v7zWxQfYZX4g5ZN2nOBXm1R2xyA+lMIKrLKIoKAwFj93jE/avX9cQ==
+  version "7.5.16"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-7.5.16.tgz#f11e063afed4554f758049d082909e37d6b53ced"
+  integrity sha512-56adEpPMouktRlBLXiaYFFzZ/3+JXa8P9n7WbR+ibIjtviN55mEaOkiysCnPnWm+7kkui1Dn8J9l+g6zV8731w==
   dependencies:
     "@isaacs/fs-minipass" "^4.0.0"
     chownr "^3.0.0"
