@@ -95,9 +95,52 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	private setVariableDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
 	private lastSetFeedbackDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setFeedbackDefinitions() was called (0 means not yet called)
 	private setFeedbackDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
+	private timeSinceLastStatusUpdateIntervalId: ReturnType<typeof setInterval> | null = null
+	private videoInputsAndGroupsPollIntervalId: ReturnType<typeof setInterval> | null = null
 	private timeOfLastStatusUpdate: number = 0 // A timestamp (in ms since epoch) of the last time that ProPresenter sent a timer/system_time status update.
 	public lastVideoInputJSON: string = '' // Used for checking if video inputs has changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/video_inputs and "everyone" is running versions that support it)
 	public lastGlobalGroupsJSON: string = '' // Used for checking if global groups have changed each time it's polled (TODO: consider removing one day when api supports chunked /v1/groups and "everyone" is running versions that support it)
+
+	private readonly handleMidiMessage = async (deltaTime: number, message: number[]) => {
+		const midiMessageChannel: number = message[0] & 0x0f
+		const midiMessageIsNoteon: boolean = (message[0] & 0x90) == 0x90
+		const midiMessageNote: number = message[1]
+		let midiMessageVelocity: number = message[2]
+
+		this.log(
+			'debug',
+			`MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`
+		)
+
+		// api/location/<page>/<row>/<column>/press
+		// page = channel + config.midi_base_page
+		// row = note
+		// column = velocity
+		
+		// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).  
+		// Therefore, this module will use a workaround where any NoteOff message will set the midiMessageVelocity to 0 to allow ProPresenter users a simple way to press buttons in Column 0 - while channel and note are still mapped to page and row.
+		if (!midiMessageIsNoteon)
+			midiMessageVelocity = 0
+
+		const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
+			midiMessageChannel + this.config.midi_base_page
+		}/${midiMessageNote}/${midiMessageVelocity}/press`
+		this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
+
+		fetch(buttonPressURL, {
+			signal: AbortSignal.timeout(2000),
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		})
+			.then((response) => {
+				this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
+			})
+			.catch((error) => {
+				this.log('error', 'Error fetching ' + buttonPressURL + '. ' + error)
+			})
+	}
 
 	public async init(config: DeviceConfig): Promise<void> {
 		this.log('debug', 'Midi input: ' + JSON.stringify(this.midi_input)) // This will show the Midi input object in the debug log (Logged in case some computers fail to create one)
@@ -107,6 +150,38 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	// When module gets deleted
 	public async destroy() {
 		this.log('debug', 'Module destroy()')
+
+		// Clear timers (even though, they self-clear in timer callback, the module might be destroyed during the delay time before the callback has run)
+		if (this.setActionDefinitionsTimeoutId) {
+			clearTimeout(this.setActionDefinitionsTimeoutId)
+			this.setActionDefinitionsTimeoutId = null
+		}
+		if (this.setVariableDefinitionsTimeoutId) {
+			clearTimeout(this.setVariableDefinitionsTimeoutId)
+			this.setVariableDefinitionsTimeoutId = null
+		}
+		if (this.setFeedbackDefinitionsTimeoutId) {
+			clearTimeout(this.setFeedbackDefinitionsTimeoutId)
+			this.setFeedbackDefinitionsTimeoutId = null
+		}
+		if (this.timeSinceLastStatusUpdateIntervalId) {
+			clearInterval(this.timeSinceLastStatusUpdateIntervalId)
+			this.timeSinceLastStatusUpdateIntervalId = null
+		}
+		if (this.videoInputsAndGroupsPollIntervalId) {
+			clearInterval(this.videoInputsAndGroupsPollIntervalId)
+			this.videoInputsAndGroupsPollIntervalId = null
+		}
+
+		if (this.midi_input) {
+			this.midi_input.removeListener('message', this.handleMidiMessage)
+		}
+
+		// Clear any open MIDI port
+		if (this.midi_input?.isPortOpen()) {
+			this.log('debug', 'Closing Midi port')
+			this.midi_input.closePort()
+		}
 	}
 
 	public async configUpdated(config: DeviceConfig) {
@@ -120,46 +195,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		// Configure a callback for MIDI input messages
 		if (this.midi_available && this.midi_input) {
-			this.midi_input.on('message', async (deltaTime, message) => {
-				const midiMessageChannel: number = message[0] & 0x0f
-				const midiMessageIsNoteon: boolean = (message[0] & 0x90) == 0x90
-				const midiMessageNote: number = message[1]
-				let midiMessageVelocity: number = message[2]
-
-				this.log(
-					'debug',
-					`MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`
-				)
-
-				// api/location/<page>/<row>/<column>/press
-				// page = channel + config.midi_base_page
-				// row = note
-				// column = velocity
-				
-				// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).  
-				// Therefore, this module will use a workaround where any NoteOff message will set the midiMessageVelocity to 0 to allow ProPresenter users a simple way to press buttons in Column 0 - while channel and note are still mapped to page and row.
-				if (!midiMessageIsNoteon)
-					midiMessageVelocity = 0
-
-				const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
-					midiMessageChannel + config.midi_base_page
-				}/${midiMessageNote}/${midiMessageVelocity}/press`
-				this.log('debug', 'Sending button press HTTP request to: ' + buttonPressURL)
-
-				fetch(buttonPressURL, {
-					signal: AbortSignal.timeout(2000),
-					method: 'POST',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-				})
-					.then((response) => {
-						this.log('debug', 'Button press response: ' + response.status + ': ' + response.statusText)
-					})
-					.catch((error) => {
-						this.log('error', 'Error fetching ' + buttonPressURL + '. ' + error)
-					})
-			})
+			this.midi_input.removeListener('message', this.handleMidiMessage)
+			this.midi_input.on('message', this.handleMidiMessage)
 		}
 
 		// Close midi port (if open)
@@ -429,13 +466,19 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.checkFeedbacks()
 
 				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter - it should be updated every second)
-				setInterval(() => {
+				if (this.timeSinceLastStatusUpdateIntervalId) {
+					clearInterval(this.timeSinceLastStatusUpdateIntervalId)
+				}
+				this.timeSinceLastStatusUpdateIntervalId = setInterval(() => {
 					SetVariableValues(this, { time_since_last_status_update: (Date.now() - this.timeOfLastStatusUpdate) / 1000 })
 				}, 1000)
 
 				// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
 				// Until then, poll video inputs and groups every 3 seconds and check if changed.  Only when they have changed, call the callback for videoInputsUpdated()
-				setInterval(() => {
+				if (this.videoInputsAndGroupsPollIntervalId) {
+					clearInterval(this.videoInputsAndGroupsPollIntervalId)
+				}
+				this.videoInputsAndGroupsPollIntervalId = setInterval(() => {
 					this.ProPresenter.videoInputsGet().then((videoInputsResult: RequestAndResponseJSONValue) => {
 						if (videoInputsResult.ok) {
 							const currentVideoInputJSON: string = JSON.stringify(videoInputsResult.data)
