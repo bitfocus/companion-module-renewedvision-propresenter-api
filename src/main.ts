@@ -430,32 +430,31 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				if (transportPresentationLayerStatus.ok) {
 					const transportPresentationLayerStatusJSONObject: StatusUpdateJSON = {
 						url: '/v1/transport/presentation/current',
-						data: stageScreensResult.data,
+						data: transportPresentationLayerStatus.data,
 					}
 					this.transportLayerUpdated(transportPresentationLayerStatusJSONObject)
 				}
 
 				// Get Announcement layer transport status
 				const transportAnnouncementLayerStatus: RequestAndResponseJSONValue =
-					await this.ProPresenter.transportLayerCurrent('presentation')
+					await this.ProPresenter.transportLayerCurrent('announcement')
 				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
 				if (transportAnnouncementLayerStatus.ok) {
 					const transportAnnouncementLayerStatusJSONObject: StatusUpdateJSON = {
 						url: '/v1/transport/announcement/current',
-						data: stageScreensResult.data,
+						data: transportPresentationLayerStatus.data,
 					}
 					this.transportLayerUpdated(transportAnnouncementLayerStatusJSONObject)
 				}
 
 				// Get Audio layer transport status
-				const transportAudioLayerStatus: RequestAndResponseJSONValue = await this.ProPresenter.transportLayerCurrent(
-					'presentation'
-				)
+				const transportAudioLayerStatus: RequestAndResponseJSONValue =
+					await this.ProPresenter.transportLayerCurrent('audio')
 				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
 				if (transportAudioLayerStatus.ok) {
 					const transportAudioLayerStatusJSONObject: StatusUpdateJSON = {
 						url: '/v1/transport/audio/current',
-						data: stageScreensResult.data,
+						data: transportPresentationLayerStatus.data,
 					}
 					this.transportLayerUpdated(transportAudioLayerStatusJSONObject)
 				}
