@@ -8,7 +8,7 @@ import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'ren
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues } from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
 import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp, ProPresentationArrangement } from './utils'
 import { GetFeedbacks } from './feedbacks'
-import { Input } from '@julusian/midi'
+import { Input } from '@julusian/midi/lazy'
 
 // propresenterStateStore (defined in utils.ts) is used to locally cache various state data of ProPresenter that are used to build dynamic Actions and Variables which "know" about the current state of ProPresenter.
 const emptyPropresenterStateStore: ProPresenterStateStore = {
