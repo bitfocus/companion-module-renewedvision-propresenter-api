@@ -541,13 +541,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 
 		SetVariableValues(this, {
-			active_presentation_current_slide_text: statusJSONObject.data.current.text,
+			active_presentation_current_slide_text: statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
 			active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
-			active_presentation_current_slide_notes: statusJSONObject.data.current.notes,
+			active_presentation_current_slide_notes: statusJSONObject.data.current != null ? statusJSONObject.data.current.notes : '',
 			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
-			active_presentation_current_slide_imageuuid: statusJSONObject.data.current.uuid,
-			active_presentation_next_slide_imageuuid:
-				statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			active_presentation_current_slide_imageuuid: statusJSONObject.data.current != null ? statusJSONObject.data.current.uuid : '',
+			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 		})
 	}
 
