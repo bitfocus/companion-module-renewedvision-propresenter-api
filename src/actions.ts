@@ -802,7 +802,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						if (
 							instance.propresenterStateStore.proProps.find(
 								(proProp) =>
-									proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id)
+									proProp.id.uuid == prop_id ||
+									proProp.id.name == prop_id ||
+									(/^\d+$/.test(prop_id) && proProp.id.index == parseInt(prop_id))
 							)?.is_active == true
 						) {
 							await instance.ProPresenter.propIdClear(prop_id)
@@ -932,7 +934,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						proTimerState.id.uuid == timerID ||
 						proTimerState.id.uuid.replace(/-/g, '') == timerID ||
 						proTimerState.id.name == timerID ||
-						proTimerState.id.index == parseInt(timerID)
+						(/^\d+$/.test(timerID) && proTimerState.id.index == parseInt(timerID))
 				)
 
 				// Determine action to "toggle" current timer state
