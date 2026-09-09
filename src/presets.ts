@@ -263,7 +263,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 							actionId: ActionId.clearLayerOrGroup,
 							options: {
 								clear_layer_or_group_dropdown: 'group',
-								clear_group_id_dropdown: instance.propresenterStateStore.clearGroupChoices[0].id,
+								clear_group_id_dropdown: instance.propresenterStateStore.clearGroupChoices[0]?.id ?? '',
 							},
 						},
 					],
