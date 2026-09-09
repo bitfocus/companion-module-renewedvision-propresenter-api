@@ -540,14 +540,27 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
 		}
 
-		SetVariableValues(this, {
-			active_presentation_current_slide_text: statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
-			active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
-			active_presentation_current_slide_notes: statusJSONObject.data.current != null ? statusJSONObject.data.current.notes : '',
-			active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
-			active_presentation_current_slide_imageuuid: statusJSONObject.data.current != null ? statusJSONObject.data.current.uuid : '',
-			active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
-		})
+		if (statusJSONObject.data) { // Make sure the response contains the expected data object
+			SetVariableValues(this, {
+				active_presentation_current_slide_text: statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
+				active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
+				active_presentation_current_slide_notes: statusJSONObject.data.current != null ? statusJSONObject.data.current.notes : '',
+				active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
+				active_presentation_current_slide_imageuuid: statusJSONObject.data.current != null ? statusJSONObject.data.current.uuid : '',
+				active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+			})
+		} else {
+			// statusSlideUpdated missing data object
+			this.log('debug', 'statusSlideUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				active_presentation_current_slide_text: '',
+				active_presentation_next_slide_text: '',
+				active_presentation_current_slide_notes: '',
+				active_presentation_next_slide_notes: '',
+				active_presentation_current_slide_imageuuid: '',
+				active_presentation_next_slide_imageuuid: '',
+			})
+		}
 	}
 
 	timersUpdate = (statusJSONObject: StatusUpdateJSON) => {
@@ -680,11 +693,24 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	focusedPresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'focusedPresentationUpdated: ' + JSON.stringify(statusJSONObject))
-		SetVariableValues(this, {
-			focused_presentation_index: statusJSONObject.data.index,
-			focused_presentation_name: statusJSONObject.data.name,
-			focused_presentation_uuid: statusJSONObject.data.uuid,
-		})
+		if (statusJSONObject.data) { // Make sure the response contains the expected data object
+			// Note: index/name/uuid are intentionally left unguarded here (not defaulted to '') - if ProPresenter
+			// ever omits one of these fields, we want "undefined" to show up in the variable so it gets noticed,
+			// rather than silently hiding the undefined values behind a blank value.
+			SetVariableValues(this, {
+				focused_presentation_index: statusJSONObject.data.index,
+				focused_presentation_name: statusJSONObject.data.name,
+				focused_presentation_uuid: statusJSONObject.data.uuid,
+			})
+		} else {
+			// focusedPresentationUpdated missing data object
+			this.log('debug', 'focusedPresentationUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				focused_presentation_index: '',
+				focused_presentation_name: '',
+				focused_presentation_uuid: '',
+			})
+		}
 	}
 
 	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) =>  {
