@@ -2406,7 +2406,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 		}
 	})
 
-	// Dynamically create Video Input presets for each videoInputChoice in propresenterStateStore... 
+	// Dynamically create Video Input presets for each videoInputChoice in propresenterStateStore...
 	instance.propresenterStateStore.videoInputChoices.forEach((videoInput) => {
 		const videoInputID: string = videoInput.id as string
 		const videoInputLabel: string = videoInput.label as string
