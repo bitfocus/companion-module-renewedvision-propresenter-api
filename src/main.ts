@@ -578,6 +578,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// The definition of one or more timers has been updated/added - refresh variable definitions to ensure we have variable for each timer (rate limit refreshing variables since updates are sent with each keystroke during rename!)
 		this.log('debug', 'Timer definitions updated: ' + JSON.stringify(statusJSONObject))
 
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'timersUpdate: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
+
 		// Update localState with new timer definitions
 		this.propresenterStateStore.proTimers = statusJSONObject.data.map(
 			(timer: { id: { uuid: string; name: string; index: number } }) => ({
@@ -1037,6 +1042,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	clearGroupsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'clearGroupsUpdated: ' + JSON.stringify(statusJSONObject))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'clearGroupsUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Update list of cleargroups in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.clearGroupChoices = statusJSONObject.data.map(
 			(clearGroup: { id: { uuid: string; name: string } }) => ({ id: clearGroup.id.uuid, label: clearGroup.id.name })
@@ -1046,6 +1055,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	looksUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'looksUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'looksUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Update list of looks in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.looksChoices = statusJSONObject.data.map(
 			(look: { id: { uuid: string; name: string } }) => ({ id: look.id.name, label: look.id.name })
@@ -1057,18 +1070,26 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	macrosUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'macrosUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'macrosUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Update list of macros in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.macroChoices = statusJSONObject.data.map(
 			(macro: { id: { uuid: string; name: string } }) => ({ id: macro.id.uuid, label: macro.id.name })
 		)
 		// Update propresenterStateStore.proMacros
-		this.propresenterStateStore.proMacros = statusJSONObject.data // TODO: Consider how this might break/fail if the strutucture of the JSON (list of macros) changes (also for other status updates where we store the whole JSON without mapping into an aray of presummed types)
+		this.propresenterStateStore.proMacros = statusJSONObject.data
 		// Update Actions (this is rate limited)
 		this.initActions()
 	}
 
 	propsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'propsUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Create a list of props in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.propChoices = statusJSONObject.data.map(
 			(prop: { id: { uuid: string; name: string } }) => ({ id: prop.id.uuid, label: prop.id.name })
@@ -1099,6 +1120,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	videoInputsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'videoInputsUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'videoInputsUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Create a list of video inputs in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.videoInputChoices = statusJSONObject.data.map(
 			(videoInput: { uuid: string; name: string }) => ({ id: videoInput.uuid, label: videoInput.name })
@@ -1188,6 +1213,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	messagesUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'messagesUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'messagesUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Create a list of messages in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.messageChoices = statusJSONObject.data.map(
 			(message: { id: { uuid: string; name: string } }) => ({ id: message.id.uuid, label: message.id.name })
@@ -1197,6 +1226,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		let newMessageTokenInputs: CompanionInputFieldTextInput[] = []
 		for (const message of statusJSONObject.data as ProMessage[]) {
 			const messageUUID: string = message.id.uuid
+			if (!Array.isArray(message.tokens)) {
+				this.log('debug', 'messagesUpdated: message has no tokens array, skipping: ' + JSON.stringify(message))
+				continue
+			}
 			for (const messageToken of message.tokens) {
 				// The ID of a token field will contain 3 chars to designate the token type.
 				let messageTokenTypeCode: string = '???' // Default is unknown: '???'.
