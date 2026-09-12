@@ -190,7 +190,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 						(stageScreenWithLayout) =>
 							stageScreenWithLayout.id.uuid == stage_screen_id ||
 							stageScreenWithLayout.id.name == stage_screen_id ||
-							stageScreenWithLayout.id.index == parseInt(stage_screen_id)
+							(/^\d+$/.test(stage_screen_id) && stageScreenWithLayout.id.index == parseInt(stage_screen_id))
 					)
 				if (selected_stage_screen == undefined) {
 					return false // Can't find specified stage screen
@@ -198,7 +198,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 					return (
 						selected_stage_screen.layout_uuid == stage_layout_id ||
 						selected_stage_screen.layout_name == stage_layout_id ||
-						selected_stage_screen.layout_index == parseInt(stage_layout_id)
+						(/^\d+$/.test(stage_layout_id) && selected_stage_screen.layout_index == parseInt(stage_layout_id))
 					)
 				}
 			},
@@ -378,7 +378,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 					)
 
 				return (
-					instance.propresenterStateStore.activeLookID.index == parseInt(look_id) ||
+					(/^\d+$/.test(look_id) && instance.propresenterStateStore.activeLookID.index == parseInt(look_id)) ||
 					instance.propresenterStateStore.activeLookID.uuid == look_id ||
 					instance.propresenterStateStore.activeLookID.name == look_id
 				)
@@ -425,7 +425,9 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				return (
 					instance.propresenterStateStore.proProps.find(
 						(proProp) =>
-							proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id)
+							proProp.id.uuid == prop_id ||
+							proProp.id.name == prop_id ||
+							(/^\d+$/.test(prop_id) && proProp.id.index == parseInt(prop_id))
 					)?.is_active == true
 				)
 			},
@@ -514,7 +516,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 							proTimer.id.uuid == timer_id ||
 							proTimer.id.uuid.replace(/-/g, '') == timer_id ||
 							proTimer.id.name == timer_id ||
-							proTimer.id.index == parseInt(timer_id)
+							(/^\d+$/.test(timer_id) && proTimer.id.index == parseInt(timer_id))
 					)?.state == feedback.options.timer_state
 				)
 			},
@@ -568,9 +570,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	// Update prop choices with data from propresenterStateStore
 	const propChoicesDropDown = feedbackDefinitions.PropActive?.options[0] as CompanionInputFieldDropdown
 	const manual_prop_choice = propChoicesDropDown.choices.pop() // The last item in the prop choices list (after all the current props list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Prop (in another text input)
-	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(
-		manual_prop_choice as DropdownChoice
-	)
+	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(manual_prop_choice as DropdownChoice)
 	propChoicesDropDown.default = propChoicesDropDown.choices[0].id
 
 	return feedbackDefinitions
