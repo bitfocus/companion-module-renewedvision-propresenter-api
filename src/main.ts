@@ -955,6 +955,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	focusedPlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'focusedPlaylistUpdated: ' + JSON.stringify(statusJSONObject))
 
+		if (!statusJSONObject.data) {
+			// focusedPlaylistUpdated missing data object
+			this.log('debug', 'focusedPlaylistUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				focused_playlist_name: '',
+			})
+			return
+		}
+
 		if (statusJSONObject.data.playlist) {
 			SetVariableValues(this, {
 				focused_playlist_name: statusJSONObject.data.playlist.name,
