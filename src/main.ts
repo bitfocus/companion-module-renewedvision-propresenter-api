@@ -686,6 +686,19 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	presentationSlideIndexUpdate = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'presentationSlideIndexUpdate: ' + JSON.stringify(statusJSONObject))
+
+		if (!statusJSONObject.data) {
+			// presentationSlideIndexUpdate missing data object
+			this.log('debug', 'presentationSlideIndexUpdate: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				active_presentation_slide_index: '',
+				active_presentation_slides_remaining: '',
+				active_presentation_name: '',
+				active_presentation_uuid: '',
+			})
+			return
+		}
+
 		if (statusJSONObject.data.presentation_index) {
 			// ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
@@ -1006,6 +1019,18 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (this.config.exta_debug_logs) {
 			this.log('debug', 'announcementSlideIndexUpdated: ' + JSON.stringify(statusJSONObject))
 		}
+
+		if (!statusJSONObject.data) {
+			// announcementSlideIndexUpdated missing data object
+			this.log('debug', 'announcementSlideIndexUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				active_announcement_slide_index: '',
+				active_announcement_name: '',
+				active_announcement_uuid: '',
+			})
+			return
+		}
+
 		if (statusJSONObject.data.announcement_index) {
 			// ProPresenter can return a null presentation_index when no announcement is active
 			SetVariableValues(this, {
