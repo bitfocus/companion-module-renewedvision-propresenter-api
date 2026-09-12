@@ -15,6 +15,7 @@ export interface DeviceConfig {
 	midi_base_page: number
 	companion_port: number
 	suppress_active_presentation_change_warning: boolean
+	recover_from_unexpected_responses: boolean
 }
 
 //export type JSONValue = string | number | boolean | { [x: string]: JSONValue } | Array<JSONValue>
@@ -174,6 +175,15 @@ export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCo
 			label: 'Suppress Warnings for ActivePresentation Next/Previous',
 			tooltip:
 				'Suppresses warnings when on first/last slide and trying to go to previous/next with active presentation operations',
+			width: 4,
+			default: false,
+		},
+		{
+			type: 'checkbox',
+			id: 'recover_from_unexpected_responses',
+			label: 'Recover From Unexpected ProPresenter Responses (Temporary Workaround)',
+			tooltip:
+				'Only enable this if advised, e.g. while waiting for a fix for a specific crash. When off (default), an unexpected/malformed response from ProPresenter will crash and restart the module, which is what generates the log needed to file a bug report.',
 			width: 4,
 			default: false,
 		},

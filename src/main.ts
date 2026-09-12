@@ -80,6 +80,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		midi_base_page: 1,
 		companion_port: 8000,
 		suppress_active_presentation_change_warning: false,
+		recover_from_unexpected_responses: false,
 	}
 
 	// ProPresenter API module - handles API communication with ProPresenter through convenience methods
@@ -142,8 +143,29 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			})
 	}
 
+	// Opt-in, temporary workaround (see 'recover_from_unexpected_responses' config option): if enabled, an unexpected/malformed
+	// response from ProPresenter that would otherwise crash (and auto-restart) the module is instead logged and swallowed here.
+	// Deliberately loud/actionable so enabling this doesn't quietly hide the underlying bug - it should still get reported and fixed.
+	private readonly unhandledRejectionHandler = (reason: unknown) => {
+		this.log(
+			'error',
+			'Recovered from an unexpected error (likely an unexpected ProPresenter response) instead of crashing: ' +
+				(reason instanceof Error ? reason.stack : reason) +
+				'\nPlease report this on GitHub with the log above - this workaround should be turned off once a fix ships.'
+		)
+	}
+
 	public async init(config: DeviceConfig): Promise<void> {
 		this.log('debug', 'Midi input: ' + JSON.stringify(this.midi_input)) // This will show the Midi input object in the debug log (Logged in case some computers fail to create one)
+
+		// Always log a clear message for an uncaughtException before letting the module crash and restart as normal.
+		// Unlike unhandledRejection, resuming after uncaughtException is unsafe (the exception may have interrupted
+		// something mid-operation) - so this is not gated by config and does not attempt to swallow/recover.
+		process.on('uncaughtException', (error) => {
+			this.log('error', 'Uncaught exception (module will restart): ' + error.stack)
+			process.exit(1)
+		})
+
 		this.updateStatus(InstanceStatus.Connecting) // The ProPresenter object will be used to establish a persistant status feedback connection later and update the InstanceStatus within configUpdated() below
 		await this.configUpdated(config)
 	}
@@ -182,6 +204,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('debug', 'Closing Midi port')
 			this.midi_input.closePort()
 		}
+
+		process.removeListener('unhandledRejection', this.unhandledRejectionHandler)
 	}
 
 	public async configUpdated(config: DeviceConfig) {
@@ -192,6 +216,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			config.midi_base_page = 1
 
 		this.config = config
+
+		// Toggle the opt-in unhandledRejection recovery workaround to match current config (see 'recover_from_unexpected_responses')
+		process.removeListener('unhandledRejection', this.unhandledRejectionHandler)
+		if (this.config.recover_from_unexpected_responses) {
+			process.on('unhandledRejection', this.unhandledRejectionHandler)
+		}
 
 		// Configure a callback for MIDI input messages
 		if (this.midi_available && this.midi_input) {
