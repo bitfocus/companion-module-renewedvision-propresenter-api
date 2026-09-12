@@ -615,6 +615,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('debug', 'timersCurrentUpdated: ' + JSON.stringify(statusJSONObject))
 		}
 
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'timersCurrentUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
+
 		// Update all the dynamic timer var values (& timers_current_json)
 		let newTimerValues = {}
 		for (const timercurrent of statusJSONObject.data) {
@@ -1165,6 +1170,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	stageScreensUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'stageScreensUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'stageScreensUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Update localState with new stageScreensWithLayout definitions
 		// (varid is a clean form of the variable ID with - remvoed from UUID)
 		this.propresenterStateStore.stageScreensWithLayout = statusJSONObject.data.map(
@@ -1218,6 +1227,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	stageScreenLayoutsUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'stageScreenLayoutsUpdated: ' + JSON.stringify(statusJSONObject.data))
+		if (!Array.isArray(statusJSONObject.data)) {
+			this.log('debug', 'stageScreenLayoutsUpdated: expected an array, got: ' + JSON.stringify(statusJSONObject))
+			return
+		}
 		// Create a list of stage screen layouts in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.stageScreenLayoutChoices = statusJSONObject.data.map(
 			(stageScreenLayout: { id: { uuid: string; name: string } }) => ({
