@@ -18,7 +18,7 @@
 	},
 	"dependencies": {
 		"@companion-module/base": "~1.10.0",
-		"@julusian/midi": "^3.6.1",
+		"@julusian/midi": "^3.8.0",
 		"renewedvision-propresenter": "^7.7.3"
 	},
 	"devDependencies": {
