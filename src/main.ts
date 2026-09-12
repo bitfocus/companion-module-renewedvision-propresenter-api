@@ -541,6 +541,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 
 		if (statusJSONObject.data) { // Make sure the response contains the expected data object
+
+			// Optional extra logging that might be useful in future
+			if (this.config.exta_debug_logs) {
+				if (statusJSONObject.data.current == null) {
+					this.log('debug', 'statusSlideUpdated: data.current is missing/null')
+				}
+				if (statusJSONObject.data.next == null) {
+					this.log('debug', 'statusSlideUpdated: data.next is missing/null')
+				}
+			}
+			
 			SetVariableValues(this, {
 				active_presentation_current_slide_text: statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
 				active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
@@ -797,68 +808,115 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	activePlaylistUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		// TODO: Consider adding logic to re-calculate totalslide count when user changes arrangement and re-triggers...
 		this.log('debug', 'activePlaylistUpdated: ' + JSON.stringify(statusJSONObject))
-		if (statusJSONObject.data.presentation.playlist) {
-			SetVariableValues(this, {
-				active_presentation_playlist_name: statusJSONObject.data.presentation.playlist.name,
-				active_presentation_playlist_index: statusJSONObject.data.presentation.playlist.index,
-				active_presentation_playlist_uuid: statusJSONObject.data.presentation.playlist.uuid,
-			})
 
-			const activePlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
-				statusJSONObject.data.presentation.playlist.uuid
-			)
-			if (activePlaylistItemsResponse.ok) {
-				SetVariableValues(this, {
-					active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items),
-					active_presentation_playlist_item_names: activePlaylistItemsResponse.data.items.map(
-						(a: { id: { name: string } }) => a.id.name
-					),
-				})
-			}
-		} else {
+		if (!statusJSONObject.data) {
+			// activePlaylistUpdated missing data object
+			this.log('debug', 'activePlaylistUpdated: missing data: ' + JSON.stringify(statusJSONObject))
 			SetVariableValues(this, {
 				active_presentation_playlist_name: '',
 				active_presentation_playlist_index: '',
 				active_presentation_playlist_uuid: '',
+				active_presentation_playlist_item_name: '',
+				active_presentation_playlist_item_index: '',
+				active_presentation_playlist_item_uuid: '',
+				active_announcement_playlist_name: '',
+				active_announcement_playlist_index: '',
+				active_announcement_playlist_uuid: '',
+				active_announcement_playlist_item_name: '',
+				active_announcement_playlist_item_index: '',
+				active_announcement_playlist_item_uuid: '',
 			})
+			return
 		}
 
-		if (statusJSONObject.data.presentation.item) {
-			SetVariableValues(this, {
-				active_presentation_playlist_item_name: statusJSONObject.data.presentation.item.name,
-				active_presentation_playlist_item_index: statusJSONObject.data.presentation.item.index,
-				active_presentation_playlist_item_uuid: statusJSONObject.data.presentation.item.uuid,
-			})
+		if (statusJSONObject.data.presentation) { // Some responses (eg some PCO playlist configurations) may not include a presentation object
+			if (statusJSONObject.data.presentation.playlist) {
+				SetVariableValues(this, {
+					active_presentation_playlist_name: statusJSONObject.data.presentation.playlist.name,
+					active_presentation_playlist_index: statusJSONObject.data.presentation.playlist.index,
+					active_presentation_playlist_uuid: statusJSONObject.data.presentation.playlist.uuid,
+				})
+
+				const activePlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
+					statusJSONObject.data.presentation.playlist.uuid
+				)
+				if (activePlaylistItemsResponse.ok) {
+					SetVariableValues(this, {
+						active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items),
+						active_presentation_playlist_item_names: activePlaylistItemsResponse.data.items.map(
+							(a: { id: { name: string } }) => a.id.name
+						),
+					})
+				}
+			} else {
+				SetVariableValues(this, {
+					active_presentation_playlist_name: '',
+					active_presentation_playlist_index: '',
+					active_presentation_playlist_uuid: '',
+				})
+			}
+
+			if (statusJSONObject.data.presentation.item) {
+				SetVariableValues(this, {
+					active_presentation_playlist_item_name: statusJSONObject.data.presentation.item.name,
+					active_presentation_playlist_item_index: statusJSONObject.data.presentation.item.index,
+					active_presentation_playlist_item_uuid: statusJSONObject.data.presentation.item.uuid,
+				})
+			} else {
+				SetVariableValues(this, {
+					active_presentation_playlist_item_name: '',
+					active_presentation_playlist_item_index: '',
+					active_presentation_playlist_item_uuid: '',
+				})
+			}
 		} else {
+			// activePlaylistUpdated missing data.presentation object
+			this.log('debug', 'activePlaylistUpdated: missing data.presentation: ' + JSON.stringify(statusJSONObject))
 			SetVariableValues(this, {
+				active_presentation_playlist_name: '',
+				active_presentation_playlist_index: '',
+				active_presentation_playlist_uuid: '',
 				active_presentation_playlist_item_name: '',
 				active_presentation_playlist_item_index: '',
 				active_presentation_playlist_item_uuid: '',
 			})
 		}
 
-		if (statusJSONObject.data.announcements.playlist) {
-			SetVariableValues(this, {
-				active_announcement_playlist_name: statusJSONObject.data.announcements.playlist.name,
-				active_announcement_playlist_index: statusJSONObject.data.announcements.playlist.index,
-				active_announcement_playlist_uuid: statusJSONObject.data.announcements.playlist.uuid,
-			})
+		if (statusJSONObject.data.announcements) { // Some responses (eg some PCO playlist configurations) may not include an announcements object
+			if (statusJSONObject.data.announcements.playlist) {
+				SetVariableValues(this, {
+					active_announcement_playlist_name: statusJSONObject.data.announcements.playlist.name,
+					active_announcement_playlist_index: statusJSONObject.data.announcements.playlist.index,
+					active_announcement_playlist_uuid: statusJSONObject.data.announcements.playlist.uuid,
+				})
+			} else {
+				SetVariableValues(this, {
+					active_announcement_playlist_name: '',
+					active_announcement_playlist_index: '',
+					active_announcement_playlist_uuid: '',
+				})
+			}
+
+			if (statusJSONObject.data.announcements.item) {
+				SetVariableValues(this, {
+					active_announcement_playlist_item_name: statusJSONObject.data.announcements.item.name,
+					active_announcement_playlist_item_index: statusJSONObject.data.announcements.item.index,
+					active_announcement_playlist_item_uuid: statusJSONObject.data.announcements.item.uuid,
+				})
+			} else {
+				SetVariableValues(this, {
+					active_announcement_playlist_item_name: '',
+					active_announcement_playlist_item_index: '',
+					active_announcement_playlist_item_uuid: '',
+				})
+			}
 		} else {
+			// activePlaylistUpdated missing data.announcements object
+			this.log('debug', 'activePlaylistUpdated: missing data.announcements: ' + JSON.stringify(statusJSONObject))
 			SetVariableValues(this, {
 				active_announcement_playlist_name: '',
 				active_announcement_playlist_index: '',
 				active_announcement_playlist_uuid: '',
-			})
-		}
-
-		if (statusJSONObject.data.announcements.item) {
-			SetVariableValues(this, {
-				active_announcement_playlist_item_name: statusJSONObject.data.announcements.item.name,
-				active_announcement_playlist_item_index: statusJSONObject.data.announcements.item.index,
-				active_announcement_playlist_item_uuid: statusJSONObject.data.announcements.item.uuid,
-			})
-		} else {
-			SetVariableValues(this, {
 				active_announcement_playlist_item_name: '',
 				active_announcement_playlist_item_index: '',
 				active_announcement_playlist_item_uuid: '',
