@@ -726,6 +726,20 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) =>  {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
+
+		if (!statusJSONObject.data) {
+			// activePresentationUpdated missing data object
+			this.log('debug', 'activePresentationUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			SetVariableValues(this, {
+				active_presentation_index: '',
+				active_presentation_slides_remaining: '',
+				active_presentation_slide_index: '',
+				active_presentation_name: '',
+				active_presentation_uuid: '',
+			})
+			return
+		}
+
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
 			SetVariableValues(this, {
@@ -760,33 +774,47 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.log('debug', 'playlist_item has no presentation_info. Using Master arrangement.')
 			} else if (!arrangementUuid) {
 				this.log('debug', 'No arrangement_uuid in presentation_info - Using Master arrangement.')
+			} else if (!presentation.arrangements) {
+				// Seen in some responses (eg some PCO playlist configurations) where presentation.arrangements is missing entirely
+				this.log('debug', 'presentation has no arrangements array. Using Master arrangement.')
 			} else {
 				currentArrangement = presentation.arrangements.find(
 					(arrangement: ProPresentationArrangement) => arrangement.id.uuid == arrangementUuid
 				)
 				if (!currentArrangement) {
 					this.log('debug', 'Arrangement ' + arrangementUuid + ' not found in presentation arrangements. Using Master arrangement')
-				} else if (currentArrangement.groups.length == 0) {
+				} else if ((currentArrangement.groups?.length ?? 0) == 0) {
 					// Workaround: Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
-					this.log('debug', 'Arrangement ' + arrangementUuid + ' has zero groups. Assuming Master arrangement')
+					this.log('debug', 'Arrangement ' + arrangementUuid + ' has zero (or missing) groups. Assuming Master arrangement')
 					currentArrangement = undefined
 				}
 			}
 
 			if (currentArrangement) {
 				for (const groupUuid of currentArrangement.groups) {
-					const group = presentation.groups.find((g: any) => g.uuid == groupUuid)
+					// presentation.groups is optionally-chained here (rather than guarded above) so a missing group is reported per-groupUuid, same as a group that's simply not found
+					const group = presentation.groups?.find((g: any) => g.uuid == groupUuid)
 					if (group) {
-						totalSlides += group.slides.length
+						if (group.slides) {
+							totalSlides += group.slides.length
+						} else {
+							this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
+						}
 					} else {
 						this.log('debug', 'Group ' + groupUuid + ' from arrangement not found in presentation groups')
 					}
 				}
-			} else {
+			} else if (presentation.groups) {
 				// Simply count all slides in all groups for slide count of master arrangement
 				for (const group of presentation.groups) {
-					totalSlides += group.slides.length
+					if (group.slides) {
+						totalSlides += group.slides.length
+					} else {
+						this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
+					}
 				}
+			} else {
+				this.log('debug', 'presentation has no groups array - cannot calculate total slides')
 			}
 
 				SetVariableValues(this, {
