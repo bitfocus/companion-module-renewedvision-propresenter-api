@@ -6,7 +6,13 @@ import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues } from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
-import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp, ProPresentationArrangement } from './utils'
+import {
+	ProPresenterStateStore,
+	ProMessage,
+	timestampToSeconds,
+	secondsToTimestamp,
+	ProPresentationArrangement,
+} from './utils'
 import { GetFeedbacks } from './feedbacks'
 import { Input } from '@julusian/midi/lazy'
 
@@ -117,11 +123,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// page = channel + config.midi_base_page
 		// row = note
 		// column = velocity
-		
-		// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).  
+
+		// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).
 		// Therefore, this module will use a workaround where any NoteOff message will set the midiMessageVelocity to 0 to allow ProPresenter users a simple way to press buttons in Column 0 - while channel and note are still mapped to page and row.
-		if (!midiMessageIsNoteon)
-			midiMessageVelocity = 0
+		if (!midiMessageIsNoteon) midiMessageVelocity = 0
 
 		const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
 			midiMessageChannel + this.config.midi_base_page
@@ -212,8 +217,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('info', 'Module Config: ' + JSON.stringify(config))
 
 		// Ensure midi_base_page is at least 1 - As older module versions without this config will default to 0.
-		if (!config.midi_base_page || config.midi_base_page <= 0)
-			config.midi_base_page = 1
+		if (!config.midi_base_page || config.midi_base_page <= 0) config.midi_base_page = 1
 
 		this.config = config
 
@@ -570,7 +574,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			this.log('debug', 'statusSlideUpdated: ' + JSON.stringify(statusJSONObject))
 		}
 
-		if (statusJSONObject.data) { // Make sure the response contains the expected data object
+		if (statusJSONObject.data) {
+			// Make sure the response contains the expected data object
 
 			// Optional extra logging that might be useful in future
 			if (this.config.exta_debug_logs) {
@@ -581,14 +586,19 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					this.log('debug', 'statusSlideUpdated: data.next is missing/null')
 				}
 			}
-			
+
 			SetVariableValues(this, {
-				active_presentation_current_slide_text: statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
+				active_presentation_current_slide_text:
+					statusJSONObject.data.current != null ? statusJSONObject.data.current.text : '',
 				active_presentation_next_slide_text: statusJSONObject.data.next != null ? statusJSONObject.data.next.text : '',
-				active_presentation_current_slide_notes: statusJSONObject.data.current != null ? statusJSONObject.data.current.notes : '',
-				active_presentation_next_slide_notes: statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
-				active_presentation_current_slide_imageuuid: statusJSONObject.data.current != null ? statusJSONObject.data.current.uuid : '',
-				active_presentation_next_slide_imageuuid: statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
+				active_presentation_current_slide_notes:
+					statusJSONObject.data.current != null ? statusJSONObject.data.current.notes : '',
+				active_presentation_next_slide_notes:
+					statusJSONObject.data.next != null ? statusJSONObject.data.next.notes : '',
+				active_presentation_current_slide_imageuuid:
+					statusJSONObject.data.current != null ? statusJSONObject.data.current.uuid : '',
+				active_presentation_next_slide_imageuuid:
+					statusJSONObject.data.next != null ? statusJSONObject.data.next.uuid : '',
 			})
 		} else {
 			// statusSlideUpdated missing data object
@@ -738,7 +748,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
 				active_presentation_slide_index: statusJSONObject.data.presentation_index?.index,
-				active_presentation_slides_remaining: Math.floor((this.getVariableValue('active_presentation_slides_count') as number) - statusJSONObject.data.presentation_index?.index - 1),
+				active_presentation_slides_remaining: Math.floor(
+					(this.getVariableValue('active_presentation_slides_count') as number) -
+						statusJSONObject.data.presentation_index?.index -
+						1
+				),
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
 				active_presentation_name: statusJSONObject.data.presentation_index?.presentation_id?.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index?.presentation_id?.uuid,
@@ -757,7 +771,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 	focusedPresentationUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'focusedPresentationUpdated: ' + JSON.stringify(statusJSONObject))
-		if (statusJSONObject.data) { // Make sure the response contains the expected data object
+		if (statusJSONObject.data) {
+			// Make sure the response contains the expected data object
 			// Note: index/name/uuid are intentionally left unguarded here (not defaulted to '') - if ProPresenter
 			// ever omits one of these fields, we want "undefined" to show up in the variable so it gets noticed,
 			// rather than silently hiding the undefined values behind a blank value.
@@ -777,7 +792,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 	}
 
-	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) =>  {
+	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 
 		if (!statusJSONObject.data) {
@@ -813,68 +828,73 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.log('debug', 'Polled activePlaylist: ' + JSON.stringify(activePlaylistResponse.data))
 				let totalSlides = 0
 
-			// Extract required info to determine any playlist arrangement that may be applied
-			const presentation = statusJSONObject.data.presentation
-			const playlistItem = activePlaylistResponse.data.presentation?.playlist_item // May or may not be present in response (for some versions of Pro - esp with PCO playlists)
-			const arrangementUuid = playlistItem?.presentation_info?.arrangement_uuid // May or may not be present in response (for some versions of Pro)
+				// Extract required info to determine any playlist arrangement that may be applied
+				const presentation = statusJSONObject.data.presentation
+				const playlistItem = activePlaylistResponse.data.presentation?.playlist_item // May or may not be present in response (for some versions of Pro - esp with PCO playlists)
+				const arrangementUuid = playlistItem?.presentation_info?.arrangement_uuid // May or may not be present in response (for some versions of Pro)
 
-			// Try to resolve a custom arrangement from the playlist item.
-			// Any missing link in the chain of required objects to determine a playlist arrangement will be logged and will leave currentArrangement undefined so that we default to Master arrangement.
-			let currentArrangement: ProPresentationArrangement | undefined
-			if (!playlistItem) {
-				this.log('debug', 'No playlist_item in active playlist response. Using Master arrangement.')
-			} else if (!playlistItem.presentation_info) {
-				this.log('debug', 'playlist_item has no presentation_info. Using Master arrangement.')
-			} else if (!arrangementUuid) {
-				this.log('debug', 'No arrangement_uuid in presentation_info - Using Master arrangement.')
-			} else if (!presentation.arrangements) {
-				// Seen in some responses (eg some PCO playlist configurations) where presentation.arrangements is missing entirely
-				this.log('debug', 'presentation has no arrangements array. Using Master arrangement.')
-			} else {
-				currentArrangement = presentation.arrangements.find(
-					(arrangement: ProPresentationArrangement) => arrangement.id.uuid == arrangementUuid
-				)
-				if (!currentArrangement) {
-					this.log('debug', 'Arrangement ' + arrangementUuid + ' not found in presentation arrangements. Using Master arrangement')
-				} else if ((currentArrangement.groups?.length ?? 0) == 0) {
-					// Workaround: Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
-					this.log('debug', 'Arrangement ' + arrangementUuid + ' has zero (or missing) groups. Assuming Master arrangement')
-					currentArrangement = undefined
+				// Try to resolve a custom arrangement from the playlist item.
+				// Any missing link in the chain of required objects to determine a playlist arrangement will be logged and will leave currentArrangement undefined so that we default to Master arrangement.
+				let currentArrangement: ProPresentationArrangement | undefined
+				if (!playlistItem) {
+					this.log('debug', 'No playlist_item in active playlist response. Using Master arrangement.')
+				} else if (!playlistItem.presentation_info) {
+					this.log('debug', 'playlist_item has no presentation_info. Using Master arrangement.')
+				} else if (!arrangementUuid) {
+					this.log('debug', 'No arrangement_uuid in presentation_info - Using Master arrangement.')
+				} else if (!presentation.arrangements) {
+					// Seen in some responses (eg some PCO playlist configurations) where presentation.arrangements is missing entirely
+					this.log('debug', 'presentation has no arrangements array. Using Master arrangement.')
+				} else {
+					currentArrangement = presentation.arrangements.find(
+						(arrangement: ProPresentationArrangement) => arrangement.id.uuid == arrangementUuid
+					)
+					if (!currentArrangement) {
+						this.log(
+							'debug',
+							'Arrangement ' + arrangementUuid + ' not found in presentation arrangements. Using Master arrangement'
+						)
+					} else if ((currentArrangement.groups?.length ?? 0) == 0) {
+						// Workaround: Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
+						this.log(
+							'debug',
+							'Arrangement ' + arrangementUuid + ' has zero (or missing) groups. Assuming Master arrangement'
+						)
+						currentArrangement = undefined
+					}
 				}
-			}
 
-			if (currentArrangement) {
-				for (const groupUuid of currentArrangement.groups) {
-					// presentation.groups is optionally-chained here (rather than guarded above) so a missing group is reported per-groupUuid, same as a group that's simply not found
-					const group = presentation.groups?.find((g: any) => g.uuid == groupUuid)
-					if (group) {
+				if (currentArrangement) {
+					for (const groupUuid of currentArrangement.groups) {
+						// presentation.groups is optionally-chained here (rather than guarded above) so a missing group is reported per-groupUuid, same as a group that's simply not found
+						const group = presentation.groups?.find((g: any) => g.uuid == groupUuid)
+						if (group) {
+							if (group.slides) {
+								totalSlides += group.slides.length
+							} else {
+								this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
+							}
+						} else {
+							this.log('debug', 'Group ' + groupUuid + ' from arrangement not found in presentation groups')
+						}
+					}
+				} else if (presentation.groups) {
+					// Simply count all slides in all groups for slide count of master arrangement
+					for (const group of presentation.groups) {
 						if (group.slides) {
 							totalSlides += group.slides.length
 						} else {
 							this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
 						}
-					} else {
-						this.log('debug', 'Group ' + groupUuid + ' from arrangement not found in presentation groups')
 					}
+				} else {
+					this.log('debug', 'presentation has no groups array - cannot calculate total slides')
 				}
-			} else if (presentation.groups) {
-				// Simply count all slides in all groups for slide count of master arrangement
-				for (const group of presentation.groups) {
-					if (group.slides) {
-						totalSlides += group.slides.length
-					} else {
-						this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
-					}
-				}
-			} else {
-				this.log('debug', 'presentation has no groups array - cannot calculate total slides')
-			}
 
 				SetVariableValues(this, {
 					active_presentation_slides_count: totalSlides,
 				})
 			}
-			
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
@@ -910,7 +930,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			return
 		}
 
-		if (statusJSONObject.data.presentation) { // Some responses (eg some PCO playlist configurations) may not include a presentation object
+		if (statusJSONObject.data.presentation) {
+			// Some responses (eg some PCO playlist configurations) may not include a presentation object
 			if (statusJSONObject.data.presentation.playlist) {
 				SetVariableValues(this, {
 					active_presentation_playlist_name: statusJSONObject.data.presentation.playlist.name,
@@ -963,7 +984,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			})
 		}
 
-		if (statusJSONObject.data.announcements) { // Some responses (eg some PCO playlist configurations) may not include an announcements object
+		if (statusJSONObject.data.announcements) {
+			// Some responses (eg some PCO playlist configurations) may not include an announcements object
 			if (statusJSONObject.data.announcements.playlist) {
 				SetVariableValues(this, {
 					active_announcement_playlist_name: statusJSONObject.data.announcements.playlist.name,
