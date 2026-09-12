@@ -1048,6 +1048,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	activeLookUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (!statusJSONObject.data || !statusJSONObject.data.id) {
+			// activeLookUpdated missing data/data.id object
+			this.log('debug', 'activeLookUpdated: missing data.id: ' + JSON.stringify(statusJSONObject))
+			return
+		}
+
 		this.log(
 			'debug',
 			'activeLookUpdated: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name
@@ -1285,6 +1291,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	}
 
 	transportLayerUpdated = (statusJSONObject: StatusUpdateJSON) => {
+		if (!statusJSONObject.data) {
+			// transportLayerUpdated missing data object
+			this.log('debug', 'transportLayerUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			return
+		}
+
 		const url = statusJSONObject.url
 		switch (url) {
 			case 'transport/presentation/current':
@@ -1329,6 +1341,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (this.config.exta_debug_logs) {
 			this.log('debug', 'captureStatusUpdated: ' + JSON.stringify(statusJSONObject))
 		}
+
+		if (!statusJSONObject.data) {
+			// captureStatusUpdated missing data object
+			this.log('debug', 'captureStatusUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			return
+		}
+
 		SetVariableValues(this, {
 			capture_status: statusJSONObject.data.status,
 			capture_time: statusJSONObject.data.capture_time,
