@@ -265,292 +265,324 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		if (this.config.host === '' || this.config.host === undefined) {
 			this.log('info', 'Please fill in IP address and hit save')
 		} else {
-			this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout) // This object is our "API manager" that handles all the network calls for us
+			// Only (re)create the connection when the actual connection target changed (or this is the first time) -
+			// NOT on every config save (eg toggling MIDI or debug-log settings, which have nothing to do with the
+			// connection). This matters because calling registerCallbacksForStatusUpdates() more than once on the
+			// SAME ProPresenter instance is NOT safe with the current library implementation: each call spins up its
+			// own independent, self-perpetuating retry loop (a local setTimeout(connectAndStartProcessing, 2000) chain)
+			// that is never torn down - even after that call's own connection gets aborted by a later call, the
+			// orphaned retry loop wakes up ~2s later, aborts whatever connection is *currently* active (via the shared,
+			// instance-level AbortController), and starts another one of its own. Repeated calls pile these loops up,
+			// and they fight each other for the connection indefinitely - observed directly as a rapid connect/error/
+			// retry flood after toggling unrelated config a few times in a row, not just duplicate logging.
+			// So: always construct a genuinely new instance (its retry-loop lineage started exactly once) whenever the
+			// connection target actually changes, and skip this block entirely otherwise. This still leaves an old
+			// instance's connection running harmlessly in the (now rare) case host/port/timeout really do change
+			// mid-session - a real fix for that needs a public stop()/destroy() on the library itself.
+			const connectionSettingsChanged =
+				!this.ProPresenter ||
+				this.ProPresenter.hostOrIp !== this.config.host ||
+				this.ProPresenter.port !== this.config.port ||
+				this.ProPresenter.timeout !== this.config.timeout
 
-			// Register callbacks for live updates to various status'
-			this.ProPresenter.registerCallbacksForStatusUpdates(
-				{
-					'status/slide': this.statusSlideUpdated,
-					timers: this.timersUpdate,
-					'timers/current': this.timersCurrentUpdated,
-					'presentation/slide_index': this.presentationSlideIndexUpdate,
-					'announcement/slide_index': this.announcementSlideIndexUpdated,
-					'playlist/active': this.activePlaylistUpdated,
-					'playlist/focused': this.focusedPlaylistUpdated,
-					'presentation/focused': this.focusedPresentationUpdated,
-					'presentation/active': this.activePresentationUpdated, // The doco for /v1/status/updates mentions presentation/current as a permitted streaming endpoint - but it's a hyperlink that actually links to presentation/active (I tested and either works - but I'm using the one that is linked to).
-					'look/current': this.activeLookUpdated,
-					looks: this.looksUpdated,
-					macros: this.macrosUpdated,
-					props: this.propsUpdated,
-					'stage/layout_map': this.stageScreensUpdated,
-					'stage/layouts': this.stageScreenLayoutsUpdated,
-					'stage/message': this.stageMessageUpdated,
-					messages: this.messagesUpdated,
-					'status/audience_screens': this.screenStatusUpdated,
-					'status/stage_screens': this.screenStatusUpdated,
-					'status/layers': this.layersStatusUpdated,
-					'timer/video_countdown': this.videoCountdownTimerUpdated,
-					'transport/presentation/current': this.transportLayerUpdated,
-					'transport/announcement/current': this.transportLayerUpdated,
-					'transport/audio/current': this.transportLayerUpdated,
-					'transport/audio/time': this.transportAudioTime,
-					'timer/system_time': this.systemTimeUpdated,
-					'capture/status': this.captureStatusUpdated,
-				},
-				2000
-			)
+			if (connectionSettingsChanged) {
+				this.ProPresenter = new ProPresenter(this.config.host, this.config.port, this.config.timeout) // This object is our "API manager" that handles all the network calls for us
 
-			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
-
-			this.ProPresenter.on('requestNotOK', (requestAndResponseJSON: RequestAndResponseJSONValue, options: any) => {
-				this.log(
-					'error',
-					'Request Error: ' +
-						requestAndResponseJSON.status +
-						'. ' +
-						requestAndResponseJSON.data +
-						'. Called: ' +
-						requestAndResponseJSON.path +
-						' with options: ' +
-						JSON.stringify(options)
+				// Register callbacks for live updates to various status'
+				this.ProPresenter.registerCallbacksForStatusUpdates(
+					{
+						'status/slide': this.statusSlideUpdated,
+						timers: this.timersUpdate,
+						'timers/current': this.timersCurrentUpdated,
+						'presentation/slide_index': this.presentationSlideIndexUpdate,
+						'announcement/slide_index': this.announcementSlideIndexUpdated,
+						'playlist/active': this.activePlaylistUpdated,
+						'playlist/focused': this.focusedPlaylistUpdated,
+						'presentation/focused': this.focusedPresentationUpdated,
+						'presentation/active': this.activePresentationUpdated, // The doco for /v1/status/updates mentions presentation/current as a permitted streaming endpoint - but it's a hyperlink that actually links to presentation/active (I tested and either works - but I'm using the one that is linked to).
+						'look/current': this.activeLookUpdated,
+						looks: this.looksUpdated,
+						macros: this.macrosUpdated,
+						props: this.propsUpdated,
+						'stage/layout_map': this.stageScreensUpdated,
+						'stage/layouts': this.stageScreenLayoutsUpdated,
+						'stage/message': this.stageMessageUpdated,
+						messages: this.messagesUpdated,
+						'status/audience_screens': this.screenStatusUpdated,
+						'status/stage_screens': this.screenStatusUpdated,
+						'status/layers': this.layersStatusUpdated,
+						'timer/video_countdown': this.videoCountdownTimerUpdated,
+						'transport/presentation/current': this.transportLayerUpdated,
+						'transport/announcement/current': this.transportLayerUpdated,
+						'transport/audio/current': this.transportLayerUpdated,
+						'transport/audio/time': this.transportAudioTime,
+						'timer/system_time': this.systemTimeUpdated,
+						'capture/status': this.captureStatusUpdated,
+					},
+					2000
 				)
 
-				if (this.config.suppress_active_presentation_change_warning) {
-					//Don't show a warning when next/previous slide in a presentation is triggered but there is none
-					if (requestAndResponseJSON.path == '/v1/presentation/active/next/trigger') return
-					if (requestAndResponseJSON.path == '/v1/presentation/active/previous/trigger') return
-				}
-				this.updateStatus(InstanceStatus.UnknownWarning)
-			})
+				// This is a freshly constructed instance, so it's guaranteed to have no listeners yet - no need to
+				// removeListener() first (unlike the MIDI input listener above, this object is never reused).
+				this.ProPresenter.on('requestNotOK', this.handleProPresenterRequestNotOK)
+				this.ProPresenter.on('statusConnectionDisconnected', this.handleProPresenterStatusConnectionDisconnected)
+				this.ProPresenter.on('statusConnectionError', this.handleProPresenterStatusConnectionError)
+				this.ProPresenter.on('statusConnectionConnected', this.handleProPresenterStatusConnectionConnected)
+			}
 
-			this.ProPresenter.on('statusConnectionDisconnected', () => {
-				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
-				this.updateStatus(InstanceStatus.Disconnected)
-			})
-			this.ProPresenter.on('statusConnectionError', () => {
-				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
-				this.updateStatus(InstanceStatus.UnknownError)
-			})
-
-			this.ProPresenter.on('statusConnectionConnected', async () => {
-				// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
-				this.updateStatus(InstanceStatus.Ok)
-
-				// Before calling initVariables(), calls setVariableDefinitions(), first make some requests to ProPresenter to get initial state that will be used for dynamic actions and variables
-				this.log('debug', 'Query ProPresenter Initial State')
-
-				// Get the timer definitions
-				const timersResult: RequestAndResponseJSONValue = await this.ProPresenter.timersGet()
-				// If we got an ok response, construct a statusJSONObject and call the callback for timersUpdate()
-				if (timersResult.ok) {
-					const timersJSONObject: StatusUpdateJSON = {
-						url: 'looks',
-						data: timersResult.data,
-					}
-					this.timersUpdate(timersJSONObject) // This will update the local cache state for the timer definitions & call initVariables() and initActions() - which are both rate limited and coalesced.
-				}
-
-				// Get version info (and update version based variables)
-				const versionResult: RequestAndResponseJSONValue = await this.ProPresenter.version()
-				if (versionResult.ok) {
-					this.processIncommingData(versionResult) // This will update version based variables
-				}
-
-				// Get Clear Groups info
-				const clearGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.clearGroupsGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for clearGroupsUpdated()
-				if (clearGroupsResult.ok) {
-					const clearGroupsJSONObject: StatusUpdateJSON = {
-						url: 'clear/groups',
-						data: clearGroupsResult.data,
-					}
-					this.clearGroupsUpdated(clearGroupsJSONObject) // This will update the local cache of available ClearGroups choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Looks info
-				const looksResult: RequestAndResponseJSONValue = await this.ProPresenter.looksGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for looksUpdated()
-				if (looksResult.ok) {
-					const looksStatusJSONObject: StatusUpdateJSON = {
-						url: 'looks',
-						data: looksResult.data,
-					}
-					this.looksUpdated(looksStatusJSONObject) // This will update the local cache of available Look choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Macros info
-				const macrosResult: RequestAndResponseJSONValue = await this.ProPresenter.marcosGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for macrosUpdated()
-				if (macrosResult.ok) {
-					const macrosStatusJSONObject: StatusUpdateJSON = {
-						url: 'macros',
-						data: macrosResult.data,
-					}
-					this.macrosUpdated(macrosStatusJSONObject) // This will update the local cache of available Macro choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Props info
-				const propsResult: RequestAndResponseJSONValue = await this.ProPresenter.propsGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for propsUpdated()
-				if (propsResult.ok) {
-					const propsStatusJSONObject: StatusUpdateJSON = {
-						url: 'props',
-						data: propsResult.data,
-					}
-					this.propsUpdated(propsStatusJSONObject) // This will update the local cache of available Prop choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Global Groups
-				const globalGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.groupsGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for globalGroupsUpdated()
-				if (globalGroupsResult.ok) {
-					const globalGroupsStatusJSONObject: StatusUpdateJSON = {
-						url: 'groups',
-						data: globalGroupsResult.data,
-					}
-					this.globalGroupsUpdated(globalGroupsStatusJSONObject) // This will update the local cache of available Group choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Video Inputs info
-				const videoInputsResult: RequestAndResponseJSONValue = await this.ProPresenter.videoInputsGet()
-				/// If we got an ok response, Construct a statusJSONObject and call the callback for videoInputsUpdated()
-				if (videoInputsResult.ok) {
-					const videoInputsStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/video_inputs',
-						data: videoInputsResult.data,
-					}
-					this.videoInputsUpdated(videoInputsStatusJSONObject) // This will update the local cache of available Video Input choices and then call initActions() - which is rate limited and coalesced.
-				}
-
-				// Get Messages info
-				const messagesResult: RequestAndResponseJSONValue = await this.ProPresenter.messagesGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for messagesUpdated()
-				if (messagesResult.ok) {
-					const messagesStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/messages',
-						data: messagesResult.data,
-					}
-					this.messagesUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
-				}
-
-				// Get audience screens status
-				const audienceScreensStatusResult: RequestAndResponseJSONValue =
-					await this.ProPresenter.statusAudienceScreensGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
-				if (audienceScreensStatusResult.ok) {
-					const audienceScreensStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/status/audience_screens',
-						data: audienceScreensStatusResult.data,
-					}
-					this.screenStatusUpdated(audienceScreensStatusJSONObject)
-				}
-
-				// Get stage screens status
-				const stageScreensResult: RequestAndResponseJSONValue = await this.ProPresenter.statusStageScreensGet()
-				// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
-				if (stageScreensResult.ok) {
-					const stageScreensJSONObject: StatusUpdateJSON = {
-						url: '/v1/status/stage_screens',
-						data: stageScreensResult.data,
-					}
-					this.screenStatusUpdated(stageScreensJSONObject)
-				}
-
-				// Get Presentation layer transport status
-				const transportPresentationLayerStatus: RequestAndResponseJSONValue =
-					await this.ProPresenter.transportLayerCurrent('presentation')
-				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
-				if (transportPresentationLayerStatus.ok) {
-					const transportPresentationLayerStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/transport/presentation/current',
-						data: transportPresentationLayerStatus.data,
-					}
-					this.transportLayerUpdated(transportPresentationLayerStatusJSONObject)
-				}
-
-				// Get Announcement layer transport status
-				const transportAnnouncementLayerStatus: RequestAndResponseJSONValue =
-					await this.ProPresenter.transportLayerCurrent('announcement')
-				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
-				if (transportAnnouncementLayerStatus.ok) {
-					const transportAnnouncementLayerStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/transport/announcement/current',
-						data: transportPresentationLayerStatus.data,
-					}
-					this.transportLayerUpdated(transportAnnouncementLayerStatusJSONObject)
-				}
-
-				// Get Audio layer transport status
-				const transportAudioLayerStatus: RequestAndResponseJSONValue =
-					await this.ProPresenter.transportLayerCurrent('audio')
-				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
-				if (transportAudioLayerStatus.ok) {
-					const transportAudioLayerStatusJSONObject: StatusUpdateJSON = {
-						url: '/v1/transport/audio/current',
-						data: transportPresentationLayerStatus.data,
-					}
-					this.transportLayerUpdated(transportAudioLayerStatusJSONObject)
-				}
-
-				// We have gathered initial state required to set these up:
-				this.initPresets()
-				this.initFeedbacks()
-				this.checkFeedbacks()
-
-				// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter - it should be updated every second)
-				if (this.timeSinceLastStatusUpdateIntervalId) {
-					clearInterval(this.timeSinceLastStatusUpdateIntervalId)
-				}
-				this.timeSinceLastStatusUpdateIntervalId = setInterval(() => {
-					SetVariableValues(this, { time_since_last_status_update: (Date.now() - this.timeOfLastStatusUpdate) / 1000 })
-				}, 1000)
-
-				// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
-				// Until then, poll video inputs and groups every 3 seconds and check if changed.  Only when they have changed, call the callback for videoInputsUpdated()
-				if (this.videoInputsAndGroupsPollIntervalId) {
-					clearInterval(this.videoInputsAndGroupsPollIntervalId)
-				}
-				this.videoInputsAndGroupsPollIntervalId = setInterval(() => {
-					this.ProPresenter.videoInputsGet().then((videoInputsResult: RequestAndResponseJSONValue) => {
-						if (videoInputsResult.ok) {
-							const currentVideoInputJSON: string = JSON.stringify(videoInputsResult.data)
-							if (currentVideoInputJSON != this.lastVideoInputJSON) {
-								// If the video_inputs have changed
-								if (this.config.exta_debug_logs) {
-									this.log('debug', 'Video Inputs Changed: ' + currentVideoInputJSON)
-								}
-								this.lastVideoInputJSON = currentVideoInputJSON // Update for comparing next time
-								// Construct a statusJSONObject and call the callback for videoInputsUpdated()
-								const videoInputsStatusJSONObject: StatusUpdateJSON = {
-									url: '/v1/video_inputs',
-									data: videoInputsResult.data,
-								}
-								this.videoInputsUpdated(videoInputsStatusJSONObject)
-							}
-						}
-					})
-					this.ProPresenter.groupsGet().then((globalGroupsResult: RequestAndResponseJSONValue) => {
-						if (globalGroupsResult.ok) {
-							const currentGlobalGroupsJSON: string = JSON.stringify(globalGroupsResult.data)
-							if (currentGlobalGroupsJSON != this.lastGlobalGroupsJSON) {
-								// If the Global Groups have changed
-								if (this.config.exta_debug_logs) {
-									this.log('debug', 'Global Groups Changed: ' + currentGlobalGroupsJSON)
-								}
-								this.lastGlobalGroupsJSON = currentGlobalGroupsJSON // Update for comparing next time
-								// Construct a statusJSONObject and call the callback for globalGroupsUpdated()
-								const globaGroupsStatusJSONObject: StatusUpdateJSON = {
-									url: '/v1/groups',
-									data: globalGroupsResult.data,
-								}
-								this.globalGroupsUpdated(globaGroupsStatusJSONObject)
-							}
-						}
-					})
-				}, 3000)
-			})
+			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
 		}
+	}
+
+	private readonly handleProPresenterRequestNotOK = (
+		requestAndResponseJSON: RequestAndResponseJSONValue,
+		options: any
+	) => {
+		this.log(
+			'error',
+			'Request Error: ' +
+				requestAndResponseJSON.status +
+				'. ' +
+				requestAndResponseJSON.data +
+				'. Called: ' +
+				requestAndResponseJSON.path +
+				' with options: ' +
+				JSON.stringify(options)
+		)
+
+		if (this.config.suppress_active_presentation_change_warning) {
+			//Don't show a warning when next/previous slide in a presentation is triggered but there is none
+			if (requestAndResponseJSON.path == '/v1/presentation/active/next/trigger') return
+			if (requestAndResponseJSON.path == '/v1/presentation/active/previous/trigger') return
+		}
+		this.updateStatus(InstanceStatus.UnknownWarning)
+	}
+
+	// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
+	private readonly handleProPresenterStatusConnectionDisconnected = () => {
+		this.updateStatus(InstanceStatus.Disconnected)
+	}
+
+	// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
+	private readonly handleProPresenterStatusConnectionError = () => {
+		this.updateStatus(InstanceStatus.UnknownError)
+	}
+
+	private readonly handleProPresenterStatusConnectionConnected = async () => {
+		// Update status of module, based on the ProPresenter object's persistent status connection (The ProPresenter object will emit Connected/Disconnected/Error messages about the status connection)
+		this.updateStatus(InstanceStatus.Ok)
+
+		// Before calling initVariables(), calls setVariableDefinitions(), first make some requests to ProPresenter to get initial state that will be used for dynamic actions and variables
+		this.log('debug', 'Query ProPresenter Initial State')
+
+		// Get the timer definitions
+		const timersResult: RequestAndResponseJSONValue = await this.ProPresenter.timersGet()
+		// If we got an ok response, construct a statusJSONObject and call the callback for timersUpdate()
+		if (timersResult.ok) {
+			const timersJSONObject: StatusUpdateJSON = {
+				url: 'looks',
+				data: timersResult.data,
+			}
+			this.timersUpdate(timersJSONObject) // This will update the local cache state for the timer definitions & call initVariables() and initActions() - which are both rate limited and coalesced.
+		}
+
+		// Get version info (and update version based variables)
+		const versionResult: RequestAndResponseJSONValue = await this.ProPresenter.version()
+		if (versionResult.ok) {
+			this.processIncommingData(versionResult) // This will update version based variables
+		}
+
+		// Get Clear Groups info
+		const clearGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.clearGroupsGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for clearGroupsUpdated()
+		if (clearGroupsResult.ok) {
+			const clearGroupsJSONObject: StatusUpdateJSON = {
+				url: 'clear/groups',
+				data: clearGroupsResult.data,
+			}
+			this.clearGroupsUpdated(clearGroupsJSONObject) // This will update the local cache of available ClearGroups choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Looks info
+		const looksResult: RequestAndResponseJSONValue = await this.ProPresenter.looksGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for looksUpdated()
+		if (looksResult.ok) {
+			const looksStatusJSONObject: StatusUpdateJSON = {
+				url: 'looks',
+				data: looksResult.data,
+			}
+			this.looksUpdated(looksStatusJSONObject) // This will update the local cache of available Look choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Macros info
+		const macrosResult: RequestAndResponseJSONValue = await this.ProPresenter.marcosGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for macrosUpdated()
+		if (macrosResult.ok) {
+			const macrosStatusJSONObject: StatusUpdateJSON = {
+				url: 'macros',
+				data: macrosResult.data,
+			}
+			this.macrosUpdated(macrosStatusJSONObject) // This will update the local cache of available Macro choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Props info
+		const propsResult: RequestAndResponseJSONValue = await this.ProPresenter.propsGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for propsUpdated()
+		if (propsResult.ok) {
+			const propsStatusJSONObject: StatusUpdateJSON = {
+				url: 'props',
+				data: propsResult.data,
+			}
+			this.propsUpdated(propsStatusJSONObject) // This will update the local cache of available Prop choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Global Groups
+		const globalGroupsResult: RequestAndResponseJSONValue = await this.ProPresenter.groupsGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for globalGroupsUpdated()
+		if (globalGroupsResult.ok) {
+			const globalGroupsStatusJSONObject: StatusUpdateJSON = {
+				url: 'groups',
+				data: globalGroupsResult.data,
+			}
+			this.globalGroupsUpdated(globalGroupsStatusJSONObject) // This will update the local cache of available Group choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Video Inputs info
+		const videoInputsResult: RequestAndResponseJSONValue = await this.ProPresenter.videoInputsGet()
+		/// If we got an ok response, Construct a statusJSONObject and call the callback for videoInputsUpdated()
+		if (videoInputsResult.ok) {
+			const videoInputsStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/video_inputs',
+				data: videoInputsResult.data,
+			}
+			this.videoInputsUpdated(videoInputsStatusJSONObject) // This will update the local cache of available Video Input choices and then call initActions() - which is rate limited and coalesced.
+		}
+
+		// Get Messages info
+		const messagesResult: RequestAndResponseJSONValue = await this.ProPresenter.messagesGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for messagesUpdated()
+		if (messagesResult.ok) {
+			const messagesStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/messages',
+				data: messagesResult.data,
+			}
+			this.messagesUpdated(messagesStatusJSONObject) // This will update the local cache of available Messages Tokens for messages
+		}
+
+		// Get audience screens status
+		const audienceScreensStatusResult: RequestAndResponseJSONValue = await this.ProPresenter.statusAudienceScreensGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
+		if (audienceScreensStatusResult.ok) {
+			const audienceScreensStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/status/audience_screens',
+				data: audienceScreensStatusResult.data,
+			}
+			this.screenStatusUpdated(audienceScreensStatusJSONObject)
+		}
+
+		// Get stage screens status
+		const stageScreensResult: RequestAndResponseJSONValue = await this.ProPresenter.statusStageScreensGet()
+		// If we got an ok response, Construct a statusJSONObject and call the callback for screenStatusUpdated()
+		if (stageScreensResult.ok) {
+			const stageScreensJSONObject: StatusUpdateJSON = {
+				url: '/v1/status/stage_screens',
+				data: stageScreensResult.data,
+			}
+			this.screenStatusUpdated(stageScreensJSONObject)
+		}
+
+		// Get Presentation layer transport status
+		const transportPresentationLayerStatus: RequestAndResponseJSONValue =
+			await this.ProPresenter.transportLayerCurrent('presentation')
+		// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+		if (transportPresentationLayerStatus.ok) {
+			const transportPresentationLayerStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/transport/presentation/current',
+				data: transportPresentationLayerStatus.data,
+			}
+			this.transportLayerUpdated(transportPresentationLayerStatusJSONObject)
+		}
+
+		// Get Announcement layer transport status
+		const transportAnnouncementLayerStatus: RequestAndResponseJSONValue =
+			await this.ProPresenter.transportLayerCurrent('announcement')
+		// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+		if (transportAnnouncementLayerStatus.ok) {
+			const transportAnnouncementLayerStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/transport/announcement/current',
+				data: transportPresentationLayerStatus.data,
+			}
+			this.transportLayerUpdated(transportAnnouncementLayerStatusJSONObject)
+		}
+
+		// Get Audio layer transport status
+		const transportAudioLayerStatus: RequestAndResponseJSONValue =
+			await this.ProPresenter.transportLayerCurrent('audio')
+		// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
+		if (transportAudioLayerStatus.ok) {
+			const transportAudioLayerStatusJSONObject: StatusUpdateJSON = {
+				url: '/v1/transport/audio/current',
+				data: transportPresentationLayerStatus.data,
+			}
+			this.transportLayerUpdated(transportAudioLayerStatusJSONObject)
+		}
+
+		// We have gathered initial state required to set these up:
+		this.initPresets()
+		this.initFeedbacks()
+		this.checkFeedbacks()
+
+		// Watchdog function - checks each second to record total time since last status update in a variable. (Users can monitor this variable to know if the module is still connected to ProPresenter - it should be updated every second)
+		if (this.timeSinceLastStatusUpdateIntervalId) {
+			clearInterval(this.timeSinceLastStatusUpdateIntervalId)
+		}
+		this.timeSinceLastStatusUpdateIntervalId = setInterval(() => {
+			SetVariableValues(this, { time_since_last_status_update: (Date.now() - this.timeOfLastStatusUpdate) / 1000 })
+		}, 1000)
+
+		// TODO: consider removing one day when api supports chunked video_inputs and groups requests, and "everyone" is running versions that support it
+		// Until then, poll video inputs and groups every 3 seconds and check if changed.  Only when they have changed, call the callback for videoInputsUpdated()
+		if (this.videoInputsAndGroupsPollIntervalId) {
+			clearInterval(this.videoInputsAndGroupsPollIntervalId)
+		}
+		this.videoInputsAndGroupsPollIntervalId = setInterval(() => {
+			this.ProPresenter.videoInputsGet().then((videoInputsResult: RequestAndResponseJSONValue) => {
+				if (videoInputsResult.ok) {
+					const currentVideoInputJSON: string = JSON.stringify(videoInputsResult.data)
+					if (currentVideoInputJSON != this.lastVideoInputJSON) {
+						// If the video_inputs have changed
+						if (this.config.exta_debug_logs) {
+							this.log('debug', 'Video Inputs Changed: ' + currentVideoInputJSON)
+						}
+						this.lastVideoInputJSON = currentVideoInputJSON // Update for comparing next time
+						// Construct a statusJSONObject and call the callback for videoInputsUpdated()
+						const videoInputsStatusJSONObject: StatusUpdateJSON = {
+							url: '/v1/video_inputs',
+							data: videoInputsResult.data,
+						}
+						this.videoInputsUpdated(videoInputsStatusJSONObject)
+					}
+				}
+			})
+			this.ProPresenter.groupsGet().then((globalGroupsResult: RequestAndResponseJSONValue) => {
+				if (globalGroupsResult.ok) {
+					const currentGlobalGroupsJSON: string = JSON.stringify(globalGroupsResult.data)
+					if (currentGlobalGroupsJSON != this.lastGlobalGroupsJSON) {
+						// If the Global Groups have changed
+						if (this.config.exta_debug_logs) {
+							this.log('debug', 'Global Groups Changed: ' + currentGlobalGroupsJSON)
+						}
+						this.lastGlobalGroupsJSON = currentGlobalGroupsJSON // Update for comparing next time
+						// Construct a statusJSONObject and call the callback for globalGroupsUpdated()
+						const globaGroupsStatusJSONObject: StatusUpdateJSON = {
+							url: '/v1/groups',
+							data: globalGroupsResult.data,
+						}
+						this.globalGroupsUpdated(globaGroupsStatusJSONObject)
+					}
+				}
+			})
+		}, 3000)
 	}
 
 	// ******************************************************************************************************************************
@@ -746,17 +778,31 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 		if (statusJSONObject.data.presentation_index) {
 			// ProPresenter can return a null presentation_index when no presentation is active
+			const presentationIndex = statusJSONObject.data.presentation_index
+
+			// Pro 21.4+ includes total_cues/remaining_cues directly on this status update, already respecting whichever
+			// arrangement is in effect - trust these when present (also self-corrects active_presentation_slides_count
+			// if the arrangement changes mid-presentation, without needing a fresh presentation/active push).
+			// Older Pro versions/platforms don't send these - fall back to the count resolved by activePresentationUpdated
+			// (via its playlistActiveGet() poll + arrangement resolution) and the existing derived math.
+			const hasCueCounts =
+				typeof presentationIndex.total_cues === 'number' && typeof presentationIndex.remaining_cues === 'number'
+
+			const slidesCount = hasCueCounts
+				? presentationIndex.total_cues
+				: (this.getVariableValue('active_presentation_slides_count') as number)
+			const slidesRemaining = hasCueCounts
+				? presentationIndex.remaining_cues
+				: Math.floor(slidesCount - presentationIndex.index - 1)
+
 			SetVariableValues(this, {
-				active_presentation_slide_index: statusJSONObject.data.presentation_index?.index,
-				active_presentation_slides_remaining: Math.floor(
-					(this.getVariableValue('active_presentation_slides_count') as number) -
-						statusJSONObject.data.presentation_index?.index -
-						1
-				),
+				active_presentation_slide_index: presentationIndex.index,
+				active_presentation_slides_count: slidesCount,
+				active_presentation_slides_remaining: slidesRemaining,
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
-				active_presentation_name: statusJSONObject.data.presentation_index?.presentation_id?.name,
-				active_presentation_uuid: statusJSONObject.data.presentation_index?.presentation_id?.uuid,
-				active_presentation_index: statusJSONObject.data.presentation_index?.presentation_id?.index, // Note that this requires later versions of ProPresenter
+				active_presentation_name: presentationIndex.presentation_id?.name,
+				active_presentation_uuid: presentationIndex.presentation_id?.uuid,
+				active_presentation_index: presentationIndex.presentation_id?.index, // Note that this requires later versions of ProPresenter
 			})
 		} else {
 			SetVariableValues(this, {
@@ -792,6 +838,97 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		}
 	}
 
+	// Determines which arrangement UUID should apply to a given (currently active) presentation, based on how it was
+	// triggered. Works for either the presentation destination or the announcements destination - /v1/playlist/active
+	// reports both independently (a presentation and an announcement loop can run simultaneously, each governed by
+	// their own, possibly-null, playlist item) - so the caller says which one it's resolving via `destination`.
+	// Priority:
+	//  1. Playlist-selected arrangement - when the presentation is governed by a playlist item (for that destination),
+	//     that item's own arrangement selection wins - INCLUDING when it explicitly selects Master (arrangement_uuid
+	//     absent). We must NOT fall back to the library default in that case: the playlist's choice of Master is
+	//     deliberate, not unknown.
+	//  2. Library-default arrangement (presentation.current_arrangement) - used ONLY when there is no governing
+	//     playlist item at all for that destination, ie. the presentation was triggered directly from the library.
+	//     This is the case the previous version of this code missed (it fell back to Master here instead).
+	// Returns undefined when no usable UUID was found - callers should treat that as "use Master arrangement".
+	private getArrangementUuidCandidate(
+		presentation: any,
+		activePlaylistResponse: RequestAndResponseJSONValue,
+		destination: 'presentation' | 'announcements'
+	): string | undefined {
+		const playlistItem = activePlaylistResponse.data[destination]?.playlist_item // May or may not be present in response (for some versions of Pro - esp with PCO playlists)
+
+		if (!playlistItem) {
+			// No playlist item governs this destination - it was (most likely) triggered directly from the library.
+			// Fall back to the presentation's own library-default arrangement instead of assuming Master.
+			// presentation.current_arrangement is a bare arrangement UUID string; resolveArrangement() falls back to
+			// Master if it doesn't resolve to a real arrangement.
+			const libraryDefaultUuid: string | undefined = presentation.current_arrangement
+			if (libraryDefaultUuid) {
+				this.log(
+					'debug',
+					'No playlist_item for ' +
+						destination +
+						' in active playlist response. Using library-default arrangement: ' +
+						libraryDefaultUuid
+				)
+			} else {
+				this.log(
+					'debug',
+					'No playlist_item for ' +
+						destination +
+						' in active playlist response, and no library-default arrangement either. Using Master arrangement.'
+				)
+			}
+			return libraryDefaultUuid
+		}
+
+		if (!playlistItem.presentation_info) {
+			this.log('debug', destination + ' playlist_item has no presentation_info. Using Master arrangement.')
+			return undefined
+		}
+
+		const arrangementUuid = playlistItem.presentation_info.arrangement_uuid // May or may not be present (for some versions of Pro)
+		if (!arrangementUuid) {
+			this.log('debug', 'No arrangement_uuid in ' + destination + ' presentation_info - Using Master arrangement.')
+		}
+		return arrangementUuid
+	}
+
+	// Resolves an arrangement UUID (from whichever source) to an actual arrangement object within the given
+	// presentation - the same validation applies no matter where the candidate UUID came from.
+	// Returns undefined (=> caller should use Master arrangement) if the UUID doesn't resolve to a usable arrangement.
+	private resolveArrangement(
+		presentation: any,
+		arrangementUuid: string | undefined
+	): ProPresentationArrangement | undefined {
+		if (!arrangementUuid) return undefined
+
+		if (!presentation.arrangements) {
+			// Seen in some responses (eg some PCO playlist configurations) where presentation.arrangements is missing entirely
+			this.log('debug', 'presentation has no arrangements array. Using Master arrangement.')
+			return undefined
+		}
+
+		const arrangement = presentation.arrangements.find(
+			(arrangement: ProPresentationArrangement) => arrangement.id.uuid == arrangementUuid
+		)
+		if (!arrangement) {
+			this.log(
+				'debug',
+				'Arrangement ' + arrangementUuid + ' not found in presentation arrangements. Using Master arrangement'
+			)
+			return undefined
+		}
+		if ((arrangement.groups?.length ?? 0) == 0) {
+			// Workaround: Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
+			this.log('debug', 'Arrangement ' + arrangementUuid + ' has zero (or missing) groups. Assuming Master arrangement')
+			return undefined
+		}
+
+		return arrangement
+	}
+
 	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 
@@ -818,51 +955,23 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 			// The ProPresenter API doesn't return the total number of slides, we have to figure this out based on current arrangement and group slide counts
 			// Older versions of ProPresenter do not return playlist arrangement information - it was not added until (about) version 21.
-			// The arrangement returned in data.presentation.current_arrangement of the presentation/active status updates is the default arrangement that the presentation has in the library - it could (quite likely) be a different arrangement chosen in a playlist)
-			// Therefore the correct arrangement should be determined from the active playlist of the active presentation.
 			// At the time of writing, the current version of Pro on Mac would automatically post playlist/active status updates automatically upon every presentation change...
-			// ...It would have been easy to the total slides calculstion purely in response to playlist/active but Pro on Winows was not posting the same updates - so that option if not currently available.
+			// ...It would have been easy to do the total slides calculation purely in response to playlist/active but Pro on Windows was not posting the same updates - so that option is not currently available.
 			// Instead, we calculate here in presentation/active updates and synchronously poll the active playlist for current arrangement.
+			// See getArrangementUuidCandidate()/resolveArrangement() above for how the arrangement is determined (respects
+			// both playlist-selected arrangements and, for library-triggered presentations, the library-default arrangement).
 			const activePlaylistResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistActiveGet()
 			if (activePlaylistResponse.ok) {
 				this.log('debug', 'Polled activePlaylist: ' + JSON.stringify(activePlaylistResponse.data))
 				let totalSlides = 0
 
-				// Extract required info to determine any playlist arrangement that may be applied
 				const presentation = statusJSONObject.data.presentation
-				const playlistItem = activePlaylistResponse.data.presentation?.playlist_item // May or may not be present in response (for some versions of Pro - esp with PCO playlists)
-				const arrangementUuid = playlistItem?.presentation_info?.arrangement_uuid // May or may not be present in response (for some versions of Pro)
-
-				// Try to resolve a custom arrangement from the playlist item.
-				// Any missing link in the chain of required objects to determine a playlist arrangement will be logged and will leave currentArrangement undefined so that we default to Master arrangement.
-				let currentArrangement: ProPresentationArrangement | undefined
-				if (!playlistItem) {
-					this.log('debug', 'No playlist_item in active playlist response. Using Master arrangement.')
-				} else if (!playlistItem.presentation_info) {
-					this.log('debug', 'playlist_item has no presentation_info. Using Master arrangement.')
-				} else if (!arrangementUuid) {
-					this.log('debug', 'No arrangement_uuid in presentation_info - Using Master arrangement.')
-				} else if (!presentation.arrangements) {
-					// Seen in some responses (eg some PCO playlist configurations) where presentation.arrangements is missing entirely
-					this.log('debug', 'presentation has no arrangements array. Using Master arrangement.')
-				} else {
-					currentArrangement = presentation.arrangements.find(
-						(arrangement: ProPresentationArrangement) => arrangement.id.uuid == arrangementUuid
-					)
-					if (!currentArrangement) {
-						this.log(
-							'debug',
-							'Arrangement ' + arrangementUuid + ' not found in presentation arrangements. Using Master arrangement'
-						)
-					} else if ((currentArrangement.groups?.length ?? 0) == 0) {
-						// Workaround: Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
-						this.log(
-							'debug',
-							'Arrangement ' + arrangementUuid + ' has zero (or missing) groups. Assuming Master arrangement'
-						)
-						currentArrangement = undefined
-					}
-				}
+				const arrangementUuidCandidate = this.getArrangementUuidCandidate(
+					presentation,
+					activePlaylistResponse,
+					'presentation'
+				)
+				const currentArrangement = this.resolveArrangement(presentation, arrangementUuidCandidate)
 
 				if (currentArrangement) {
 					for (const groupUuid of currentArrangement.groups) {
