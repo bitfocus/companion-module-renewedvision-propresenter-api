@@ -57,6 +57,7 @@ const emptyPropresenterStateStore: ProPresenterStateStore = {
 		index: -1,
 	},
 	stageMessage: '',
+	activePresentationData: null,
 }
 
 class ModuleInstance extends InstanceBase<DeviceConfig> {
@@ -772,6 +773,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_slides_remaining: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
 			})
 			return
 		}
@@ -795,6 +798,15 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				? presentationIndex.remaining_cues
 				: Math.floor(slidesCount - presentationIndex.index - 1)
 
+			// Look up the current slide's label/group name from the cached active presentation data (populated by
+			// activePresentationUpdated on presentation/arrangement change) - no network round-trip per slide click.
+			const activePresentationData = this.propresenterStateStore.activePresentationData
+			const currentSlide = activePresentationData
+				? this.getOrderedSlides(activePresentationData.presentation, activePresentationData.resolvedArrangementUUID)[
+						presentationIndex.index
+					]
+				: undefined
+
 			SetVariableValues(this, {
 				active_presentation_slide_index: presentationIndex.index,
 				active_presentation_slides_count: slidesCount,
@@ -803,6 +815,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_name: presentationIndex.presentation_id?.name,
 				active_presentation_uuid: presentationIndex.presentation_id?.uuid,
 				active_presentation_index: presentationIndex.presentation_id?.index, // Note that this requires later versions of ProPresenter
+				active_presentation_current_slide_label: currentSlide?.label ?? '',
+				active_presentation_current_slide_group_name: currentSlide?.groupName ?? '',
 			})
 		} else {
 			SetVariableValues(this, {
@@ -811,6 +825,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				active_presentation_slides_remaining: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
 			})
 		}
 	}
@@ -929,18 +945,68 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		return arrangement
 	}
 
+	// Flattens a presentation's slides into document order, respecting whichever arrangement governs it (or all
+	// groups, in document order, when arrangementUuidCandidate is undefined/doesn't resolve - ie. Master). Re-resolves
+	// the arrangement from scratch each call via resolveArrangement() (cheap, local, no network) rather than trusting
+	// a pre-validated result, so this stays correct even if what gets cached in activePresentationData changes later.
+	// Used both for the current-slide-label/group-name variables below and for trigger-by-label actions.
+	private getOrderedSlides(
+		presentation: any,
+		arrangementUuidCandidate: string | undefined
+	): { uuid: string; label: string; groupName: string }[] {
+		const arrangement = this.resolveArrangement(presentation, arrangementUuidCandidate)
+
+		let groups: any[]
+		if (arrangement) {
+			groups = []
+			for (const groupUuid of arrangement.groups) {
+				// presentation.groups is optionally-chained here (rather than guarded above) so a missing group is reported per-groupUuid, same as a group that's simply not found
+				const group = presentation.groups?.find((g: any) => g.uuid == groupUuid)
+				if (group) {
+					groups.push(group)
+				} else {
+					this.log('debug', 'Group ' + groupUuid + ' from arrangement not found in presentation groups')
+				}
+			}
+		} else if (presentation.groups) {
+			groups = presentation.groups
+		} else {
+			this.log('debug', 'presentation has no groups array - cannot enumerate slides')
+			groups = []
+		}
+
+		const slides: { uuid: string; label: string; groupName: string }[] = []
+		for (const group of groups) {
+			if (!group.slides) {
+				this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
+				continue
+			}
+			for (const slide of group.slides) {
+				slides.push({
+					uuid: slide.uuid,
+					label: slide.label ?? '',
+					groupName: group.name ?? '',
+				})
+			}
+		}
+		return slides
+	}
+
 	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 
 		if (!statusJSONObject.data) {
 			// activePresentationUpdated missing data object
 			this.log('debug', 'activePresentationUpdated: missing data: ' + JSON.stringify(statusJSONObject))
+			this.propresenterStateStore.activePresentationData = null
 			SetVariableValues(this, {
 				active_presentation_index: '',
 				active_presentation_slides_remaining: '',
 				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
 			})
 			return
 		}
@@ -958,12 +1024,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// At the time of writing, the current version of Pro on Mac would automatically post playlist/active status updates automatically upon every presentation change...
 			// ...It would have been easy to do the total slides calculation purely in response to playlist/active but Pro on Windows was not posting the same updates - so that option is not currently available.
 			// Instead, we calculate here in presentation/active updates and synchronously poll the active playlist for current arrangement.
-			// See getArrangementUuidCandidate()/resolveArrangement() above for how the arrangement is determined (respects
-			// both playlist-selected arrangements and, for library-triggered presentations, the library-default arrangement).
+			// See getArrangementUuidCandidate()/resolveArrangement()/getOrderedSlides() above for how the arrangement is
+			// determined and slides enumerated (respects both playlist-selected arrangements and, for library-triggered
+			// presentations, the library-default arrangement).
 			const activePlaylistResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistActiveGet()
 			if (activePlaylistResponse.ok) {
 				this.log('debug', 'Polled activePlaylist: ' + JSON.stringify(activePlaylistResponse.data))
-				let totalSlides = 0
 
 				const presentation = statusJSONObject.data.presentation
 				const arrangementUuidCandidate = this.getArrangementUuidCandidate(
@@ -971,46 +1037,45 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					activePlaylistResponse,
 					'presentation'
 				)
-				const currentArrangement = this.resolveArrangement(presentation, arrangementUuidCandidate)
 
-				if (currentArrangement) {
-					for (const groupUuid of currentArrangement.groups) {
-						// presentation.groups is optionally-chained here (rather than guarded above) so a missing group is reported per-groupUuid, same as a group that's simply not found
-						const group = presentation.groups?.find((g: any) => g.uuid == groupUuid)
-						if (group) {
-							if (group.slides) {
-								totalSlides += group.slides.length
-							} else {
-								this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
-							}
-						} else {
-							this.log('debug', 'Group ' + groupUuid + ' from arrangement not found in presentation groups')
-						}
-					}
-				} else if (presentation.groups) {
-					// Simply count all slides in all groups for slide count of master arrangement
-					for (const group of presentation.groups) {
-						if (group.slides) {
-							totalSlides += group.slides.length
-						} else {
-							this.log('debug', 'Group has no slides array, treating as 0 slides: ' + JSON.stringify(group))
-						}
-					}
-				} else {
-					this.log('debug', 'presentation has no groups array - cannot calculate total slides')
+				// Cache the raw presentation JSON + arrangement candidate so slide-label lookups (current-slide-label
+				// variables below, and future trigger-by-label actions) can be resolved locally, without a network
+				// round-trip per slide click. Updated here (on presentation/arrangement change) only - not per click.
+				this.propresenterStateStore.activePresentationData = {
+					presentation,
+					resolvedArrangementUUID: arrangementUuidCandidate,
 				}
 
+				const orderedSlides = this.getOrderedSlides(presentation, arrangementUuidCandidate)
+
+				// Also (re-)apply the current-slide-label/group-name variables here, using whatever slide index is
+				// already known (maintained by presentationSlideIndexUpdate). This closes a race on the very first
+				// slide of a freshly-triggered presentation: ProPresenter can push presentation/slide_index for that
+				// first slide before this handler's playlistActiveGet() poll above (needed to resolve the arrangement)
+				// has resolved - so presentationSlideIndexUpdate can run, find activePresentationData still null/stale,
+				// and write blank label/group values before the cache above is ready. Recomputing here, now that the
+				// cache is fresh, means whichever handler finishes last leaves the correct value: if this handler
+				// finishes first instead, presentationSlideIndexUpdate will shortly overwrite with the same correct
+				// result anyway once its own slide_index update arrives - so this is safe either way.
+				const currentSlideIndex = this.getVariableValue('active_presentation_slide_index')
+				const currentSlide = typeof currentSlideIndex === 'number' ? orderedSlides[currentSlideIndex] : undefined
+
 				SetVariableValues(this, {
-					active_presentation_slides_count: totalSlides,
+					active_presentation_slides_count: orderedSlides.length,
+					active_presentation_current_slide_label: currentSlide?.label ?? '',
+					active_presentation_current_slide_group_name: currentSlide?.groupName ?? '',
 				})
 			}
 		} else {
+			this.propresenterStateStore.activePresentationData = null
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
 				active_presentation_slides_remaining: '',
 				active_presentation_slide_index: '',
 				active_presentation_name: '',
 				active_presentation_uuid: '',
+				active_presentation_current_slide_label: '',
+				active_presentation_current_slide_group_name: '',
 			})
 		}
 	}

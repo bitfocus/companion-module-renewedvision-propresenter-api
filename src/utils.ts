@@ -945,6 +945,16 @@ export type ProMacro = {
 
 export type ProPresentationArrangement = { id: ProID; groups: string[] }
 
+// Cached copy of the active presentation's raw JSON (as received via presentation/active status updates - includes
+// groups/slides/arrangements), alongside the arrangement UUID candidate that governs it (undefined => Master).
+// Populated/updated only when the active presentation (or its governing arrangement) changes - not on every slide
+// click - so slide-label lookups (current-slide-label variables, trigger-by-label actions) never need a network
+// round-trip. See getArrangementUuidCandidate()/resolveArrangement()/getOrderedSlides() in main.ts.
+export type ActivePresentationData = {
+	presentation: any
+	resolvedArrangementUUID: string | undefined
+}
+
 export type ProPresenterStateStore = {
 	proTransportLayersStatus: ProTransportLayersStatus
 	proLayersStatus: ProLayersStatus
@@ -966,6 +976,7 @@ export type ProPresenterStateStore = {
 	clearGroupChoices: DropdownChoice[]
 	activeLookID: ProID
 	stageMessage: string
+	activePresentationData: ActivePresentationData | null
 }
 
 // Custom function to convert HH:mm:ss or mm:ss to seconds (number). Handles negative timestamps
