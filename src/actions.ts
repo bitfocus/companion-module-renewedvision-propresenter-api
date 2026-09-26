@@ -5,7 +5,7 @@ import {
 	DropdownChoice,
 } from '@companion-module/base'
 import { DeviceConfig, InstanceBaseExt } from './config'
-import { options, timestampToSeconds } from './utils'
+import { options, timestampToSeconds, matchesSlideLabel } from './utils'
 import {
 	ProPresenterLayerName,
 	ProPresenterCaptureOperation,
@@ -178,6 +178,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.clearLayerOrGroup]: {
 			name: 'Clear: Operation',
 			description: 'Clear the specified Layer or Clear Group',
+			// NOTE: options[2] (clear_group_id_dropdown) is looked up by position (not id) in GetActions()'s "Update
+			// clearGroup choices" section below - reordering this array will break that lookup silently (see the
+			// Trigger Slide By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [
 				options.clear_layer_or_group_dropdown,
 				options.clear_layer_dropdown,
@@ -226,6 +231,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.lookIdTrigger]: {
 			name: 'Look: Trigger',
 			description: 'Triggers the specified audience look to make it the live/current look.',
+			// NOTE: options[0] (look_id_dropdown) is looked up by position (not id) in GetActions()'s "Update look
+			// choices" section below - reordering this array will break that lookup silently (see the Trigger Slide
+			// By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [options.look_id_dropdown, options.look_id_text],
 			callback: async (actionEvent) => {
 				// user can either choose a look from the dropdown, or choose to manaully enter a look ID as text (in a separate input that supports variables)
@@ -260,6 +270,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.marcoIdTrigger]: {
 			name: 'Macro: Trigger',
 			description: 'Triggers the specified macro.',
+			// NOTE: options[0] (macro_id_dropdown) is looked up by position (not id) in GetActions()'s "Update macro
+			// choices" section below - reordering this array will break that lookup silently (see the Trigger Slide
+			// By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [options.macro_id_dropdown, options.macro_id_text],
 			callback: async (actionEvent) => {
 				// user can either choose a macro from the dropdown, or choose to manaully enter a macro ID as text (in a separate input that supports variables)
@@ -381,6 +396,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.messageOperation]: {
 			name: 'Message: Operation',
 			description: 'Perform an operation on the specified message',
+			// NOTE: options[1] (message_id_dropdown) is looked up by position (not id) in GetActions()'s "Update
+			// message choices" section below - reordering this array will break that lookup silently (see the
+			// Trigger Slide By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [options.message_operation, options.message_id_dropdown, options.message_id_text],
 			callback: async (actionEvent) => {
 				// user can either choose a message from the dropdown, or choose to manaully enter a message ID as text (in a separate input that supports variables)
@@ -617,6 +637,9 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				options.group_id_dropdown,
 				options.group_id_text,
 				options.timeline_operation,
+				options.slide_label,
+				options.slide_label_case_insensitive,
+				options.slide_label_partial_match,
 			],
 			callback: async (actionEvent) => {
 				switch (actionEvent.options.active_presentation_operation) {
@@ -635,6 +658,39 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'trigger_index':
 						const index: string = await instance.parseVariablesInString(actionEvent.options.index as string)
 						await instance.ProPresenter.presentationActiveIndexTrigger(index)
+						break
+					case 'trigger_slide_label':
+						const targetLabel: string = await instance.parseVariablesInString(actionEvent.options.slide_label as string)
+						const caseInsensitive = actionEvent.options.slide_label_case_insensitive as boolean
+						const partialMatch = actionEvent.options.slide_label_partial_match as boolean
+
+						const activePresentationData = instance.propresenterStateStore.activePresentationData
+						if (!activePresentationData) {
+							instance.log(
+								'warn',
+								'Trigger Slide By Label: no active presentation data cached - cannot look up slide label "' +
+									targetLabel +
+									'"'
+							)
+							break
+						}
+
+						const orderedSlides = instance.getOrderedSlides(
+							activePresentationData.presentation,
+							activePresentationData.resolvedArrangementUUID
+						)
+						const slideIndex = orderedSlides.findIndex((slide: { label: string }) =>
+							matchesSlideLabel(slide.label, targetLabel, caseInsensitive, partialMatch)
+						)
+
+						if (slideIndex == -1) {
+							instance.log('warn', 'Trigger Slide By Label: no slide found matching label "' + targetLabel + '"')
+							break
+						}
+
+						// Not awaited (fire and forget, for now) - the lookup work above already happened synchronously,
+						// no need to hold the action open for the trigger request's response too.
+						instance.ProPresenter.presentationActiveIndexTrigger(String(slideIndex))
 						break
 					case 'group':
 						// user can either choose a Group from the dropdown, or choose to manually enter a Group ID as text (in a separate input that supports variables)
@@ -783,6 +839,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.propOperation]: {
 			name: 'Prop: Operation',
 			description: 'Perform an operation of the specified prop.',
+			// NOTE: options[1] (prop_id_dropdown) is looked up by position (not id) in GetActions()'s "Update prop
+			// choices" section below - reordering this array will break that lookup silently (see the Trigger Slide
+			// By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [options.prop_operation, options.prop_id_dropdown, options.prop_id_text],
 			callback: async (actionEvent) => {
 				// user can either choose a prop from the dropdown, or choose to manually enter a prop ID as text (in a separate input that supports variables)
@@ -821,6 +882,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.stageDisplayOperation]: {
 			name: 'Stage Display: Operation',
 			description: 'Perform an operation on the stage display',
+			// NOTE: options[2] (stagescreen_id_dropdown) AND options[4] (stagescreenlayout_id_dropdown) are both looked
+			// up by position (not id) in GetActions()'s "Update stagescreen choices"/"Update stagescreen layout
+			// choices" sections below - reordering this array will break both lookups silently (see the Trigger Slide
+			// By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert both lookups to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [
 				options.stagedisplay_operation,
 				options.stage_message_text,
@@ -900,6 +967,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.timerOperation]: {
 			name: 'Timer: Operation',
 			description: 'Performs an operation on the specified timer.',
+			// NOTE: options[0] (timer_id_dropdown) is looked up by position (not id) in GetActions()'s "Update timer
+			// choices" section below - reordering this array will break that lookup silently (see the Trigger Slide
+			// By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [
 				options.timer_id_dropdown,
 				options.timer_id_text,
@@ -1150,6 +1222,11 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		[ActionId.videoInputsIdTrigger]: {
 			name: 'VideoInputs: Trigger',
 			description: 'Triggers a video input from the video inputs playlist.',
+			// NOTE: options[0] (video_input_id_dropdown) is looked up by position (not id) in GetActions()'s "Update
+			// video input choices" section below - reordering this array will break that lookup silently (see the
+			// Trigger Slide By Label incident that broke the equivalent group_id_dropdown lookup this same way).
+			// TODO: convert that lookup to find-by-id (like groupChoicesDropDown already is), testing this action
+			// still works afterward, before moving on to the next NOTE/TODO like this one.
 			options: [options.video_input_id_dropdown, options.video_input_id_text],
 			callback: async (actionEvent) => {
 				// user can either choose a video input from the dropdown, or choose to manaully enter a video input ID as text (in a separate input that supports variables)
@@ -1227,7 +1304,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	messageChoicesDropDown.default = messageChoicesDropDown.choices[0].id
 
 	// Update group choices with data from propresenterStateStore
-	const groupChoicesDropDown = actions[ActionId.activePresentationOperation]?.options[2] as CompanionInputFieldDropdown // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
+	// This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew).
+	// Found by id (not position) - a hardcoded index here previously broke when Trigger Slide By Label's new options
+	// were inserted earlier in this same action's options array, shifting everything after them.
+	const groupChoicesDropDown = actions[ActionId.activePresentationOperation]?.options.find(
+		(option) => option.id === 'group_id_dropdown'
+	) as CompanionInputFieldDropdown
 	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
 	const groupChoices: DropdownChoice[] = instance.propresenterStateStore.proGroups.map(
 		(group: { id: { uuid: string; name: string } }) => ({ id: group.id.name, label: group.id.name })

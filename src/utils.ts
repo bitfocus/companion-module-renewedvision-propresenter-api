@@ -55,6 +55,9 @@ export interface Options {
 	index: EnforceDefault<CompanionInputFieldTextInput, string>
 	cue_index: EnforceDefault<CompanionInputFieldTextInput, string>
 	presentation_uuid: EnforceDefault<CompanionInputFieldTextInput, string>
+	slide_label: EnforceDefault<CompanionInputFieldTextInput, string>
+	slide_label_case_insensitive: EnforceDefault<CompanionInputFieldCheckbox, boolean>
+	slide_label_partial_match: EnforceDefault<CompanionInputFieldCheckbox, boolean>
 	clear_layer_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
 	clear_layer_or_group_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
 	clear_group_id_dropdown: EnforceDefault<CompanionInputFieldDropdown, string>
@@ -210,6 +213,7 @@ export const options: Options = {
 			{ id: 'trigger_previous', label: 'Trigger Previous Slide' },
 			{ id: 'trigger_first', label: 'Trigger First Slide' },
 			{ id: 'trigger_index', label: "Trigger Slide By It's Index" },
+			{ id: 'trigger_slide_label', label: "Trigger Slide By It's Label" },
 			{ id: 'group', label: 'Trigger Specified Group' },
 			{ id: 'timeline_operation', label: 'Perform Timeline Operation' },
 		],
@@ -909,6 +913,45 @@ export const options: Options = {
 		default: '',
 		useVariables: true,
 	},
+	slide_label: {
+		type: 'textinput',
+		label: 'Slide Label',
+		tooltip: "The label of the slide to trigger. Respects the active presentation's current arrangement.",
+		id: 'slide_label',
+		isVisible: (options) => options.active_presentation_operation == 'trigger_slide_label',
+		default: '',
+		useVariables: true,
+	},
+	slide_label_case_insensitive: {
+		type: 'checkbox',
+		label: 'Case Insensitive',
+		id: 'slide_label_case_insensitive',
+		isVisible: (options) => options.active_presentation_operation == 'trigger_slide_label',
+		default: false,
+	},
+	slide_label_partial_match: {
+		type: 'checkbox',
+		label: 'Partial Match (Contains)',
+		tooltip: 'Match any slide label that contains the given text, rather than requiring an exact match.',
+		id: 'slide_label_partial_match',
+		isVisible: (options) => options.active_presentation_operation == 'trigger_slide_label',
+		default: false,
+	},
+}
+
+// Returns true if slideLabel matches targetLabel, per the given matching rules. Shared by any action that looks up a
+// slide by its label (currently: Active Presentation: Trigger Slide By Label).
+export function matchesSlideLabel(
+	slideLabel: string,
+	targetLabel: string,
+	caseInsensitive: boolean,
+	partialMatch: boolean
+): boolean {
+	const normalizedSlideLabel = caseInsensitive ? slideLabel.toLowerCase() : slideLabel
+	const normalizedTargetLabel = caseInsensitive ? targetLabel.toLowerCase() : targetLabel
+	return partialMatch
+		? normalizedSlideLabel.includes(normalizedTargetLabel)
+		: normalizedSlideLabel === normalizedTargetLabel
 }
 
 // Used for module local cache of state

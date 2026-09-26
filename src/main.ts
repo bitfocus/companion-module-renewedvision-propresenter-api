@@ -949,8 +949,9 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	// groups, in document order, when arrangementUuidCandidate is undefined/doesn't resolve - ie. Master). Re-resolves
 	// the arrangement from scratch each call via resolveArrangement() (cheap, local, no network) rather than trusting
 	// a pre-validated result, so this stays correct even if what gets cached in activePresentationData changes later.
-	// Used both for the current-slide-label/group-name variables below and for trigger-by-label actions.
-	private getOrderedSlides(
+	// Used both for the current-slide-label/group-name variables below and for trigger-by-label actions (actions.ts) -
+	// public (not private) for that reason.
+	getOrderedSlides(
 		presentation: any,
 		arrangementUuidCandidate: string | undefined
 	): { uuid: string; label: string; groupName: string }[] {
