@@ -9,7 +9,8 @@
 		"dev": "tsc -p tsconfig.build.json --watch",
 		"lint:raw": "eslint --ext .ts --ext .js --ignore-pattern dist --ignore-pattern pkg",
 		"lint": "yarn lint:raw .",
-		"format": "prettier -w ."
+		"format": "prettier -w .",
+		"test": "yarn build && node --test test/*.test.cjs"
 	},
 	"license": "MIT",
 	"repository": {
@@ -17,19 +18,20 @@
 		"url": "git+https://github.com/bitfocus/companion-module-renewedvision-propresenter-api.git"
 	},
 	"dependencies": {
-		"@companion-module/base": "~1.10.0",
+		"@companion-module/base": "~1.15.1",
 		"@julusian/midi": "^3.8.0",
 		"renewedvision-propresenter": "^7.7.3"
 	},
 	"devDependencies": {
-		"@companion-module/tools": "^2.8.0",
+		"@companion-module/tools": "~2.9.1",
 		"@types/node": "^18.12",
 		"@types/ws": "^8.5.4",
 		"husky": "^8.0.1",
 		"lint-staged": "^13.0.3",
 		"prettier": "^3.6.2",
 		"rimraf": "^3.0.2",
-		"typescript": "^5.3.3"
+		"typescript": "^5.3.3",
+		"eslint": "^8.57.1"
 	},
 	"lint-staged": {
 		"*.{css,json,md,scss}": [
@@ -40,7 +42,7 @@
 		]
 	},
 	"engines": {
-		"node": "^18.12"
+		"node": "^26.5"
 	},
 	"packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
