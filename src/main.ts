@@ -1027,10 +1027,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					type: 'textinput',
 					label: messageToken.name,
 					id: messageUUID + '__' + messageTokenTypeCode + '__' + messageToken.name, // "Parent" message UUID __ 3 Char type __ TokenName
-					isVisibleData: messageUUID,
+					isVisibleData: { messageUUID },
 					isVisible: (options, isVisibleData) => {
 						return (
-							(options.message_id_dropdown as string) == isVisibleData &&
+							(options.message_id_dropdown as string) == isVisibleData.messageUUID &&
 							(options.message_operation as string) == 'show'
 						)
 					},
