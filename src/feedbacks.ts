@@ -181,7 +181,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 							' for layout: ' +
 							stage_layout_id +
 							'. propresenterStateStore' +
-							JSON.stringify(instance.propresenterStateStore.stageScreensWithLayout)
+							JSON.stringify(instance.propresenterStateStore.stageScreensWithLayout),
 					)
 				}
 
@@ -190,7 +190,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 						(stageScreenWithLayout) =>
 							stageScreenWithLayout.id.uuid == stage_screen_id ||
 							stageScreenWithLayout.id.name == stage_screen_id ||
-							stageScreenWithLayout.id.index == parseInt(stage_screen_id)
+							stageScreenWithLayout.id.index == parseInt(stage_screen_id),
 					)
 				if (selected_stage_screen == undefined) {
 					return false // Can't find specified stage screen
@@ -374,7 +374,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 						'Active Look Feedback look_id selected = ' +
 							look_id +
 							' instance.propresenterStateStore.activeLookID.uuid = ' +
-							instance.propresenterStateStore.activeLookID.uuid
+							instance.propresenterStateStore.activeLookID.uuid,
 					)
 
 				return (
@@ -419,13 +419,13 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				if (instance.config.exta_debug_logs)
 					instance.log(
 						'debug',
-						'Prop Active Feedback prop_id selected = ' + prop_id + ' Feedback: ' + JSON.stringify(feedback)
+						'Prop Active Feedback prop_id selected = ' + prop_id + ' Feedback: ' + JSON.stringify(feedback),
 					)
 
 				return (
 					instance.propresenterStateStore.proProps.find(
 						(proProp) =>
-							proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id)
+							proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id),
 					)?.is_active == true
 				)
 			},
@@ -505,7 +505,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 				if (instance.config.exta_debug_logs)
 					instance.log(
 						'debug',
-						'Timer State Feedback timer_id selected = ' + timer_id + ' Feedback: ' + JSON.stringify(feedback)
+						'Timer State Feedback timer_id selected = ' + timer_id + ' Feedback: ' + JSON.stringify(feedback),
 					)
 
 				return (
@@ -514,7 +514,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 							proTimer.id.uuid == timer_id ||
 							proTimer.id.uuid.replace(/-/g, '') == timer_id ||
 							proTimer.id.name == timer_id ||
-							proTimer.id.index == parseInt(timer_id)
+							proTimer.id.index == parseInt(timer_id),
 					)?.state == feedback.options.timer_state
 				)
 			},
@@ -537,7 +537,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	const active_look_dropdown = feedbackDefinitions.ActiveLook?.options[0] as CompanionInputFieldDropdown
 	const manual_look_choice = active_look_dropdown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is ALWAYS a placeholder, that when selected, allows for manually specifing the Look (in another text input)
 	active_look_dropdown.choices = instance.propresenterStateStore.looksChoices.concat(
-		manual_look_choice as DropdownChoice
+		manual_look_choice as DropdownChoice,
 	)
 	active_look_dropdown.default = active_look_dropdown.choices[0].id
 
@@ -545,7 +545,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	const stageScreenChoicesDropDown = feedbackDefinitions.StageLayouts?.options[0] as CompanionInputFieldDropdown
 	const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
 	stageScreenChoicesDropDown.choices = instance.propresenterStateStore.stageScreenChoices.concat(
-		manual_stagescreen_choice as DropdownChoice
+		manual_stagescreen_choice as DropdownChoice,
 	)
 	stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
 
@@ -553,7 +553,7 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	const stageScreenLayoutChoicesDropDown = feedbackDefinitions.StageLayouts?.options[2] as CompanionInputFieldDropdown
 	const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
 	stageScreenLayoutChoicesDropDown.choices = instance.propresenterStateStore.stageScreenLayoutChoices.concat(
-		manual_stagescreenlayout_choice as DropdownChoice
+		manual_stagescreenlayout_choice as DropdownChoice,
 	)
 	stageScreenLayoutChoicesDropDown.default = stageScreenLayoutChoicesDropDown.choices[0].id
 
@@ -561,16 +561,14 @@ export function GetFeedbacks(instance: InstanceBaseExt<DeviceConfig>): Companion
 	const timerChoicesDropDown = feedbackDefinitions.TimerState?.options[0] as CompanionInputFieldDropdown
 	const manual_timer_choice = timerChoicesDropDown.choices.pop() // The last item in the timer choices list (after all the current timers list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Timer (in another text input)
 	timerChoicesDropDown.choices = instance.propresenterStateStore.timerChoices.concat(
-		manual_timer_choice as DropdownChoice
+		manual_timer_choice as DropdownChoice,
 	)
 	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
 
 	// Update prop choices with data from propresenterStateStore
 	const propChoicesDropDown = feedbackDefinitions.PropActive?.options[0] as CompanionInputFieldDropdown
 	const manual_prop_choice = propChoicesDropDown.choices.pop() // The last item in the prop choices list (after all the current props list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Prop (in another text input)
-	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(
-		manual_prop_choice as DropdownChoice
-	)
+	propChoicesDropDown.choices = instance.propresenterStateStore.propChoices.concat(manual_prop_choice as DropdownChoice)
 	propChoicesDropDown.default = propChoicesDropDown.choices[0].id
 
 	return feedbackDefinitions
