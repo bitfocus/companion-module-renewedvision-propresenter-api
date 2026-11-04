@@ -44,7 +44,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
 						await instance.ProPresenter.announcementActiveTimelineOperation(
-							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
+							actionEvent.options.timeline_operation as ProPresenterTimelineOperation,
 						)
 						break
 					default:
@@ -117,7 +117,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			options: [options.specific_audioplaylist_operation, options.audio_playlist_id, options.audio_item_id],
 			callback: async (actionEvent) => {
 				const audio_playlist_id: string = await instance.parseVariablesInString(
-					actionEvent.options.audio_playlist_id as string
+					actionEvent.options.audio_playlist_id as string,
 				)
 				switch (actionEvent.options.specific_audioplaylist_operation) {
 					case 'focus':
@@ -139,7 +139,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					default:
 						instance.log(
 							'debug',
-							'Invalid specific_audioplaylist_operation: ' + options.specific_audioplaylist_operation
+							'Invalid specific_audioplaylist_operation: ' + options.specific_audioplaylist_operation,
 						)
 				}
 			},
@@ -169,7 +169,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					}
 				} else {
 					await instance.ProPresenter.captureOperation(
-						actionEvent.options.capture_operation as ProPresenterCaptureOperation
+						actionEvent.options.capture_operation as ProPresenterCaptureOperation,
 					)
 				}
 			},
@@ -244,7 +244,10 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				if (instance.config.exta_debug_logs) {
 					instance.log(
 						'debug',
-						'Variables(active_look_name): ' + active_look_name + ' CompanionActionEvent: ' + JSON.stringify(actionEvent)
+						'Variables(active_look_name): ' +
+							active_look_name +
+							' CompanionActionEvent: ' +
+							JSON.stringify(actionEvent),
 					)
 				}
 
@@ -292,7 +295,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						break
 					case 'trigger_id':
 						const media_item_id: string = await instance.parseVariablesInString(
-							actionEvent.options.media_item_id as string
+							actionEvent.options.media_item_id as string,
 						)
 						await instance.ProPresenter.mediaPlaylistActiveMediaIdTrigger(media_item_id)
 						break
@@ -318,7 +321,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						break
 					case 'trigger_id':
 						const media_item_id: string = await instance.parseVariablesInString(
-							actionEvent.options.media_item_id as string
+							actionEvent.options.media_item_id as string,
 						)
 						await instance.ProPresenter.mediaPlaylistFocusedMediaIdTrigger(media_item_id)
 						break
@@ -339,7 +342,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			options: [options.specific_mediaplaylist_operation, options.media_playlist_id, options.media_item_id],
 			callback: async (actionEvent) => {
 				const media_playlist_id: string = await instance.parseVariablesInString(
-					actionEvent.options.media_playlist_id as string
+					actionEvent.options.media_playlist_id as string,
 				)
 				switch (actionEvent.options.specific_mediaplaylist_operation) {
 					case 'focus':
@@ -361,7 +364,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					default:
 						instance.log(
 							'debug',
-							'Invalid specific_mediaplaylist_operation: ' + options.specific_mediaplaylist_operation
+							'Invalid specific_mediaplaylist_operation: ' + options.specific_mediaplaylist_operation,
 						)
 				}
 			},
@@ -408,16 +411,16 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 									'MMMM messageOperation Option: ' +
 										JSON.stringify(companionOptionValue) +
 										' = ' +
-										JSON.stringify(actionEvent.options[companionOptionValue])
+										JSON.stringify(actionEvent.options[companionOptionValue]),
 								)
 							}
 							if (companionOptionValue.startsWith(actionEvent.options.message_id_dropdown as string)) {
 								// The ID of the token input fields have the uuid of the message they belong to at the start of their own id string
 								const token_name = companionOptionValue.slice(
-									((actionEvent.options.message_id_dropdown as string) + '__???__').length
+									((actionEvent.options.message_id_dropdown as string) + '__???__').length,
 								) // Extract name from the ID that is always a contacatination of the uuid, 2 underscores, 3 char for the token type and 2 more underscores before the variable length token name
 								const token_value = await instance.parseVariablesInString(
-									actionEvent.options[companionOptionValue] as string
+									actionEvent.options[companionOptionValue] as string,
 								)
 								tokenNamesAndTextArray.push({ name: token_name, text: { text: token_value } })
 							}
@@ -463,7 +466,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						console.log(
 							'debug',
 							'Invalid active_announcement_playlist_operation: ' +
-								actionEvent.options.active_announcement_playlist_operation
+								actionEvent.options.active_announcement_playlist_operation,
 						)
 				}
 			},
@@ -488,7 +491,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						console.log(
 							'debug',
 							'Invalid active_presentation_playlist_operation: ' +
-								actionEvent.options.active_presentation_playlist_operation
+								actionEvent.options.active_presentation_playlist_operation,
 						)
 				}
 			},
@@ -532,7 +535,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					default:
 						console.log(
 							'debug',
-							'Invalid focused_playlist_operation: ' + actionEvent.options.focused_playlist_operation
+							'Invalid focused_playlist_operation: ' + actionEvent.options.focused_playlist_operation,
 						)
 				}
 			},
@@ -574,7 +577,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					default:
 						console.log(
 							'debug',
-							'Invalid specific_playlist_operation: ' + actionEvent.options.specific_playlist_operation
+							'Invalid specific_playlist_operation: ' + actionEvent.options.specific_playlist_operation,
 						)
 				}
 			},
@@ -632,13 +635,13 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
 						await instance.ProPresenter.presentationActiveTimelineOperation(
-							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
+							actionEvent.options.timeline_operation as ProPresenterTimelineOperation,
 						)
 						break
 					default:
 						console.log(
 							'debug',
-							'Invalid active_presentation_operation: ' + actionEvent.options.active_presentation_operation
+							'Invalid active_presentation_operation: ' + actionEvent.options.active_presentation_operation,
 						)
 				}
 			},
@@ -680,7 +683,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'timeline_operation':
 						//const operation: string = await instance.parseVariablesInString(actionEvent.options.timeline_operation as string)
 						await instance.ProPresenter.presentationFocusedTimelineOperation(
-							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
+							actionEvent.options.timeline_operation as ProPresenterTimelineOperation,
 						)
 						break
 					case 'focus_next':
@@ -692,7 +695,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					default:
 						console.log(
 							'debug',
-							'Invalid focused_presentation_operation: ' + actionEvent.options.focused_presentation_operation
+							'Invalid focused_presentation_operation: ' + actionEvent.options.focused_presentation_operation,
 						)
 				}
 			},
@@ -710,7 +713,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			],
 			callback: async (actionEvent) => {
 				const presentation_uuid: string = await instance.parseVariablesInString(
-					actionEvent.options.presentation_uuid as string
+					actionEvent.options.presentation_uuid as string,
 				)
 				switch (actionEvent.options.specific_presentation_operation) {
 					case 'focus':
@@ -741,13 +744,13 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'timeline_operation':
 						await instance.ProPresenter.presentationUUIDTimelineOperation(
 							presentation_uuid,
-							actionEvent.options.timeline_operation as ProPresenterTimelineOperation
+							actionEvent.options.timeline_operation as ProPresenterTimelineOperation,
 						)
 						break
 					default:
 						console.log(
 							'debug',
-							'Invalid specific_presentation_operation: ' + actionEvent.options.specific_presentation_operation
+							'Invalid specific_presentation_operation: ' + actionEvent.options.specific_presentation_operation,
 						)
 				}
 			},
@@ -786,7 +789,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						if (
 							instance.propresenterStateStore.proProps.find(
 								(proProp) =>
-									proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id)
+									proProp.id.uuid == prop_id || proProp.id.name == prop_id || proProp.id.index == parseInt(prop_id),
 							)?.is_active == true
 						) {
 							await instance.ProPresenter.propIdClear(prop_id)
@@ -813,7 +816,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 			],
 			callback: async (actionEvent) => {
 				const stage_message_text: string = await instance.parseVariablesInString(
-					actionEvent.options.stage_message_text as string
+					actionEvent.options.stage_message_text as string,
 				)
 				switch (actionEvent.options.stagedisplay_operation) {
 					case 'show_stage_message':
@@ -839,7 +842,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						let stagescreenlayout_id: string = ''
 						if (actionEvent.options.stagescreenlayout_id_dropdown == 'manually_specify_stagescreenlayoutid')
 							stagescreenlayout_id = await instance.parseVariablesInString(
-								actionEvent.options.stagescreenlayout_id_text as string
+								actionEvent.options.stagescreenlayout_id_text as string,
 							)
 						else stagescreenlayout_id = actionEvent.options.stagescreenlayout_id_dropdown as string
 
@@ -916,7 +919,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						proTimerState.id.uuid == timerID ||
 						proTimerState.id.uuid.replace(/-/g, '') == timerID ||
 						proTimerState.id.name == timerID ||
-						proTimerState.id.index == parseInt(timerID)
+						proTimerState.id.index == parseInt(timerID),
 				)
 
 				// Determine action to "toggle" current timer state
@@ -934,7 +937,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 					case 'reset':
 						await instance.ProPresenter.timerIdOperation(
 							timerID,
-							actionEvent.options.timer_operation as ProPresenterTimerOperation
+							actionEvent.options.timer_operation as ProPresenterTimerOperation,
 						)
 						break
 					case 'toggle':
@@ -942,35 +945,35 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						break
 					case 'increment':
 						const timer_increment_value = await instance.parseVariablesInString(
-							actionEvent.options.timer_increment_value as string
+							actionEvent.options.timer_increment_value as string,
 						)
 						await instance.ProPresenter.timerIdIncrement(timerID, parseInt(timer_increment_value))
 						break
 					case 'set':
 						const newTimerName: string = await instance.parseVariablesInString(
-							actionEvent.options.timer_new_name as string
+							actionEvent.options.timer_new_name as string,
 						)
 						const timerDurationString: string = await instance.parseVariablesInString(
-							actionEvent.options.timer_duration as string
+							actionEvent.options.timer_duration as string,
 						)
 						const timerDurationNumber: number = timerDurationString.includes(':')
 							? timestampToSeconds(timerDurationString)
 							: Number(timerDurationString)
 						const timeOfDayString: string = await instance.parseVariablesInString(
-							actionEvent.options.timer_time_of_day as string
+							actionEvent.options.timer_time_of_day as string,
 						)
 						const timeOfDayNumber: number = timeOfDayString.includes(':')
 							? timestampToSeconds(timeOfDayString)
 							: Number(timeOfDayString)
 						const timerType: string = actionEvent.options.timer_type as string
 						const startTimeString: string = await instance.parseVariablesInString(
-							actionEvent.options.timer_start_time as string
+							actionEvent.options.timer_start_time as string,
 						)
 						const startTimeNumber: number = startTimeString.includes(':')
 							? timestampToSeconds(startTimeString)
 							: Number(startTimeString)
 						const endTimeString: string = await instance.parseVariablesInString(
-							actionEvent.options.timer_end_time as string
+							actionEvent.options.timer_end_time as string,
 						)
 						const endTimeNumber: number = endTimeString.includes(':')
 							? timestampToSeconds(endTimeString)
@@ -979,8 +982,8 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 							actionEvent.options.timer_optional_operation == 'none'
 								? undefined
 								: actionEvent.options.timer_optional_operation == 'toggle'
-								? timerToggleOperation
-								: (actionEvent.options.timer_optional_operation as ProPresenterTimerOperation)
+									? timerToggleOperation
+									: (actionEvent.options.timer_optional_operation as ProPresenterTimerOperation)
 
 						switch (timerType) {
 							case 'countdown':
@@ -989,7 +992,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 									timerDurationNumber,
 									actionEvent.options.timer_allows_overrun as boolean,
 									optionalOperation,
-									newTimerName != '' ? newTimerName : undefined
+									newTimerName != '' ? newTimerName : undefined,
 								) // Only rename if new name is not blank
 								break
 							case 'countdownto':
@@ -1009,7 +1012,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 									timerPeriodString as ProPresenterTimePeriod,
 									actionEvent.options.timer_allows_overrun as boolean,
 									optionalOperation,
-									newTimerName != '' ? newTimerName : undefined
+									newTimerName != '' ? newTimerName : undefined,
 								) // Only rename if new name is not blank
 								break
 							case 'elapsed':
@@ -1019,7 +1022,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 									actionEvent.options.timer_allows_overrun as boolean,
 									endTimeNumber > 0 ? endTimeNumber : undefined,
 									optionalOperation,
-									newTimerName != '' ? newTimerName : undefined
+									newTimerName != '' ? newTimerName : undefined,
 								) // Only pass endTime if it was > 0 and only rename if new name is not blank
 								break
 							default:
@@ -1046,12 +1049,12 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 				switch (actionEvent.options.transport_operation) {
 					case 'play':
 						await instance.ProPresenter.transportLayerPlay(
-							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl
+							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
 						)
 						break
 					case 'pause':
 						await instance.ProPresenter.transportLayerPause(
-							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl
+							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
 						)
 						break
 					case 'toggle_play_pause':
@@ -1065,38 +1068,38 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 						break
 					case 'skip_forward':
 						const transport_skip_forward_time_string = await instance.parseVariablesInString(
-							actionEvent.options.transport_skip_time as string
+							actionEvent.options.transport_skip_time as string,
 						)
 						await instance.ProPresenter.transportLayerSkipForwardTime(
 							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
-							parseInt(transport_skip_forward_time_string)
+							parseInt(transport_skip_forward_time_string),
 						)
 						break
 					case 'skip_backward':
 						const transport_skip_backward_time_string = await instance.parseVariablesInString(
-							actionEvent.options.transport_skip_time as string
+							actionEvent.options.transport_skip_time as string,
 						)
 						await instance.ProPresenter.transportLayerSkipBackwardTime(
 							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
-							parseInt(transport_skip_backward_time_string)
+							parseInt(transport_skip_backward_time_string),
 						)
 						break
 					case 'go_to_time':
 						const transport_goto_time_string = await instance.parseVariablesInString(
-							actionEvent.options.transport_goto_time as string
+							actionEvent.options.transport_goto_time as string,
 						)
 						await instance.ProPresenter.transportLayerTimeSet(
 							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
-							parseInt(transport_goto_time_string)
+							parseInt(transport_goto_time_string),
 						)
 						break
 					case 'go_to_end':
 						const transport_goto_end_time = await instance.parseVariablesInString(
-							actionEvent.options.transport_goto_end_time as string
+							actionEvent.options.transport_goto_end_time as string,
 						)
 						await instance.ProPresenter.transportLayerGoToEnd(
 							actionEvent.options.transport_layer as ProPresenterLayerWithTransportControl,
-							parseInt(transport_goto_end_time)
+							parseInt(transport_goto_end_time),
 						)
 						break
 					default:
@@ -1149,7 +1152,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const lookChoicesDropDown = actions[ActionId.lookIdTrigger]?.options[0] as CompanionInputFieldDropdown
 	const manual_look_choice = lookChoicesDropDown.choices.pop() // The last item in the looks choices list (after all the current looks list from ProPresenter) is ALWAYS a placeholder, that when selected, allows for manually specifing the Look (in another text input)
 	lookChoicesDropDown.choices = instance.propresenterStateStore.looksChoices.concat(
-		manual_look_choice as DropdownChoice
+		manual_look_choice as DropdownChoice,
 	)
 	lookChoicesDropDown.default = lookChoicesDropDown.choices[0].id
 
@@ -1157,7 +1160,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const macroChoicesDropDown = actions[ActionId.marcoIdTrigger]?.options[0] as CompanionInputFieldDropdown
 	const manual_macro_choice = macroChoicesDropDown.choices.pop() // The last item in the macro choices list (after all the current macros list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Macro (in another text input)
 	macroChoicesDropDown.choices = instance.propresenterStateStore.macroChoices.concat(
-		manual_macro_choice as DropdownChoice
+		manual_macro_choice as DropdownChoice,
 	)
 	macroChoicesDropDown.default = macroChoicesDropDown.choices[0].id
 
@@ -1171,7 +1174,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const videoInputChoicesDropDown = actions[ActionId.videoInputsIdTrigger]?.options[0] as CompanionInputFieldDropdown
 	const manual_video_input_choice = videoInputChoicesDropDown.choices.pop() // The last item in the video inputs choices list (after all the current video inputs list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Video Input (in another text input)
 	videoInputChoicesDropDown.choices = instance.propresenterStateStore.videoInputChoices.concat(
-		manual_video_input_choice as DropdownChoice
+		manual_video_input_choice as DropdownChoice,
 	)
 	videoInputChoicesDropDown.default = videoInputChoicesDropDown.choices[0].id
 
@@ -1179,7 +1182,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const timerChoicesDropDown = actions[ActionId.timerOperation]?.options[0] as CompanionInputFieldDropdown
 	const manual_timer_choice = timerChoicesDropDown.choices.pop() // The last item in the timer choices list (after all the current timers list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the Timer (in another text input)
 	timerChoicesDropDown.choices = instance.propresenterStateStore.timerChoices.concat(
-		manual_timer_choice as DropdownChoice
+		manual_timer_choice as DropdownChoice,
 	)
 	timerChoicesDropDown.default = timerChoicesDropDown.choices[0].id
 
@@ -1187,7 +1190,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const stageScreenChoicesDropDown = actions[ActionId.stageDisplayOperation]?.options[2] as CompanionInputFieldDropdown
 	const manual_stagescreen_choice = stageScreenChoicesDropDown.choices.pop() // The last item in the stage screen choices list (after all the current stage screens list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen (in another text input)
 	stageScreenChoicesDropDown.choices = instance.propresenterStateStore.stageScreenChoices.concat(
-		manual_stagescreen_choice as DropdownChoice
+		manual_stagescreen_choice as DropdownChoice,
 	)
 	stageScreenChoicesDropDown.default = stageScreenChoicesDropDown.choices[0].id
 
@@ -1196,7 +1199,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 		?.options[4] as CompanionInputFieldDropdown
 	const manual_stagescreenlayout_choice = stageScreenLayoutChoicesDropDown.choices.pop() // The last item in the stage screen layout choices list (after all the current stage screen layouts list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the stage screen layout (in another text input)
 	stageScreenLayoutChoicesDropDown.choices = instance.propresenterStateStore.stageScreenLayoutChoices.concat(
-		manual_stagescreenlayout_choice as DropdownChoice
+		manual_stagescreenlayout_choice as DropdownChoice,
 	)
 	stageScreenLayoutChoicesDropDown.default = stageScreenLayoutChoicesDropDown.choices[0].id
 
@@ -1204,7 +1207,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const messageChoicesDropDown = actions[ActionId.messageOperation]?.options[1] as CompanionInputFieldDropdown
 	const manual_message_choice = messageChoicesDropDown.choices.pop() // The last item in the message choices list (after all the current messages list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the message (in another text input)
 	messageChoicesDropDown.choices = instance.propresenterStateStore.messageChoices.concat(
-		manual_message_choice as DropdownChoice
+		manual_message_choice as DropdownChoice,
 	)
 	messageChoicesDropDown.default = messageChoicesDropDown.choices[0].id
 
@@ -1212,7 +1215,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const groupChoicesDropDown = actions[ActionId.activePresentationOperation]?.options[2] as CompanionInputFieldDropdown // This dropdown is used in multiple actions - but updating in this one action, updates for all the others (phew)
 	const manual_group_choice = groupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
 	const groupChoices: DropdownChoice[] = instance.propresenterStateStore.proGroups.map(
-		(group: { id: { uuid: string; name: string } }) => ({ id: group.id.name, label: group.id.name })
+		(group: { id: { uuid: string; name: string } }) => ({ id: group.id.name, label: group.id.name }),
 	) // TODO: this should be ({id:group.id.uuid, label:group.id.name}), but triggering groups via uuid is currently working in the API, so using name as a workaround - at the risk of clashing id user had two groups with same name!
 	groupChoicesDropDown.choices = groupChoices.concat(manual_group_choice as DropdownChoice)
 	groupChoicesDropDown.default = groupChoicesDropDown.choices[0].id
@@ -1221,7 +1224,7 @@ export function GetActions(instance: InstanceBaseExt<DeviceConfig>): CompanionAc
 	const clearGroupChoicesDropDown = actions[ActionId.clearLayerOrGroup]?.options[2] as CompanionInputFieldDropdown
 	const manual_clearGroup_choice = clearGroupChoicesDropDown.choices.pop() // The last item in the group choices list (after all the current group list from ProPresenter) is a placeholder, that when selected, allows for manually specifing the group (in another text input)
 	clearGroupChoicesDropDown.choices = instance.propresenterStateStore.clearGroupChoices.concat(
-		manual_clearGroup_choice as DropdownChoice
+		manual_clearGroup_choice as DropdownChoice,
 	)
 	clearGroupChoicesDropDown.default = clearGroupChoicesDropDown.choices[0].id
 
