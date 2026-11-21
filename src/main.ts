@@ -96,6 +96,18 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	// Start with empty state
 	public propresenterStateStore: ProPresenterStateStore = emptyPropresenterStateStore
 
+	// Action callbacks run one at a time, in the order Companion called them (see enqueue)
+	private actionQueue: Promise<unknown> = Promise.resolve()
+
+	// Run a job after every previously enqueued job has finished (including waiting for ProPresenter's response).
+	// Companion starts a button's actions concurrently, so without this the order requests reach ProPresenter depends on
+	// how many awaits each callback makes first (#130). Must be called synchronously at the start of the callback.
+	public enqueue<T>(job: () => Promise<T>): Promise<T> {
+		const result = this.actionQueue.then(job)
+		this.actionQueue = result.catch(() => {}) // A failed job must not stall the queue
+		return result
+	}
+
 	// Private variables
 	private lastSetActionDefinitionsTime: number = 0 // A timestamp (in ms since epoch) of the last time that setActionDefinitions() was called (0 means not yet called)
 	private setActionDefinitionsTimeoutId: ReturnType<typeof setTimeout> | null = null
