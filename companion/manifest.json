@@ -18,13 +18,18 @@
 		}
 	],
 	"runtime": {
-		"type": "node18",
+		"type": "node26",
 		"api": "nodejs-ipc",
 		"apiVersion": "0.0.0",
-		"entrypoint": "../dist/main.js"
+		"entrypoint": "../dist/main.js",
+		"permissions": {
+			"native-addons": true
+		}
 	},
 	"legacyIds": [],
 	"manufacturer": "Renewed Vision",
-	"products": ["ProPresenter API"],
+	"products": [
+		"ProPresenter API"
+	],
 	"keywords": []
 }
