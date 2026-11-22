@@ -255,7 +255,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 		{
 			name: 'Capture Time (Custom Format)',
 			variableId: 'capture_time_custom',
-		}
+		},
 	)
 	// Get Timer variable definitions from module cache of timers state
 	for (const proTimer of propresenterStateStore.proTimers) {
@@ -275,7 +275,7 @@ export function GetVariableDefinitions(propresenterStateStore: ProPresenterState
 			{
 				name: proTimer.id.name + ' (State)',
 				variableId: proTimer.varid + '_state',
-			}
+			},
 		)
 	}
 

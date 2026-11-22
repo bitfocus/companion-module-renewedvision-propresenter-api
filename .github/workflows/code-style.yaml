@@ -15,11 +15,11 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 26
 
       - name: Prepare environment
         run: |
-          corepack enable
-          yarn install
+          npm install --global yarn@1.22.22
+          yarn install --frozen-lockfile
       - name: Check code style
         run: yarn run prettier --check src/

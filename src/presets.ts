@@ -3333,7 +3333,7 @@ export function GetPresets(instance: InstanceBaseExt<DeviceConfig>): CompanionPr
 					proMacro.color.red * 255,
 					proMacro.color.green * 255,
 					proMacro.color.blue * 255,
-					proMacro.color.alpha * 255
+					proMacro.color.alpha * 255,
 				), //combineRgb(153, 153, 0),
 				png64:
 					'iVBORw0KGgoAAAANSUhEUgAAABkAAAAZCAYAAADE6YVjAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9bpVoqDlYQcchQ\

@@ -6,7 +6,13 @@ import { DeviceConfig, GetConfigFields } from './config'
 import { GetPresets } from './presets'
 import { ProPresenter, StatusUpdateJSON, RequestAndResponseJSONValue } from 'renewedvision-propresenter'
 import { GetVariableDefinitions, ResetVariablesFromLocalCache, SetVariableValues } from './variables' // This modules uses SetVariableValues(this, CompanionVariableValues) function as an override for ModuleInstance.setVariableValues() that must be used in order to capture and cache all variable values (which are later used to reset variable values when we add new vars by re-defining all vars)
-import { ProPresenterStateStore, ProMessage, timestampToSeconds, secondsToTimestamp, ProPresentationArrangement } from './utils'
+import {
+	ProPresenterStateStore,
+	ProMessage,
+	timestampToSeconds,
+	secondsToTimestamp,
+	ProPresentationArrangement,
+} from './utils'
 import { GetFeedbacks } from './feedbacks'
 import { Input } from '@julusian/midi'
 
@@ -113,8 +119,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('info', 'Module Config: ' + JSON.stringify(config))
 
 		// Ensure midi_base_page is at least 1 - As older module versions without this config will default to 0.
-		if (!config.midi_base_page || config.midi_base_page <= 0)
-			config.midi_base_page = 1
+		if (!config.midi_base_page || config.midi_base_page <= 0) config.midi_base_page = 1
 
 		this.config = config
 
@@ -128,18 +133,17 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 
 				this.log(
 					'debug',
-					`MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`
+					`MIDI Message: Midi Channel: ${midiMessageChannel}, Is Note On?: ${midiMessageIsNoteon}, Note: ${midiMessageNote}, Velocity: ${midiMessageVelocity}, Delta Time: ${deltaTime}`,
 				)
 
 				// api/location/<page>/<row>/<column>/press
 				// page = channel + config.midi_base_page
 				// row = note
 				// column = velocity
-				
-				// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).  
+
+				// Note: NoteOn with velocity = 0 is interpreted/sent as Note Off (and when sent from Pro it seems to be sent with non-zero velocity).
 				// Therefore, this module will use a workaround where any NoteOff message will set the midiMessageVelocity to 0 to allow ProPresenter users a simple way to press buttons in Column 0 - while channel and note are still mapped to page and row.
-				if (!midiMessageIsNoteon)
-					midiMessageVelocity = 0
+				if (!midiMessageIsNoteon) midiMessageVelocity = 0
 
 				const buttonPressURL = `http://127.0.0.1:${this.config.companion_port}/api/location/${
 					midiMessageChannel + config.midi_base_page
@@ -227,7 +231,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					'timer/system_time': this.systemTimeUpdated,
 					'capture/status': this.captureStatusUpdated,
 				},
-				2000
+				2000,
 			)
 
 			this.initVariables() // Define the static "base" variables and dynamic variables based on ProPresenter state. (This function will be called many more times as the module gathers status data from ProPresenter and also get status updates)
@@ -242,7 +246,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 						'. Called: ' +
 						requestAndResponseJSON.path +
 						' with options: ' +
-						JSON.stringify(options)
+						JSON.stringify(options),
 				)
 
 				if (this.config.suppress_active_presentation_change_warning) {
@@ -411,9 +415,8 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				}
 
 				// Get Audio layer transport status
-				const transportAudioLayerStatus: RequestAndResponseJSONValue = await this.ProPresenter.transportLayerCurrent(
-					'presentation'
-				)
+				const transportAudioLayerStatus: RequestAndResponseJSONValue =
+					await this.ProPresenter.transportLayerCurrent('presentation')
 				// If we got an ok response, Construct a statusJSONObject and call the callback for transportLayerUpdated()
 				if (transportAudioLayerStatus.ok) {
 					const transportAudioLayerStatusJSONObject: StatusUpdateJSON = {
@@ -520,12 +523,12 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				time: '',
 				varid: 'timer_' + timer.id.uuid.replace(/-/g, ''),
 				state: 'stopped',
-			})
+			}),
 		)
 
 		// Update list of Timers in the dropdown choices format { id: string, label: string}
 		this.propresenterStateStore.timerChoices = statusJSONObject.data.map(
-			(timer: { id: { uuid: string; name: string } }) => ({ id: timer.id.uuid, label: timer.id.name })
+			(timer: { id: { uuid: string; name: string } }) => ({ id: timer.id.uuid, label: timer.id.name }),
 		)
 		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
@@ -555,7 +558,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					['timer_' + timercurrent.id.uuid.replace(/-/g, '') + '_seconds']: timestampToSeconds(timercurrent.time),
 					['timer_' + timercurrent.id.uuid.replace(/-/g, '') + '_custom']: secondsToTimestamp(
 						timestampToSeconds(timercurrent.time),
-						this.config.custom_timer_format_string
+						this.config.custom_timer_format_string,
 					),
 					['timer_' + timercurrent.id.uuid.replace(/-/g, '') + '_state']: timercurrent.state,
 				},
@@ -570,7 +573,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		// Update the .state and .time for each of the defined timers. // TODO: let's build a feedback based on time values - have to perform comparisons etc with hh:mm:ss format - for now, you can manually create this feedback with internal variable checks against timer (seconds) vars
 		this.propresenterStateStore.proTimers = this.propresenterStateStore.proTimers.map((proTimer) => {
 			const newTimer = statusJSONObject.data.find(
-				(newTimer: { id: { uuid: string } }) => newTimer.id.uuid == proTimer.id.uuid
+				(newTimer: { id: { uuid: string } }) => newTimer.id.uuid == proTimer.id.uuid,
 			)
 			if (this.config.exta_debug_logs) {
 				this.log('debug', 'newTimer: ' + JSON.stringify(newTimer))
@@ -614,7 +617,11 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			// ProPresenter can return a null presentation_index when no presentation is active
 			SetVariableValues(this, {
 				active_presentation_slide_index: statusJSONObject.data.presentation_index.index,
-				active_presentation_slides_remaining: Math.floor((this.getVariableValue('active_presentation_slides_count') as number) - statusJSONObject.data.presentation_index.index - 1),
+				active_presentation_slides_remaining: Math.floor(
+					(this.getVariableValue('active_presentation_slides_count') as number) -
+						statusJSONObject.data.presentation_index.index -
+						1,
+				),
 				// This status update includes the name and uuid of the presentation - so we can update these variables too
 				active_presentation_name: statusJSONObject.data.presentation_index.presentation_id.name,
 				active_presentation_uuid: statusJSONObject.data.presentation_index.presentation_id.uuid,
@@ -640,7 +647,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		})
 	}
 
-	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) =>  {
+	activePresentationUpdated = async (statusJSONObject: StatusUpdateJSON) => {
 		this.log('debug', 'activePresentationUpdated: ' + JSON.stringify(statusJSONObject))
 		if (statusJSONObject.data.presentation) {
 			// ProPresenter can return a null presentation when no presentation is active
@@ -662,10 +669,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				this.log('debug', 'Polled activePlaylist: ' + JSON.stringify(activePlaylistResponse.data))
 				let totalSlides = 0
 
-				if (activePlaylistResponse.data.presentation.playlist_item) { // Version 21 and above include playlist_item info which contains the playlist arrangement for the presentation
-					if (activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid) { // Custom arrangement selected by the playlist
+				if (activePlaylistResponse.data.presentation.playlist_item) {
+					// Version 21 and above include playlist_item info which contains the playlist arrangement for the presentation
+					if (activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid) {
+						// Custom arrangement selected by the playlist
 						const currentArrangement = statusJSONObject.data.presentation.arrangements.find(
-							(arrangement: ProPresentationArrangement) => arrangement.id.uuid == activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid
+							(arrangement: ProPresentationArrangement) =>
+								arrangement.id.uuid ==
+								activePlaylistResponse.data.presentation.playlist_item.presentation_info.arrangement_uuid,
 						)
 						if (currentArrangement && currentArrangement.groups.length > 0) {
 							for (const groupUuid of currentArrangement.groups) {
@@ -675,28 +686,34 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 								}
 							}
 						} else {
-							this.log('debug', 'currentArrangement, (' + JSON.stringify(currentArrangement) + ') not found or has zero groups. Assuming Master arrangement')
+							this.log(
+								'debug',
+								'currentArrangement, (' +
+									JSON.stringify(currentArrangement) +
+									') not found or has zero groups. Assuming Master arrangement',
+							)
 							// Assume Master arrangement - This is a workaround for the fact that Pro 21.3.1 on Windows reports the master arrangement as an arrangement with no groups.
 							for (const group of statusJSONObject.data.presentation.groups) {
 								totalSlides += group.slides.length
 							}
 						}
-					} else { // Master arrangement selected by the playlist
+					} else {
+						// Master arrangement selected by the playlist
 						for (const group of statusJSONObject.data.presentation.groups) {
 							totalSlides += group.slides.length
 						}
 					}
-				} else { // Earlier versions of ProPresenter do not include activePlaylistResponse.data.presentation.playlist_item - the best we can do is return master total slides //TODO: consider pulling arrangement name from library and using that?
+				} else {
+					// Earlier versions of ProPresenter do not include activePlaylistResponse.data.presentation.playlist_item - the best we can do is return master total slides //TODO: consider pulling arrangement name from library and using that?
 					for (const group of statusJSONObject.data.presentation.groups) {
-							totalSlides += group.slides.length
-						}
+						totalSlides += group.slides.length
+					}
 				}
 
 				SetVariableValues(this, {
 					active_presentation_slides_count: totalSlides,
 				})
 			}
-			
 		} else {
 			SetVariableValues(this, {
 				active_presentation_index: '', // Note that this seems to return invalid indexes. Keeping it here for the future, in case it becomes useful in a future version of ProPresenter
@@ -719,13 +736,13 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			})
 
 			const activePlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
-				statusJSONObject.data.presentation.playlist.uuid
+				statusJSONObject.data.presentation.playlist.uuid,
 			)
 			if (activePlaylistItemsResponse.ok) {
 				SetVariableValues(this, {
 					active_presentation_playlist_json: JSON.stringify(activePlaylistItemsResponse.data.items),
 					active_presentation_playlist_item_names: activePlaylistItemsResponse.data.items.map(
-						(a: { id: { name: string } }) => a.id.name
+						(a: { id: { name: string } }) => a.id.name,
 					),
 				})
 			}
@@ -788,7 +805,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				focused_playlist_name: statusJSONObject.data.playlist.name,
 			})
 			const focusedPlaylistItemsResponse: RequestAndResponseJSONValue = await this.ProPresenter.playlistPlaylistIdGet(
-				statusJSONObject.data.playlist.uuid
+				statusJSONObject.data.playlist.uuid,
 			)
 			this.log('debug', 'focusedPlaylistItems: ' + JSON.stringify(focusedPlaylistItemsResponse))
 			if (focusedPlaylistItemsResponse.ok) {
@@ -797,7 +814,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				})
 				SetVariableValues(this, {
 					focused_playlist_item_names: focusedPlaylistItemsResponse.data.items.map(
-						(a: { id: { name: string } }) => a.id.name
+						(a: { id: { name: string } }) => a.id.name,
 					),
 				})
 			} else {
@@ -806,7 +823,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					'Error getting focused playlist items: ' +
 						focusedPlaylistItemsResponse.status +
 						': ' +
-						focusedPlaylistItemsResponse.data
+						focusedPlaylistItemsResponse.data,
 				)
 			}
 		} else {
@@ -839,7 +856,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 	activeLookUpdated = (statusJSONObject: StatusUpdateJSON) => {
 		this.log(
 			'debug',
-			'activeLookUpdated: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name
+			'activeLookUpdated: ' + JSON.stringify(statusJSONObject) + ' lookname: ' + statusJSONObject.data.id.name,
 		)
 		SetVariableValues(this, {
 			active_look_name: statusJSONObject.data.id.name,
@@ -858,7 +875,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'clearGroupsUpdated: ' + JSON.stringify(statusJSONObject))
 		// Update list of cleargroups in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.clearGroupChoices = statusJSONObject.data.map(
-			(clearGroup: { id: { uuid: string; name: string } }) => ({ id: clearGroup.id.uuid, label: clearGroup.id.name })
+			(clearGroup: { id: { uuid: string; name: string } }) => ({ id: clearGroup.id.uuid, label: clearGroup.id.name }),
 		)
 		this.initActions()
 	}
@@ -867,7 +884,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'looksUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of looks in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.looksChoices = statusJSONObject.data.map(
-			(look: { id: { uuid: string; name: string } }) => ({ id: look.id.name, label: look.id.name })
+			(look: { id: { uuid: string; name: string } }) => ({ id: look.id.name, label: look.id.name }),
 		) // Note that we use the look name and not the UUID - as the active look will always have a different UUID, than any of the UUID in the list of configured looks - no idea why or how this is useful.
 		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
@@ -878,7 +895,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'macrosUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Update list of macros in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.macroChoices = statusJSONObject.data.map(
-			(macro: { id: { uuid: string; name: string } }) => ({ id: macro.id.uuid, label: macro.id.name })
+			(macro: { id: { uuid: string; name: string } }) => ({ id: macro.id.uuid, label: macro.id.name }),
 		)
 		// Update propresenterStateStore.proMacros
 		this.propresenterStateStore.proMacros = statusJSONObject.data // TODO: Consider how this might break/fail if the strutucture of the JSON (list of macros) changes (also for other status updates where we store the whole JSON without mapping into an aray of presummed types)
@@ -890,14 +907,14 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'propsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of props in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.propChoices = statusJSONObject.data.map(
-			(prop: { id: { uuid: string; name: string } }) => ({ id: prop.id.uuid, label: prop.id.name })
+			(prop: { id: { uuid: string; name: string } }) => ({ id: prop.id.uuid, label: prop.id.name }),
 		)
 		// Update propresenterStateStore.proProps
 		this.propresenterStateStore.proProps = statusJSONObject.data.map(
 			(prop: { id: { uuid: string; name: string; index: number }; is_active: boolean }) => ({
 				id: { uuid: prop.id.uuid, name: prop.id.name, index: prop.id.index },
 				is_active: prop.is_active,
-			})
+			}),
 		)
 		this.checkFeedbacks()
 		// Update Actions and Feedbacks (both are rate limited)
@@ -920,7 +937,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'videoInputsUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of video inputs in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.videoInputChoices = statusJSONObject.data.map(
-			(videoInput: { uuid: string; name: string }) => ({ id: videoInput.uuid, label: videoInput.name })
+			(videoInput: { uuid: string; name: string }) => ({ id: videoInput.uuid, label: videoInput.name }),
 		)
 		// Update Actions (this is rate limited)
 		this.initActions()
@@ -944,7 +961,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 				layout_uuid: stageScreenWithLayout.layout.uuid,
 				layout_name: stageScreenWithLayout.layout.name,
 				layout_index: stageScreenWithLayout.layout.index,
-			})
+			}),
 		)
 
 		// Create a list of stage screens in the dropdown choices format  { id: string, label: string}
@@ -952,7 +969,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			(stageScreenWithLayout: { screen: { uuid: string; name: string } }) => ({
 				id: stageScreenWithLayout.screen.uuid,
 				label: stageScreenWithLayout.screen.name,
-			})
+			}),
 		)
 		// Update Actions and Feedbacks (both are rate limited)
 		this.initActions()
@@ -986,7 +1003,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			(stageScreenLayout: { id: { uuid: string; name: string } }) => ({
 				id: stageScreenLayout.id.uuid,
 				label: stageScreenLayout.id.name,
-			})
+			}),
 		)
 
 		this.checkFeedbacks()
@@ -1009,7 +1026,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 		this.log('debug', 'messagesUpdated: ' + JSON.stringify(statusJSONObject.data))
 		// Create a list of messages in the dropdown choices format  { id: string, label: string}
 		this.propresenterStateStore.messageChoices = statusJSONObject.data.map(
-			(message: { id: { uuid: string; name: string } }) => ({ id: message.id.uuid, label: message.id.name })
+			(message: { id: { uuid: string; name: string } }) => ({ id: message.id.uuid, label: message.id.name }),
 		)
 
 		// Update the list of dynamically created text inputs for all message tokens...
@@ -1027,10 +1044,10 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 					type: 'textinput',
 					label: messageToken.name,
 					id: messageUUID + '__' + messageTokenTypeCode + '__' + messageToken.name, // "Parent" message UUID __ 3 Char type __ TokenName
-					isVisibleData: messageUUID,
+					isVisibleData: { messageUUID },
 					isVisible: (options, isVisibleData) => {
 						return (
-							(options.message_id_dropdown as string) == isVisibleData &&
+							(options.message_id_dropdown as string) == isVisibleData.messageUUID &&
 							(options.message_operation as string) == 'show'
 						)
 					},
@@ -1081,7 +1098,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			transport_audio_layer_time: statusJSONObject.data,
 			audio_countdown_timer: secondsToTimestamp(
 				Math.floor((this.getVariableValue('transport_audio_layer_media_duration') as number) - statusJSONObject.data),
-				'HH:mm:ss'
+				'HH:mm:ss',
 			),
 		})
 	}
@@ -1096,7 +1113,7 @@ class ModuleInstance extends InstanceBase<DeviceConfig> {
 			capture_time_seconds: timestampToSeconds(statusJSONObject.data.capture_time),
 			capture_time_custom: secondsToTimestamp(
 				timestampToSeconds(statusJSONObject.data.capture_time),
-				this.config.custom_timer_format_string
+				this.config.custom_timer_format_string,
 			),
 		})
 
