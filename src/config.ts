@@ -25,6 +25,7 @@ export interface InstanceBaseExt<TConfig> extends InstanceBase<TConfig> {
 	config: TConfig
 	ProPresenter: ProPresenter
 	propresenterStateStore: ProPresenterStateStore
+	enqueue<T>(job: () => Promise<T>): Promise<T>
 }
 
 export function GetConfigFields(instance: InstanceBaseExt<DeviceConfig>): SomeCompanionConfigField[] {
